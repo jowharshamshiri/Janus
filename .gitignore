@@ -1,0 +1,55 @@
+# AI-Assisted Development Files
+CLAUDE.md
+internal/
+
+# Generated Test Files
+generated/
+
+# Build Artifacts
+target/
+build/
+*.o
+*.so
+*.dylib
+*.dll
+
+# IDE Files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS Files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+test_logs/
+
+# Language-Specific Ignores
+
+# Go
+go.sum
+vendor/
+
+# Rust
+Cargo.lock
+target/
+
+# Swift
+.build/
+Package.resolved
+*.xcodeproj
+*.xcworkspace
+
+# Node.js (if any tooling)
+node_modules/
+npm-debug.log*
+
+# Python (if any tooling)
+__pycache__/
+*.pyc
+*.pyo
+.env

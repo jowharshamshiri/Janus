@@ -1,0 +1,36 @@
+{
+    "version": "1.0.0",
+    "channels": {
+        "test": {
+            "description": "Test channel for cross-platform communication",
+            "commands": {
+                "ping": {
+                    "description": "Simple ping command",
+                    "args": {},
+                    "response": {
+                        "type": "object",
+                        "properties": {
+                            "pong": {"type": "boolean"},
+                            "timestamp": {"type": "string"}
+                        }
+                    }
+                },
+                "echo": {
+                    "description": "Echo back the input",
+                    "args": {
+                        "message": {
+                            "type": "string",
+                            "required": true
+                        }
+                    },
+                    "response": {
+                        "type": "object",
+                        "properties": {
+                            "echo": {"type": "string"}
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,9 @@
+[submodule "SwiftUnixSockAPI"]
+	path = SwiftUnixSockAPI
+	url = ./SwiftUnixSockAPI
+[submodule "RustUnixSockAPI"]
+	path = RustUnixSockAPI
+	url = ./RustUnixSockAPI
+[submodule "GoUnixSocketAPI"]
+	path = GoUnixSocketAPI
+	url = ./GoUnixSocketAPI
