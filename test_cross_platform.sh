@@ -162,9 +162,9 @@ run_client_test() {
     local test_log="${LOG_DIR}/$(echo ${client_impl} | tr '[:upper:]' '[:lower:]')_to_$(echo ${server_impl} | tr '[:upper:]' '[:lower:]')_test.log"
     
     if [[ ${VERBOSE} -eq 1 ]]; then
-        timeout "${TIMEOUT}" bash -c "${client_cmd}"
+        gtimeout "${TIMEOUT}" bash -c "${client_cmd}"
     else
-        timeout "${TIMEOUT}" bash -c "${client_cmd}" > "${test_log}" 2>&1
+        gtimeout "${TIMEOUT}" bash -c "${client_cmd}" > "${test_log}" 2>&1
     fi
     
     local exit_code=$?
@@ -189,8 +189,8 @@ run_cross_platform_tests() {
     local implementations=("Swift" "Rust" "Go")
     local impl_dirs=("${TEST_DIR}/SwiftUnixSockAPI" "${TEST_DIR}/RustUnixSockAPI" "${TEST_DIR}/GoUnixSocketAPI")
     local build_cmds=("swift build" "cargo build" "go build -o bin/server ./cmd/server && go build -o bin/client ./cmd/client")
-    local server_cmds=("swift run SwiftUnixSockAPI-Server --socket-path=${SOCKET_PATH}" "cargo run --bin server -- --socket-path=${SOCKET_PATH}" "./bin/server --socket-path=${SOCKET_PATH}")
-    local client_cmds=("swift run SwiftUnixSockAPI-Client --socket-path=${SOCKET_PATH}" "cargo run --bin client -- --socket-path=${SOCKET_PATH}" "./bin/client --socket-path=${SOCKET_PATH}")
+    local server_cmds=("swift run SwiftUnixSockAPI-Server --socket-path=${SOCKET_PATH} --spec=test-api-spec.json" "cargo run --bin server -- --socket-path=${SOCKET_PATH} --spec=test-api-spec.json" "./bin/server --socket-path=${SOCKET_PATH} --spec=test-api-spec.json")
+    local client_cmds=("swift run SwiftUnixSockAPI-Client --socket-path=${SOCKET_PATH} --spec=test-api-spec.json" "cargo run --bin client -- --socket-path=${SOCKET_PATH} --spec=test-api-spec.json" "./bin/client --socket-path=${SOCKET_PATH} --spec=test-api-spec.json")
     
     local total_tests=0
     local passed_tests=0
@@ -294,22 +294,32 @@ create_test_examples() {
     cat > "${TEST_DIR}/test-api-spec.json" << 'EOF'
 {
     "version": "1.0.0",
+    "name": "Cross-Platform Test API",
     "channels": {
         "test": {
+            "name": "test",
             "description": "Test channel for cross-platform communication",
             "commands": {
                 "ping": {
+                    "name": "ping",
                     "description": "Simple ping command",
                     "args": {},
                     "response": {
                         "type": "object",
                         "properties": {
-                            "pong": {"type": "boolean"},
-                            "timestamp": {"type": "string"}
+                            "pong": {
+                                "type": "boolean",
+                                "required": true
+                            },
+                            "timestamp": {
+                                "type": "string",
+                                "required": true
+                            }
                         }
                     }
                 },
                 "echo": {
+                    "name": "echo",
                     "description": "Echo back the input",
                     "args": {
                         "message": {
@@ -320,7 +330,10 @@ create_test_examples() {
                     "response": {
                         "type": "object",
                         "properties": {
-                            "echo": {"type": "string"}
+                            "echo": {
+                                "type": "string",
+                                "required": true
+                            }
                         }
                     }
                 }
@@ -329,6 +342,11 @@ create_test_examples() {
     }
 }
 EOF
+    
+    # Copy spec to each implementation directory for consistent paths
+    cp "${TEST_DIR}/test-api-spec.json" "${TEST_DIR}/RustUnixSockAPI/test-api-spec.json" 2>/dev/null || true
+    cp "${TEST_DIR}/test-api-spec.json" "${TEST_DIR}/GoUnixSocketAPI/test-api-spec.json" 2>/dev/null || true
+    cp "${TEST_DIR}/test-api-spec.json" "${TEST_DIR}/SwiftUnixSockAPI/test-api-spec.json" 2>/dev/null || true
     
     log_success "Test API specification created: test-api-spec.json"
 }

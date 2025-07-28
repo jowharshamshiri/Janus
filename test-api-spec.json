@@ -1,21 +1,31 @@
 {
     "version": "1.0.0",
+    "name": "Cross-Platform Test API",
     "channels": {
         "test": {
+            "name": "test",
             "description": "Test channel for cross-platform communication",
             "commands": {
                 "ping": {
+                    "name": "ping",
                     "description": "Simple ping command",
                     "args": {},
                     "response": {
                         "type": "object",
                         "properties": {
-                            "pong": {"type": "boolean"},
-                            "timestamp": {"type": "string"}
+                            "pong": {
+                                "type": "boolean",
+                                "required": true
+                            },
+                            "timestamp": {
+                                "type": "string",
+                                "required": true
+                            }
                         }
                     }
                 },
                 "echo": {
+                    "name": "echo",
                     "description": "Echo back the input",
                     "args": {
                         "message": {
@@ -26,7 +36,10 @@
                     "response": {
                         "type": "object",
                         "properties": {
-                            "echo": {"type": "string"}
+                            "echo": {
+                                "type": "string",
+                                "required": true
+                            }
                         }
                     }
                 }
