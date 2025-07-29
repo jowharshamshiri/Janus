@@ -54,7 +54,7 @@ All messages use **direct JSON payload** without length prefixes (connectionless
     "role": "user"
   },
   "timeout": 30.0,
-  "timestamp": "2025-07-29T10:50:00.000Z"
+  "timestamp": 1722249000.123
 }
 ```
 
@@ -64,7 +64,7 @@ All messages use **direct JSON payload** without length prefixes (connectionless
 - `command` (required): Command name (1-256 chars, alphanumeric + `-_`)
 - `args` (optional): Command arguments object (max 5MB)
 - `timeout` (optional): Timeout in seconds (0.1-300.0, default: 30.0)
-- `timestamp` (required): ISO 8601 timestamp with millisecond precision
+- `timestamp` (required): Unix timestamp (seconds since epoch) as f64 with microsecond precision
 
 #### SocketResponse (Server → Client)
 
@@ -78,7 +78,7 @@ All messages use **direct JSON payload** without length prefixes (connectionless
     "status": "created",
     "message": "User created successfully"
   },
-  "timestamp": "2025-07-29T10:50:01.234Z"
+  "timestamp": 1722249001.234
 }
 ```
 
@@ -87,7 +87,7 @@ All messages use **direct JSON payload** without length prefixes (connectionless
 - `channelId` (required): Channel verification
 - `success` (required): `true` for successful operations
 - `result` (optional): Response data object
-- `timestamp` (required): Response generation timestamp
+- `timestamp` (required): Response generation Unix timestamp (f64 seconds since epoch)
 
 **Error Response Example**:
 ```json
@@ -100,7 +100,7 @@ All messages use **direct JSON payload** without length prefixes (connectionless
     "message": "Username contains invalid characters",
     "details": "Username must contain only alphanumeric characters and underscores"
   },
-  "timestamp": "2025-07-29T10:50:01.234Z"
+  "timestamp": 1722249001.234
 }
 ```
 
@@ -514,7 +514,7 @@ interface DatagramConfig {
       "maxLength": 50
     }
   },
-  "timestamp": "2025-07-29T10:50:01.234Z"
+  "timestamp": 1722249001.234
 }
 ```
 
@@ -588,7 +588,7 @@ All implementations must produce **byte-for-byte identical** wire format:
 1. **4-byte big-endian length prefix** 
 2. **UTF-8 encoded JSON payload**
 3. **Consistent field ordering** (for deterministic serialization)
-4. **ISO 8601 timestamps** with millisecond precision
+4. **Unix timestamps (f64)** with millisecond precision
 5. **UUID v4 format** for command correlation
 
 ### Language-Specific Considerations
@@ -608,13 +608,13 @@ All implementations must produce **byte-for-byte identical** wire format:
 #### Swift Implementation
 - Use `JSONEncoder` with sorted keys
 - `CFByteOrder` functions for length prefix
-- `ISO8601DateFormatter` for timestamps
+- `Unix timestamp (f64)` for timestamps
 - `UUID()` for UUID generation
 
 #### TypeScript Implementation (Future)
 - Use `JSON.stringify` with replacer for ordering
 - `Buffer` with `writeUInt32BE` for length prefix
-- `Date.toISOString()` for timestamps
+- `Date.now() / 1000` for timestamps
 - `crypto.randomUUID()` for UUID generation
 
 ### Validation Consistency

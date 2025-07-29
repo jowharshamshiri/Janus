@@ -98,3 +98,4 @@ Thumbs.db
 *.sublime-workspace
 *.sublime-project
 .scrap/
+tests/reports/

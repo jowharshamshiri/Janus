@@ -133,12 +133,15 @@ class ComprehensiveTestSuite:
         """Load and validate implementation configurations"""
         self.implementations: Dict[str, ImplementationInfo] = {}
         
+        # Get project root (parent of tests directory)
+        project_root = Path(__file__).parent.parent.parent
+        
         for impl_name, impl_config in self.config["implementations"].items():
             # Map implementation configurations to unified SOCK_DGRAM model
             impl_info = ImplementationInfo(
                 name=impl_name,
                 language=impl_config.get("language", impl_name),
-                directory=Path(impl_config["directory"]),
+                directory=project_root / impl_config["directory"],
                 build_command=impl_config["build_command"],
                 test_command=impl_config["test_command"],
                 unified_binary=self._get_unified_binary_path(impl_name, impl_config),
