@@ -1,0 +1,1721 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Management API - API Documentation</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/themes/prism.min.css" rel="stylesheet">
+
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.36.1/min/vs/editor/editor.main.css" rel="stylesheet">
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.36.1/min/vs/loader.min.js"></script>
+      </head>
+<body>
+    <nav class="sidebar">
+        <div class="sidebar-header">
+            
+            <h1>User Management API</h1>
+            <p class="version">v1.0.0</p>
+        </div>
+        
+        <div class="sidebar-content">
+            <div class="nav-section">
+                <h3>Overview</h3>
+                <ul>
+                    <li><a href="#introduction">Introduction</a></li>
+                    <li><a href="#protocol">Protocol</a></li>
+                    <li><a href="#authentication">Authentication</a></li>
+                    <li><a href="#errors">Error Handling</a></li>
+                </ul>
+            </div>
+            
+            <div class="nav-section">
+                <h3>Channels</h3>
+                <ul>
+                    
+                        <li>
+                            <a href="#channel-user-service">User Service</a>
+                            <ul class="command-list">
+                                <li><a href="#command-user-service-create-user">create-user</a></li><li><a href="#command-user-service-authenticate-user">authenticate-user</a></li><li><a href="#command-user-service-get-user">get-user</a></li><li><a href="#command-user-service-update-user">update-user</a></li><li><a href="#command-user-service-delete-user">delete-user</a></li>
+                            </ul>
+                        </li>
+                    
+                        <li>
+                            <a href="#channel-session-service">Session Service</a>
+                            <ul class="command-list">
+                                <li><a href="#command-session-service-validate-session">validate-session</a></li><li><a href="#command-session-service-logout">logout</a></li>
+                            </ul>
+                        </li>
+                    
+                </ul>
+            </div>
+            
+            
+            <div class="nav-section">
+                <h3>Models</h3>
+                <ul>
+                    <li><a href="#model-UserProfile">UserProfile</a></li><li><a href="#model-UserPreferences">UserPreferences</a></li><li><a href="#model-CreateUserResponse">CreateUserResponse</a></li><li><a href="#model-UserInfo">UserInfo</a></li><li><a href="#model-UserUpdateRequest">UserUpdateRequest</a></li>
+                </ul>
+            </div>
+            
+        </div>
+    
+      <div class="nav-section dev-hub-section">
+        <h3>🛠️ Development Hub</h3>
+        <ul>
+          <li><a href="#socket-monitor" class="dev-hub-link">Socket Monitor</a></li>
+          <li><a href="#message-sender" class="dev-hub-link">Message Sender</a></li>
+          <li><a href="#connection-tester" class="dev-hub-link">Connection Tester</a></li>
+          <li><a href="#message-formatter" class="dev-hub-link">Message Formatter</a></li>
+        </ul>
+      </div>
+    </nav>
+
+    <main class="main-content">
+        <section id="introduction" class="section">
+            <h1>User Management API</h1>
+            <p class="lead">Comprehensive user management operations with authentication and profile management</p>
+            
+            <div class="info-cards">
+                <div class="info-card">
+                    <h3>Protocol</h3>
+                    <p>Unix Domain Sockets with JSON messaging</p>
+                </div>
+                <div class="info-card">
+                    <h3>Version</h3>
+                    <p>1.0.0</p>
+                </div>
+                <div class="info-card">
+                    <h3>Channels</h3>
+                    <p>2 available</p>
+                </div>
+                <div class="info-card">
+                    <h3>Commands</h3>
+                    <p>7 total</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="protocol" class="section">
+            <h2>Protocol Overview</h2>
+            <p>This API uses Unix Domain Sockets for inter-process communication with JSON-based messaging and 4-byte length prefixes.</p>
+            
+            <h3>Message Format</h3>
+            <div class="code-block">
+                <pre><code class="language-json">{
+  "id": "uuid-v4-string",
+  "channelId": "channel-identifier", 
+  "command": "command-name",
+  "args": {
+    "key": "value"
+  },
+  "timeout": 30.0,
+  "timestamp": "2025-07-29T10:50:00.000Z"
+}</code></pre>
+            </div>
+            
+            <h3>Response Format</h3>
+            <div class="code-block">
+                <pre><code class="language-json">{
+  "commandId": "uuid-from-request",
+  "channelId": "channel-identifier",
+  "success": true,
+  "result": {
+    "data": "response-data"
+  },
+  "timestamp": "2025-07-29T10:50:01.000Z"
+}</code></pre>
+            </div>
+        </section>
+
+        <section id="authentication" class="section">
+            <h2>Authentication</h2>
+            <p>Authentication is handled through Unix socket permissions and optional channel-specific authentication mechanisms.</p>
+        </section>
+
+        <section id="errors" class="section">
+            <h2>Error Handling</h2>
+            <p>All errors follow a standardized format with specific error codes and detailed messages.</p>
+            
+            <div class="code-block">
+                <pre><code class="language-json">{
+  "commandId": "uuid-from-request",
+  "channelId": "channel-identifier", 
+  "success": false,
+  "error": {
+    "code": "ERROR_CODE",
+    "message": "Human readable message",
+    "details": "Additional context"
+  },
+  "timestamp": "2025-07-29T10:50:01.000Z"
+}</code></pre>
+            </div>
+        </section>
+
+        
+        <section id="channel-user-service" class="section">
+            <h2>User Service</h2>
+            <p>Core user management operations including registration, authentication, and profile management</p>
+            
+            
+        <div id="command-user-service-create-user" class="command">
+            <h3>Create User</h3>
+            <p>Create a new user account with validation and security checks</p>
+            
+            <div class="command-details">
+                <div class="command-info">
+                    <span class="badge">Channel: user-service</span>
+                    <span class="badge">Command: create-user</span>
+                    <span class="badge">Timeout: 30s</span>
+                </div>
+                
+                
+                <h4>Arguments</h4>
+                <div class="arguments">
+                    
+        <div class="argument">
+            <div class="argument-header">
+                <h5>Username</h5>
+                <span class="type">string</span>
+                <span class="required">required</span>
+            </div>
+            <p>Unique username for the account</p>
+            
+            
+            <p><strong>Pattern:</strong> <code>^[a-zA-Z0-9_]{3,50}$</code></p>
+            <p><strong>Min length:</strong> 3</p>
+            <p><strong>Max length:</strong> 50</p>
+            
+            
+        </div>
+    
+        <div class="argument">
+            <div class="argument-header">
+                <h5>Email Address</h5>
+                <span class="type">string</span>
+                <span class="required">required</span>
+            </div>
+            <p>User's email address for notifications and recovery</p>
+            
+            
+            <p><strong>Pattern:</strong> <code>^[\w\.-]+@[\w\.-]+\.[a-zA-Z]{2,}$</code></p>
+            
+            
+            
+            
+        </div>
+    
+        <div class="argument">
+            <div class="argument-header">
+                <h5>Password</h5>
+                <span class="type">string</span>
+                <span class="required">required</span>
+            </div>
+            <p>Secure password meeting complexity requirements</p>
+            
+            
+            
+            <p><strong>Min length:</strong> 8</p>
+            <p><strong>Max length:</strong> 128</p>
+            
+            
+        </div>
+    
+        <div class="argument">
+            <div class="argument-header">
+                <h5>User Role</h5>
+                <span class="type">string</span>
+                <span class="optional">optional</span>
+            </div>
+            <p>User's system role determining permissions</p>
+            <p><strong>Default:</strong> <code>"user"</code></p>
+            <p><strong>Allowed values:</strong> <code>"admin"</code>, <code>"moderator"</code>, <code>"user"</code>, <code>"guest"</code></p>
+            
+            
+            
+            
+            
+        </div>
+    
+        <div class="argument">
+            <div class="argument-header">
+                <h5>User Profile</h5>
+                <span class="type">object</span>
+                <span class="optional">optional</span>
+            </div>
+            <p>Extended user profile information</p>
+            
+            
+            
+            
+            
+            
+            
+        </div>
+    
+                </div>
+                
+                
+                
+                <h4>Response</h4>
+                <div class="response">
+                    
+        <div class="response-details">
+            <p><strong>Type:</strong> object</p>
+            <p>User creation result with generated ID and status</p>
+            <p><strong>Model:</strong> <a href="#model-CreateUserResponse">CreateUserResponse</a></p>
+        </div>
+    
+                </div>
+                
+                
+                
+                <h4>Error Codes</h4>
+                <div class="error-codes">
+                    <code class="error-code">VALIDATION_FAILED</code> <code class="error-code">USERNAME_EXISTS</code> <code class="error-code">EMAIL_EXISTS</code> <code class="error-code">PASSWORD_TOO_WEAK</code> <code class="error-code">SECURITY_VIOLATION</code>
+                </div>
+                
+                
+                
+        <h4>Example</h4>
+        <div class="example">
+            <h5>Request</h5>
+            <div class="code-block">
+                <pre><code class="language-json">{
+  "id": "550e8400-e29b-41d4-a716-446655440000",
+  "channelId": "user-service",
+  "command": "create-user",
+  "args": {
+    "username": "example-username",
+    "email": "example-email",
+    "password": "example-password",
+    "role": "user",
+    "profile": {
+      "key": "value"
+    }
+  },
+  "timeout": 30,
+  "timestamp": "2025-07-29T13:15:58.981Z"
+}</code></pre>
+            </div>
+            
+            <h5>Response</h5>
+            <div class="code-block">
+                <pre><code class="language-json">{
+  "commandId": "550e8400-e29b-41d4-a716-446655440000",
+  "channelId": "user-service",
+  "success": true,
+  "result": {
+    "message": "Command executed successfully"
+  },
+  "timestamp": "2025-07-29T13:15:58.982Z"
+}</code></pre>
+            </div>
+        </div>
+    
+            </div>
+        </div>
+    
+        <div id="command-user-service-authenticate-user" class="command">
+            <h3>Authenticate User</h3>
+            <p>Authenticate user credentials and generate session token</p>
+            
+            <div class="command-details">
+                <div class="command-info">
+                    <span class="badge">Channel: user-service</span>
+                    <span class="badge">Command: authenticate-user</span>
+                    <span class="badge">Timeout: 10s</span>
+                </div>
+                
+                
+                <h4>Arguments</h4>
+                <div class="arguments">
+                    
+        <div class="argument">
+            <div class="argument-header">
+                <h5>Username</h5>
+                <span class="type">string</span>
+                <span class="required">required</span>
+            </div>
+            <p>Username or email for authentication</p>
+            
+            
+            
+            <p><strong>Min length:</strong> 1</p>
+            <p><strong>Max length:</strong> 256</p>
+            
+            
+        </div>
+    
+        <div class="argument">
+            <div class="argument-header">
+                <h5>Password</h5>
+                <span class="type">string</span>
+                <span class="required">required</span>
+            </div>
+            <p>User's password</p>
+            
+            
+            
+            <p><strong>Min length:</strong> 1</p>
+            <p><strong>Max length:</strong> 128</p>
+            
+            
+        </div>
+    
+        <div class="argument">
+            <div class="argument-header">
+                <h5>Remember Me</h5>
+                <span class="type">boolean</span>
+                <span class="optional">optional</span>
+            </div>
+            <p>Whether to create long-lived session</p>
+            <p><strong>Default:</strong> <code>false</code></p>
+            
+            
+            
+            
+            
+            
+        </div>
+    
+                </div>
+                
+                
+                
+                <h4>Response</h4>
+                <div class="response">
+                    
+        <div class="response-details">
+            <p><strong>Type:</strong> object</p>
+            <p>Authentication result with session information</p>
+            
+        </div>
+    
+                </div>
+                
+                
+                
+                <h4>Error Codes</h4>
+                <div class="error-codes">
+                    <code class="error-code">INVALID_CREDENTIALS</code> <code class="error-code">ACCOUNT_LOCKED</code> <code class="error-code">ACCOUNT_DISABLED</code> <code class="error-code">TOO_MANY_ATTEMPTS</code>
+                </div>
+                
+                
+                
+        <h4>Example</h4>
+        <div class="example">
+            <h5>Request</h5>
+            <div class="code-block">
+                <pre><code class="language-json">{
+  "id": "550e8400-e29b-41d4-a716-446655440000",
+  "channelId": "user-service",
+  "command": "authenticate-user",
+  "args": {
+    "username": "example-username",
+    "password": "example-password",
+    "rememberMe": false
+  },
+  "timeout": 10,
+  "timestamp": "2025-07-29T13:15:58.982Z"
+}</code></pre>
+            </div>
+            
+            <h5>Response</h5>
+            <div class="code-block">
+                <pre><code class="language-json">{
+  "commandId": "550e8400-e29b-41d4-a716-446655440000",
+  "channelId": "user-service",
+  "success": true,
+  "result": {
+    "message": "Command executed successfully"
+  },
+  "timestamp": "2025-07-29T13:15:58.982Z"
+}</code></pre>
+            </div>
+        </div>
+    
+            </div>
+        </div>
+    
+        <div id="command-user-service-get-user" class="command">
+            <h3>Get User</h3>
+            <p>Retrieve user information by ID or username</p>
+            
+            <div class="command-details">
+                <div class="command-info">
+                    <span class="badge">Channel: user-service</span>
+                    <span class="badge">Command: get-user</span>
+                    <span class="badge">Timeout: 15s</span>
+                </div>
+                
+                
+                <h4>Arguments</h4>
+                <div class="arguments">
+                    
+        <div class="argument">
+            <div class="argument-header">
+                <h5>User ID</h5>
+                <span class="type">string</span>
+                <span class="optional">optional</span>
+            </div>
+            <p>Unique user identifier</p>
+            
+            
+            <p><strong>Pattern:</strong> <code>^[a-zA-Z0-9-]+$</code></p>
+            
+            
+            
+            
+        </div>
+    
+        <div class="argument">
+            <div class="argument-header">
+                <h5>Username</h5>
+                <span class="type">string</span>
+                <span class="optional">optional</span>
+            </div>
+            <p>Username to look up</p>
+            
+            
+            <p><strong>Pattern:</strong> <code>^[a-zA-Z0-9_]{3,50}$</code></p>
+            
+            
+            
+            
+        </div>
+    
+        <div class="argument">
+            <div class="argument-header">
+                <h5>Include Profile</h5>
+                <span class="type">boolean</span>
+                <span class="optional">optional</span>
+            </div>
+            <p>Whether to include extended profile information</p>
+            <p><strong>Default:</strong> <code>false</code></p>
+            
+            
+            
+            
+            
+            
+        </div>
+    
+                </div>
+                
+                
+                
+                <h4>Response</h4>
+                <div class="response">
+                    
+        <div class="response-details">
+            <p><strong>Type:</strong> object</p>
+            <p>User information</p>
+            <p><strong>Model:</strong> <a href="#model-UserInfo">UserInfo</a></p>
+        </div>
+    
+                </div>
+                
+                
+                
+                <h4>Error Codes</h4>
+                <div class="error-codes">
+                    <code class="error-code">USER_NOT_FOUND</code> <code class="error-code">ACCESS_DENIED</code> <code class="error-code">VALIDATION_FAILED</code>
+                </div>
+                
+                
+                
+        <h4>Example</h4>
+        <div class="example">
+            <h5>Request</h5>
+            <div class="code-block">
+                <pre><code class="language-json">{
+  "id": "550e8400-e29b-41d4-a716-446655440000",
+  "channelId": "user-service",
+  "command": "get-user",
+  "args": {
+    "userId": "example-userId",
+    "username": "example-username",
+    "includeProfile": false
+  },
+  "timeout": 15,
+  "timestamp": "2025-07-29T13:15:58.982Z"
+}</code></pre>
+            </div>
+            
+            <h5>Response</h5>
+            <div class="code-block">
+                <pre><code class="language-json">{
+  "commandId": "550e8400-e29b-41d4-a716-446655440000",
+  "channelId": "user-service",
+  "success": true,
+  "result": {
+    "message": "Command executed successfully"
+  },
+  "timestamp": "2025-07-29T13:15:58.982Z"
+}</code></pre>
+            </div>
+        </div>
+    
+            </div>
+        </div>
+    
+        <div id="command-user-service-update-user" class="command">
+            <h3>Update User</h3>
+            <p>Update user information and profile</p>
+            
+            <div class="command-details">
+                <div class="command-info">
+                    <span class="badge">Channel: user-service</span>
+                    <span class="badge">Command: update-user</span>
+                    <span class="badge">Timeout: 30s</span>
+                </div>
+                
+                
+                <h4>Arguments</h4>
+                <div class="arguments">
+                    
+        <div class="argument">
+            <div class="argument-header">
+                <h5>User ID</h5>
+                <span class="type">string</span>
+                <span class="required">required</span>
+            </div>
+            <p>ID of user to update</p>
+            
+            
+            <p><strong>Pattern:</strong> <code>^[a-zA-Z0-9-]+$</code></p>
+            
+            
+            
+            
+        </div>
+    
+        <div class="argument">
+            <div class="argument-header">
+                <h5>Updates</h5>
+                <span class="type">object</span>
+                <span class="required">required</span>
+            </div>
+            <p>Fields to update</p>
+            
+            
+            
+            
+            
+            
+            
+        </div>
+    
+                </div>
+                
+                
+                
+                <h4>Response</h4>
+                <div class="response">
+                    
+        <div class="response-details">
+            <p><strong>Type:</strong> object</p>
+            <p>Updated user information</p>
+            <p><strong>Model:</strong> <a href="#model-UserInfo">UserInfo</a></p>
+        </div>
+    
+                </div>
+                
+                
+                
+                <h4>Error Codes</h4>
+                <div class="error-codes">
+                    <code class="error-code">USER_NOT_FOUND</code> <code class="error-code">ACCESS_DENIED</code> <code class="error-code">VALIDATION_FAILED</code> <code class="error-code">EMAIL_EXISTS</code> <code class="error-code">USERNAME_EXISTS</code>
+                </div>
+                
+                
+                
+        <h4>Example</h4>
+        <div class="example">
+            <h5>Request</h5>
+            <div class="code-block">
+                <pre><code class="language-json">{
+  "id": "550e8400-e29b-41d4-a716-446655440000",
+  "channelId": "user-service",
+  "command": "update-user",
+  "args": {
+    "userId": "example-userId",
+    "updates": {
+      "key": "value"
+    }
+  },
+  "timeout": 30,
+  "timestamp": "2025-07-29T13:15:58.982Z"
+}</code></pre>
+            </div>
+            
+            <h5>Response</h5>
+            <div class="code-block">
+                <pre><code class="language-json">{
+  "commandId": "550e8400-e29b-41d4-a716-446655440000",
+  "channelId": "user-service",
+  "success": true,
+  "result": {
+    "message": "Command executed successfully"
+  },
+  "timestamp": "2025-07-29T13:15:58.982Z"
+}</code></pre>
+            </div>
+        </div>
+    
+            </div>
+        </div>
+    
+        <div id="command-user-service-delete-user" class="command">
+            <h3>Delete User</h3>
+            <p>Permanently delete a user account</p>
+            
+            <div class="command-details">
+                <div class="command-info">
+                    <span class="badge">Channel: user-service</span>
+                    <span class="badge">Command: delete-user</span>
+                    <span class="badge">Timeout: 60s</span>
+                </div>
+                
+                
+                <h4>Arguments</h4>
+                <div class="arguments">
+                    
+        <div class="argument">
+            <div class="argument-header">
+                <h5>User ID</h5>
+                <span class="type">string</span>
+                <span class="required">required</span>
+            </div>
+            <p>ID of user to delete</p>
+            
+            
+            <p><strong>Pattern:</strong> <code>^[a-zA-Z0-9-]+$</code></p>
+            
+            
+            
+            
+        </div>
+    
+        <div class="argument">
+            <div class="argument-header">
+                <h5>Confirmation</h5>
+                <span class="type">string</span>
+                <span class="required">required</span>
+            </div>
+            <p>Must be 'DELETE' to confirm deletion</p>
+            
+            <p><strong>Allowed values:</strong> <code>"DELETE"</code></p>
+            
+            
+            
+            
+            
+        </div>
+    
+                </div>
+                
+                
+                
+                <h4>Response</h4>
+                <div class="response">
+                    
+        <div class="response-details">
+            <p><strong>Type:</strong> object</p>
+            <p>Deletion confirmation</p>
+            
+        </div>
+    
+                </div>
+                
+                
+                
+                <h4>Error Codes</h4>
+                <div class="error-codes">
+                    <code class="error-code">USER_NOT_FOUND</code> <code class="error-code">ACCESS_DENIED</code> <code class="error-code">VALIDATION_FAILED</code> <code class="error-code">CANNOT_DELETE_ADMIN</code>
+                </div>
+                
+                
+                
+        <h4>Example</h4>
+        <div class="example">
+            <h5>Request</h5>
+            <div class="code-block">
+                <pre><code class="language-json">{
+  "id": "550e8400-e29b-41d4-a716-446655440000",
+  "channelId": "user-service",
+  "command": "delete-user",
+  "args": {
+    "userId": "example-userId",
+    "confirmation": "DELETE"
+  },
+  "timeout": 60,
+  "timestamp": "2025-07-29T13:15:58.982Z"
+}</code></pre>
+            </div>
+            
+            <h5>Response</h5>
+            <div class="code-block">
+                <pre><code class="language-json">{
+  "commandId": "550e8400-e29b-41d4-a716-446655440000",
+  "channelId": "user-service",
+  "success": true,
+  "result": {
+    "message": "Command executed successfully"
+  },
+  "timestamp": "2025-07-29T13:15:58.982Z"
+}</code></pre>
+            </div>
+        </div>
+    
+            </div>
+        </div>
+    
+        </section>
+    
+        <section id="channel-session-service" class="section">
+            <h2>Session Service</h2>
+            <p>Session management and token validation operations</p>
+            
+            
+        <div id="command-session-service-validate-session" class="command">
+            <h3>Validate Session</h3>
+            <p>Validate session token and return user information</p>
+            
+            <div class="command-details">
+                <div class="command-info">
+                    <span class="badge">Channel: session-service</span>
+                    <span class="badge">Command: validate-session</span>
+                    <span class="badge">Timeout: 5s</span>
+                </div>
+                
+                
+                <h4>Arguments</h4>
+                <div class="arguments">
+                    
+        <div class="argument">
+            <div class="argument-header">
+                <h5>Session Token</h5>
+                <span class="type">string</span>
+                <span class="required">required</span>
+            </div>
+            <p>JWT session token to validate</p>
+            
+            
+            
+            <p><strong>Min length:</strong> 1</p>
+            
+            
+            
+        </div>
+    
+                </div>
+                
+                
+                
+                <h4>Response</h4>
+                <div class="response">
+                    
+        <div class="response-details">
+            <p><strong>Type:</strong> object</p>
+            <p>Session validation result</p>
+            
+        </div>
+    
+                </div>
+                
+                
+                
+                <h4>Error Codes</h4>
+                <div class="error-codes">
+                    <code class="error-code">INVALID_TOKEN</code> <code class="error-code">TOKEN_EXPIRED</code> <code class="error-code">SESSION_NOT_FOUND</code>
+                </div>
+                
+                
+                
+        <h4>Example</h4>
+        <div class="example">
+            <h5>Request</h5>
+            <div class="code-block">
+                <pre><code class="language-json">{
+  "id": "550e8400-e29b-41d4-a716-446655440000",
+  "channelId": "session-service",
+  "command": "validate-session",
+  "args": {
+    "sessionToken": "example-sessionToken"
+  },
+  "timeout": 5,
+  "timestamp": "2025-07-29T13:15:58.982Z"
+}</code></pre>
+            </div>
+            
+            <h5>Response</h5>
+            <div class="code-block">
+                <pre><code class="language-json">{
+  "commandId": "550e8400-e29b-41d4-a716-446655440000",
+  "channelId": "session-service",
+  "success": true,
+  "result": {
+    "message": "Command executed successfully"
+  },
+  "timestamp": "2025-07-29T13:15:58.982Z"
+}</code></pre>
+            </div>
+        </div>
+    
+            </div>
+        </div>
+    
+        <div id="command-session-service-logout" class="command">
+            <h3>Logout</h3>
+            <p>Invalidate session token and logout user</p>
+            
+            <div class="command-details">
+                <div class="command-info">
+                    <span class="badge">Channel: session-service</span>
+                    <span class="badge">Command: logout</span>
+                    <span class="badge">Timeout: 10s</span>
+                </div>
+                
+                
+                <h4>Arguments</h4>
+                <div class="arguments">
+                    
+        <div class="argument">
+            <div class="argument-header">
+                <h5>Session Token</h5>
+                <span class="type">string</span>
+                <span class="required">required</span>
+            </div>
+            <p>Session token to invalidate</p>
+            
+            
+            
+            <p><strong>Min length:</strong> 1</p>
+            
+            
+            
+        </div>
+    
+                </div>
+                
+                
+                
+                <h4>Response</h4>
+                <div class="response">
+                    
+        <div class="response-details">
+            <p><strong>Type:</strong> object</p>
+            <p>Logout confirmation</p>
+            
+        </div>
+    
+                </div>
+                
+                
+                
+                <h4>Error Codes</h4>
+                <div class="error-codes">
+                    <code class="error-code">INVALID_TOKEN</code> <code class="error-code">SESSION_NOT_FOUND</code>
+                </div>
+                
+                
+                
+        <h4>Example</h4>
+        <div class="example">
+            <h5>Request</h5>
+            <div class="code-block">
+                <pre><code class="language-json">{
+  "id": "550e8400-e29b-41d4-a716-446655440000",
+  "channelId": "session-service",
+  "command": "logout",
+  "args": {
+    "sessionToken": "example-sessionToken"
+  },
+  "timeout": 10,
+  "timestamp": "2025-07-29T13:15:58.982Z"
+}</code></pre>
+            </div>
+            
+            <h5>Response</h5>
+            <div class="code-block">
+                <pre><code class="language-json">{
+  "commandId": "550e8400-e29b-41d4-a716-446655440000",
+  "channelId": "session-service",
+  "success": true,
+  "result": {
+    "message": "Command executed successfully"
+  },
+  "timestamp": "2025-07-29T13:15:58.982Z"
+}</code></pre>
+            </div>
+        </div>
+    
+            </div>
+        </div>
+    
+        </section>
+    
+        
+        
+        <section id="models" class="section">
+            <h2>Data Models</h2>
+            
+            
+                <div id="model-UserProfile" class="model">
+                    <h3>User Profile</h3>
+                    <p>Extended user profile information</p>
+                    
+                    
+                    <h4>Properties</h4>
+                    <div class="model-properties">
+                        
+        <div class="argument">
+            <div class="argument-header">
+                <h5>First Name</h5>
+                <span class="type">string</span>
+                <span class="optional">optional</span>
+            </div>
+            <p>User's first name</p>
+            
+            
+            
+            
+            <p><strong>Max length:</strong> 100</p>
+            
+            
+        </div>
+    
+        <div class="argument">
+            <div class="argument-header">
+                <h5>Last Name</h5>
+                <span class="type">string</span>
+                <span class="optional">optional</span>
+            </div>
+            <p>User's last name</p>
+            
+            
+            
+            
+            <p><strong>Max length:</strong> 100</p>
+            
+            
+        </div>
+    
+        <div class="argument">
+            <div class="argument-header">
+                <h5>Age</h5>
+                <span class="type">integer</span>
+                <span class="optional">optional</span>
+            </div>
+            <p>User's age in years</p>
+            
+            
+            
+            
+            
+            <p><strong>Minimum:</strong> 13</p>
+            <p><strong>Maximum:</strong> 120</p>
+        </div>
+    
+        <div class="argument">
+            <div class="argument-header">
+                <h5>Biography</h5>
+                <span class="type">string</span>
+                <span class="optional">optional</span>
+            </div>
+            <p>User's biography or description</p>
+            
+            
+            
+            
+            <p><strong>Max length:</strong> 1000</p>
+            
+            
+        </div>
+    
+        <div class="argument">
+            <div class="argument-header">
+                <h5>Location</h5>
+                <span class="type">string</span>
+                <span class="optional">optional</span>
+            </div>
+            <p>User's location or city</p>
+            
+            
+            
+            
+            <p><strong>Max length:</strong> 200</p>
+            
+            
+        </div>
+    
+        <div class="argument">
+            <div class="argument-header">
+                <h5>Website</h5>
+                <span class="type">string</span>
+                <span class="optional">optional</span>
+            </div>
+            <p>User's personal website URL</p>
+            
+            
+            <p><strong>Pattern:</strong> <code>^https?://.+</code></p>
+            
+            <p><strong>Max length:</strong> 500</p>
+            
+            
+        </div>
+    
+        <div class="argument">
+            <div class="argument-header">
+                <h5>Preferences</h5>
+                <span class="type">object</span>
+                <span class="optional">optional</span>
+            </div>
+            <p>User preferences and settings</p>
+            
+            
+            
+            
+            
+            
+            
+        </div>
+    
+                    </div>
+                    
+                    
+                    
+                    <h4>Required Fields</h4>
+                    <div class="required-fields">
+                        
+                    </div>
+                    
+                </div>
+            
+                <div id="model-UserPreferences" class="model">
+                    <h3>User Preferences</h3>
+                    <p>User preferences and settings</p>
+                    
+                    
+                    <h4>Properties</h4>
+                    <div class="model-properties">
+                        
+        <div class="argument">
+            <div class="argument-header">
+                <h5>Theme</h5>
+                <span class="type">string</span>
+                <span class="optional">optional</span>
+            </div>
+            <p>UI theme preference</p>
+            <p><strong>Default:</strong> <code>"light"</code></p>
+            <p><strong>Allowed values:</strong> <code>"light"</code>, <code>"dark"</code>, <code>"auto"</code></p>
+            
+            
+            
+            
+            
+        </div>
+    
+        <div class="argument">
+            <div class="argument-header">
+                <h5>Language</h5>
+                <span class="type">string</span>
+                <span class="optional">optional</span>
+            </div>
+            <p>Preferred interface language</p>
+            <p><strong>Default:</strong> <code>"en"</code></p>
+            
+            <p><strong>Pattern:</strong> <code>^[a-z]{2}$</code></p>
+            
+            
+            
+            
+        </div>
+    
+        <div class="argument">
+            <div class="argument-header">
+                <h5>Timezone</h5>
+                <span class="type">string</span>
+                <span class="optional">optional</span>
+            </div>
+            <p>User's timezone identifier</p>
+            
+            
+            <p><strong>Pattern:</strong> <code>^[A-Za-z_/]+$</code></p>
+            
+            
+            
+            
+        </div>
+    
+        <div class="argument">
+            <div class="argument-header">
+                <h5>Notifications</h5>
+                <span class="type">object</span>
+                <span class="optional">optional</span>
+            </div>
+            <p>Notification preferences</p>
+            
+            
+            
+            
+            
+            
+            
+        </div>
+    
+                    </div>
+                    
+                    
+                    
+                    <h4>Required Fields</h4>
+                    <div class="required-fields">
+                        
+                    </div>
+                    
+                </div>
+            
+                <div id="model-CreateUserResponse" class="model">
+                    <h3>Create User Response</h3>
+                    <p>Response from user creation operation</p>
+                    
+                    
+                    <h4>Properties</h4>
+                    <div class="model-properties">
+                        
+        <div class="argument">
+            <div class="argument-header">
+                <h5>User ID</h5>
+                <span class="type">string</span>
+                <span class="optional">optional</span>
+            </div>
+            <p>Unique identifier for the created user</p>
+            
+            
+            
+            
+            
+            
+            
+        </div>
+    
+        <div class="argument">
+            <div class="argument-header">
+                <h5>Status</h5>
+                <span class="type">string</span>
+                <span class="optional">optional</span>
+            </div>
+            <p>Creation status</p>
+            
+            <p><strong>Allowed values:</strong> <code>"created"</code>, <code>"pending"</code>, <code>"failed"</code></p>
+            
+            
+            
+            
+            
+        </div>
+    
+        <div class="argument">
+            <div class="argument-header">
+                <h5>Message</h5>
+                <span class="type">string</span>
+                <span class="optional">optional</span>
+            </div>
+            <p>Human-readable status message</p>
+            
+            
+            
+            
+            
+            
+            
+        </div>
+    
+        <div class="argument">
+            <div class="argument-header">
+                <h5>Created At</h5>
+                <span class="type">string</span>
+                <span class="optional">optional</span>
+            </div>
+            <p>ISO 8601 timestamp of creation</p>
+            
+            
+            
+            
+            
+            
+            
+        </div>
+    
+        <div class="argument">
+            <div class="argument-header">
+                <h5>User Information</h5>
+                <span class="type">object</span>
+                <span class="optional">optional</span>
+            </div>
+            <p>Basic information about created user</p>
+            
+            
+            
+            
+            
+            
+            
+        </div>
+    
+                    </div>
+                    
+                    
+                    
+                    <h4>Required Fields</h4>
+                    <div class="required-fields">
+                        <code>userId</code>, <code>status</code>, <code>message</code>, <code>createdAt</code>
+                    </div>
+                    
+                </div>
+            
+                <div id="model-UserInfo" class="model">
+                    <h3>User Information</h3>
+                    <p>Basic user information for API responses</p>
+                    
+                    
+                    <h4>Properties</h4>
+                    <div class="model-properties">
+                        
+        <div class="argument">
+            <div class="argument-header">
+                <h5>User ID</h5>
+                <span class="type">string</span>
+                <span class="optional">optional</span>
+            </div>
+            <p>Unique user identifier</p>
+            
+            
+            
+            
+            
+            
+            
+        </div>
+    
+        <div class="argument">
+            <div class="argument-header">
+                <h5>Username</h5>
+                <span class="type">string</span>
+                <span class="optional">optional</span>
+            </div>
+            <p>User's username</p>
+            
+            
+            
+            
+            
+            
+            
+        </div>
+    
+        <div class="argument">
+            <div class="argument-header">
+                <h5>Email</h5>
+                <span class="type">string</span>
+                <span class="optional">optional</span>
+            </div>
+            <p>User's email address</p>
+            
+            
+            
+            
+            
+            
+            
+        </div>
+    
+        <div class="argument">
+            <div class="argument-header">
+                <h5>Role</h5>
+                <span class="type">string</span>
+                <span class="optional">optional</span>
+            </div>
+            <p>User's system role</p>
+            
+            <p><strong>Allowed values:</strong> <code>"admin"</code>, <code>"moderator"</code>, <code>"user"</code>, <code>"guest"</code></p>
+            
+            
+            
+            
+            
+        </div>
+    
+        <div class="argument">
+            <div class="argument-header">
+                <h5>Status</h5>
+                <span class="type">string</span>
+                <span class="optional">optional</span>
+            </div>
+            <p>Account status</p>
+            
+            <p><strong>Allowed values:</strong> <code>"active"</code>, <code>"inactive"</code>, <code>"locked"</code>, <code>"pending"</code></p>
+            
+            
+            
+            
+            
+        </div>
+    
+        <div class="argument">
+            <div class="argument-header">
+                <h5>Created At</h5>
+                <span class="type">string</span>
+                <span class="optional">optional</span>
+            </div>
+            <p>ISO 8601 timestamp of account creation</p>
+            
+            
+            
+            
+            
+            
+            
+        </div>
+    
+        <div class="argument">
+            <div class="argument-header">
+                <h5>Last Login At</h5>
+                <span class="type">string</span>
+                <span class="optional">optional</span>
+            </div>
+            <p>ISO 8601 timestamp of last login</p>
+            
+            
+            
+            
+            
+            
+            
+        </div>
+    
+        <div class="argument">
+            <div class="argument-header">
+                <h5>Profile</h5>
+                <span class="type">object</span>
+                <span class="optional">optional</span>
+            </div>
+            <p>Extended profile information</p>
+            
+            
+            
+            
+            
+            
+            
+        </div>
+    
+                    </div>
+                    
+                    
+                    
+                    <h4>Required Fields</h4>
+                    <div class="required-fields">
+                        <code>userId</code>, <code>username</code>, <code>email</code>, <code>role</code>, <code>status</code>, <code>createdAt</code>
+                    </div>
+                    
+                </div>
+            
+                <div id="model-UserUpdateRequest" class="model">
+                    <h3>User Update Request</h3>
+                    <p>Request object for updating user information</p>
+                    
+                    
+                    <h4>Properties</h4>
+                    <div class="model-properties">
+                        
+        <div class="argument">
+            <div class="argument-header">
+                <h5>Email</h5>
+                <span class="type">string</span>
+                <span class="optional">optional</span>
+            </div>
+            <p>New email address</p>
+            
+            
+            <p><strong>Pattern:</strong> <code>^[\w\.-]+@[\w\.-]+\.[a-zA-Z]{2,}$</code></p>
+            
+            
+            
+            
+        </div>
+    
+        <div class="argument">
+            <div class="argument-header">
+                <h5>Role</h5>
+                <span class="type">string</span>
+                <span class="optional">optional</span>
+            </div>
+            <p>New user role</p>
+            
+            <p><strong>Allowed values:</strong> <code>"admin"</code>, <code>"moderator"</code>, <code>"user"</code>, <code>"guest"</code></p>
+            
+            
+            
+            
+            
+        </div>
+    
+        <div class="argument">
+            <div class="argument-header">
+                <h5>Status</h5>
+                <span class="type">string</span>
+                <span class="optional">optional</span>
+            </div>
+            <p>New account status</p>
+            
+            <p><strong>Allowed values:</strong> <code>"active"</code>, <code>"inactive"</code>, <code>"locked"</code></p>
+            
+            
+            
+            
+            
+        </div>
+    
+        <div class="argument">
+            <div class="argument-header">
+                <h5>Profile Updates</h5>
+                <span class="type">object</span>
+                <span class="optional">optional</span>
+            </div>
+            <p>Profile fields to update</p>
+            
+            
+            
+            
+            
+            
+            
+        </div>
+    
+                    </div>
+                    
+                    
+                    
+                    <h4>Required Fields</h4>
+                    <div class="required-fields">
+                        
+                    </div>
+                    
+                </div>
+            
+        </section>
+    
+    
+      <!-- Development Hub Sections -->
+      
+      <section id="socket-monitor" class="section dev-hub-section">
+        <h2>🔍 Socket Monitor</h2>
+        <p class="lead">Monitor messages in real-time on Unix socket connections</p>
+        
+        <div class="monitor-controls">
+          <div class="input-group">
+            <label for="monitor-socket-path">Socket Path:</label>
+            <input type="text" id="monitor-socket-path" class="form-input" 
+                   value="/tmp/unixsocket-api-monitor.sock" 
+                   placeholder="/tmp/your-socket.sock">
+          </div>
+          
+          <div class="button-group">
+            <button id="start-monitoring" class="btn btn-primary">Start Monitoring</button>
+            <button id="stop-monitoring" class="btn btn-secondary" disabled>Stop Monitoring</button>
+            <button id="clear-monitor" class="btn btn-outline">Clear</button>
+          </div>
+        </div>
+        
+        <div class="monitor-status">
+          <div id="monitor-status" class="status-indicator">
+            <span class="status-dot status-disconnected"></span>
+            <span class="status-text">Disconnected</span>
+          </div>
+        </div>
+        
+        <div class="monitor-display">
+          <div class="monitor-tabs">
+            <button class="tab-button active" data-tab="structured">Structured View</button>
+            <button class="tab-button" data-tab="raw">Raw JSON</button>
+            <button class="tab-button" data-tab="timeline">Timeline</button>
+          </div>
+          
+          <div id="structured-view" class="tab-content active">
+            <div id="message-list" class="message-list">
+              <div class="empty-state">
+                <p>No messages yet. Start monitoring to see real-time communication.</p>
+              </div>
+            </div>
+          </div>
+          
+          <div id="raw-view" class="tab-content">
+            <div id="raw-messages" class="code-container"></div>
+          </div>
+          
+          <div id="timeline-view" class="tab-content">
+            <div id="message-timeline" class="timeline-container"></div>
+          </div>
+        </div>
+      </section>
+    
+      
+      <section id="message-sender" class="section dev-hub-section">
+        <h2>📤 Message Sender</h2>
+        <p class="lead">Send messages using the API specification with full validation</p>
+        
+        <div class="sender-controls">
+          <div class="connection-setup">
+            <div class="input-group">
+              <label for="sender-socket-path">Socket Path:</label>
+              <input type="text" id="sender-socket-path" class="form-input" 
+                     placeholder="/tmp/your-socket.sock">
+            </div>
+            
+            <div class="button-group">
+              <button id="connect-sender" class="btn btn-primary">Connect</button>
+              <button id="disconnect-sender" class="btn btn-secondary" disabled>Disconnect</button>
+            </div>
+            
+            <div id="sender-status" class="status-indicator">
+              <span class="status-dot status-disconnected"></span>
+              <span class="status-text">Disconnected</span>
+            </div>
+          </div>
+          
+          <div class="message-builder">
+            <div class="form-row">
+              <div class="input-group">
+                <label for="select-channel">Channel:</label>
+                <select id="select-channel" class="form-select">
+                  <option value="">Select a channel...</option>
+                  <option value="user-service">User Service (user-service)</option><option value="session-service">Session Service (session-service)</option>
+                </select>
+              </div>
+              
+              <div class="input-group">
+                <label for="select-command">Command:</label>
+                <select id="select-command" class="form-select" disabled>
+                  <option value="">Select a command...</option>
+                </select>
+              </div>
+            </div>
+            
+            <div class="message-editor-container">
+              <label>Message Parameters:</label>
+              <div id="message-editor" class="message-editor"></div>
+            </div>
+            
+            <div class="button-group">
+              <button id="send-message" class="btn btn-success" disabled>Send Message</button>
+              <button id="validate-message" class="btn btn-outline">Validate</button>
+              <button id="clear-message" class="btn btn-outline">Clear</button>
+            </div>
+          </div>
+        </div>
+        
+        <div class="sender-response">
+          <h3>Response</h3>
+          <div id="response-display" class="response-container">
+            <div class="empty-state">
+              <p>Send a message to see the response here.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    
+      
+      <section id="connection-tester" class="section dev-hub-section">
+        <h2>🔗 Connection Tester</h2>
+        <p class="lead">Test socket connections and verify server availability</p>
+        
+        <div class="tester-controls">
+          <div class="input-group">
+            <label for="test-socket-path">Socket Path:</label>
+            <input type="text" id="test-socket-path" class="form-input" 
+                   placeholder="/tmp/your-socket.sock">
+          </div>
+          
+          <div class="button-group">
+            <button id="test-connection" class="btn btn-primary">Test Connection</button>
+            <button id="ping-server" class="btn btn-outline">Ping Server</button>
+          </div>
+        </div>
+        
+        <div class="test-results">
+          <div id="connection-results" class="results-container">
+            <div class="empty-state">
+              <p>Run a connection test to see results here.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    
+      
+      <section id="message-formatter" class="section dev-hub-section">
+        <h2>🎨 Message Formatter</h2>
+        <p class="lead">Format, validate, and preview messages according to API specification</p>
+        
+        <div class="formatter-controls">
+          <div class="input-tabs">
+            <button class="tab-button active" data-tab="json-input">JSON Input</button>
+            <button class="tab-button" data-tab="form-input">Form Input</button>
+          </div>
+          
+          <div id="json-input" class="tab-content active">
+            <div class="input-group">
+              <label for="raw-json">Raw JSON:</label>
+              <div id="json-editor" class="code-editor"></div>
+            </div>
+          </div>
+          
+          <div id="form-input" class="tab-content">
+            <div class="form-builder">
+              <div class="input-group">
+                <label for="format-channel">Channel:</label>
+                <select id="format-channel" class="form-select">
+                  <option value="">Select channel...</option>
+                  <option value="user-service">User Service</option><option value="session-service">Session Service</option>
+                </select>
+              </div>
+              
+              <div class="input-group">
+                <label for="format-command">Command:</label>
+                <select id="format-command" class="form-select">
+                  <option value="">Select command...</option>
+                </select>
+              </div>
+              
+              <div id="dynamic-form" class="dynamic-form-container">
+                <!-- Dynamic form fields will be generated here -->
+              </div>
+            </div>
+          </div>
+          
+          <div class="button-group">
+            <button id="format-message" class="btn btn-primary">Format Message</button>
+            <button id="validate-format" class="btn btn-outline">Validate</button>
+            <button id="copy-formatted" class="btn btn-outline">Copy</button>
+          </div>
+        </div>
+        
+        <div class="formatter-output">
+          <h3>Formatted Output</h3>
+          <div id="formatted-output" class="output-container">
+            <div class="empty-state">
+              <p>Format a message to see the structured output here.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    
+    </main>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/components/prism-core.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/plugins/autoloader/prism-autoloader.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

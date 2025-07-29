@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Cross-Platform Unix Socket API Testing Infrastructure
-# Tests communication between Swift, Rust, and Go implementations
+# Tests SOCK_DGRAM connectionless communication between Swift, Rust, Go, and TypeScript implementations
 
 set -e
 

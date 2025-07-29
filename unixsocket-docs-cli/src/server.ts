@@ -3,7 +3,7 @@
  * Serves static documentation files with WebSocket live reload
  */
 
-import * as express from 'express';
+import express from 'express';
 import * as path from 'path';
 import * as http from 'http';
 import * as WebSocket from 'ws';
@@ -39,12 +39,12 @@ export class DocumentationServer {
     this.app.use(express.static(this.docsDir));
 
     // Health check endpoint
-    this.app.get('/health', (req, res) => {
+    this.app.get('/health', (_req, res) => {
       res.json({ status: 'ok', timestamp: new Date().toISOString() });
     });
 
     // API info endpoint
-    this.app.get('/api/info', (req, res) => {
+    this.app.get('/api/info', (_req, res) => {
       res.json({
         name: 'Unix Socket API Documentation Server',
         version: '1.0.0',
@@ -54,12 +54,12 @@ export class DocumentationServer {
     });
 
     // Default route to index.html
-    this.app.get('/', (req, res) => {
+    this.app.get('/', (_req, res) => {
       res.sendFile(path.join(this.docsDir, 'index.html'));
     });
 
     // Catch-all route for SPA behavior
-    this.app.get('*', (req, res) => {
+    this.app.get('*', (_req, res) => {
       res.sendFile(path.join(this.docsDir, 'index.html'));
     });
   }

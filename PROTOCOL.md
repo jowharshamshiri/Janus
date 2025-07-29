@@ -1,13 +1,14 @@
 # Unix Socket API Protocol Specification
 
-**Version**: 1.0.0  
+**Version**: 2.0.0  
 **Status**: Production Ready  
-**Compatibility**: Go, Rust, Swift implementations  
+**Socket Type**: SOCK_DGRAM (Connectionless Datagram)
+**Compatibility**: Go, Rust, Swift, TypeScript implementations  
 **Date**: 2025-07-29  
 
 ## Overview
 
-The Unix Socket API Protocol provides a standardized approach to inter-process communication using Unix domain sockets with JSON-based messaging, comprehensive security validation, and async communication patterns. This specification ensures compatibility across multiple programming language implementations.
+The Unix Socket API Protocol provides a standardized approach to inter-process communication using **connectionless Unix domain datagram sockets (SOCK_DGRAM)** with JSON-based messaging, comprehensive security validation, and stateless communication patterns. This specification ensures compatibility across multiple programming language implementations while maintaining the simplicity and efficiency of connectionless communication.
 
 ## Table of Contents
 
@@ -25,16 +26,17 @@ The Unix Socket API Protocol provides a standardized approach to inter-process c
 
 ### Wire Protocol
 
-All messages use **4-byte big-endian length prefix framing** followed by JSON payload:
+All messages use **direct JSON payload** without length prefixes (connectionless datagram communication):
 
 ```
-[4-byte length][JSON message payload]
+[JSON message payload]
 ```
 
-#### Length Prefix
-- **Format**: 32-bit unsigned integer, big-endian
-- **Purpose**: Exact message boundary detection
-- **Range**: 1 to 2^32-1 bytes (practical limit: 10MB default)
+#### Datagram Format
+- **Transport**: UDP-style connectionless datagrams over Unix domain sockets
+- **Framing**: Each datagram contains exactly one complete JSON message
+- **Size Limit**: Maximum datagram size enforced by OS (typically 64KB for Unix domain sockets)
+- **Boundary Detection**: Automatic per-datagram boundaries (no manual framing required)
 
 ### Core Message Types
 
@@ -43,8 +45,9 @@ All messages use **4-byte big-endian length prefix framing** followed by JSON pa
 ```json
 {
   "id": "550e8400-e29b-41d4-a716-446655440000",
-  "channelId": "user-service",
+  "channelId": "user-service", 
   "command": "create-user",
+  "reply_to": "/tmp/client_response_123456.sock",
   "args": {
     "username": "john_doe",
     "email": "john@example.com",
@@ -117,87 +120,99 @@ For implementations requiring type discrimination:
 
 ## Communication Patterns
 
-### Async Request-Response Model
+### Connectionless Request-Response Model
 
-The protocol uses **async request-response** with **UUID correlation** instead of synchronous blocking:
+The protocol uses **connectionless request-response** with **UUID correlation** for stateless communication:
 
 #### Client Flow
 1. **Generate Command**: Create UUID and timestamp
-2. **Send Async**: Transmit command without blocking
-3. **Background Listening**: Maintain persistent connection with message listener
+2. **Send Datagram**: Transmit single datagram with complete command
+3. **Listen for Response**: Bind to response socket and wait for reply datagram
 4. **Response Correlation**: Match responses via UUID
-5. **Cleanup**: Remove tracking after success/timeout
+5. **Socket Cleanup**: Close socket after receiving response or timeout
 
 #### Server Flow  
-1. **Receive Commands**: Continuous listening for incoming commands
-2. **Validate Security**: Apply comprehensive security framework
-3. **Execute Handler**: Process command with timeout enforcement
-4. **Send Response**: Correlate response with original command ID
-5. **Resource Cleanup**: Clean up handler resources
+1. **Bind Server Socket**: Listen on server socket path for incoming datagrams
+2. **Receive Datagrams**: Process each complete command datagram independently
+3. **Validate Security**: Apply comprehensive security framework per message
+4. **Execute Handler**: Process command with timeout enforcement
+5. **Send Response Datagram**: Send reply to client's response socket path
 
-### Connection Lifecycle
+### Connectionless Lifecycle
 
-#### Persistent Connection Model
-- **Single Connection**: One persistent socket per client
-- **Background Listeners**: Continuous response monitoring
-- **Connection Pooling**: Reuse connections for multiple operations
-- **Automatic Reconnection**: Handle connection failures gracefully
+#### Stateless Datagram Model
+- **No Persistent Connections**: Each request-response is independent
+- **Client Response Socket**: Client creates temporary socket for responses
+- **Server Socket Binding**: Server maintains single bound socket for all clients
+- **Automatic Cleanup**: OS handles socket cleanup automatically
 
 ```
 Client                          Server
   |                               |
-  |-- Unix Socket Connect ------->|
-  |<-- Connection Established ----|
+  |-- Create Response Socket -----|
+  |    (Bind to temp path)        |
   |                               |
-  |-- Command (UUID: abc123) ---->|
+  |-- Send Command Datagram ----->|
+  |    (UUID: abc123, reply_to)   |-- Receive & Validate
   |                               |-- Execute Handler
-  |<-- Response (commandId: abc123)|
+  |<-- Response Datagram ---------|
+  |    (commandId: abc123)        |
   |                               |
-  |-- Command (UUID: def456) ---->|
-  |                               |-- Execute Handler  
-  |<-- Response (commandId: def456)|
+  |-- Close Response Socket ------|
   |                               |
-  [Background listener continues]
+  |-- Create New Response Socket--|
+  |-- Send Command Datagram ----->|
+  |    (UUID: def456, reply_to)   |-- Execute Handler
+  |<-- Response Datagram ---------|
+  |    (commandId: def456)        |
+  |-- Close Response Socket ------|
 ```
 
 ### Message Correlation System
 
 #### UUID-Based Tracking
 - **Command Generation**: UUID v4 for each command
-- **Pending Commands**: Map of UUID → response handler
-- **Response Routing**: commandId → pending handler lookup
-- **Timeout Cleanup**: Automatic removal of expired entries
+- **Response Socket**: Temporary socket path for receiving replies
+- **Reply-To Mechanism**: Server sends response to client's reply_to socket
+- **Timeout Cleanup**: Client socket timeout for unresponsive servers
 
 #### Implementation Pattern
 ```typescript
-// Pseudo-code for correlation system
-class ResponseTracker {
-  private pendingCommands = new Map<string, PendingCommand>();
-  
+// Pseudo-code for connectionless correlation system
+class DatagramClient {
   async sendCommand(command: SocketCommand): Promise<SocketResponse> {
-    const promise = new Promise<SocketResponse>((resolve, reject) => {
-      this.pendingCommands.set(command.id, {
-        resolve,
-        reject,
-        timestamp: Date.now(),
-        timeout: command.timeout || 30.0
-      });
-    });
+    // Create temporary response socket
+    const responseSocket = `/tmp/client_response_${Date.now()}_${Math.random()}.sock`;
+    const socket = dgram.createSocket('unix_dgram');
+    socket.bind(responseSocket);
     
-    await this.sendMessage(command);
-    return promise;
+    // Add reply_to field
+    command.reply_to = responseSocket;
+    
+    // Send command datagram
+    await this.sendDatagram(JSON.stringify(command), serverSocketPath);
+    
+    // Wait for response with timeout
+    const response = await this.waitForResponse(socket, command.timeout);
+    
+    // Cleanup
+    socket.close();
+    fs.unlinkSync(responseSocket);
+    
+    return response;
   }
   
-  handleResponse(response: SocketResponse) {
-    const pending = this.pendingCommands.get(response.commandId);
-    if (pending) {
-      this.pendingCommands.delete(response.commandId);
-      if (response.success) {
-        pending.resolve(response);
-      } else {
-        pending.reject(new Error(response.error.message));
-      }
-    }
+  handleResponse(socket: Socket): Promise<SocketResponse> {
+    return new Promise((resolve, reject) => {
+      const timeout = setTimeout(() => {
+        reject(new Error('Response timeout'));
+      }, this.timeout);
+      
+      socket.once('message', (data) => {
+        clearTimeout(timeout);
+        resolve(JSON.parse(data.toString()));
+      });
+    });
   }
 }
 ```
@@ -278,24 +293,25 @@ interface ConnectionPool {
 }
 ```
 
-### Connection States
+### Socket States
 
-1. **INITIALIZING**: Socket path validation, channel setup
-2. **CONNECTING**: Establishing Unix socket connection
-3. **AUTHENTICATED**: Channel isolation verified
-4. **ACTIVE**: Processing commands and responses
-5. **CLEANUP**: Resource deallocation
-6. **CLOSED**: Connection terminated
+1. **UNBOUND**: No socket created
+2. **BINDING**: Creating and binding response socket
+3. **BOUND**: Socket ready to receive datagrams
+4. **SENDING**: Transmitting command datagram
+5. **WAITING**: Listening for response datagram
+6. **CLEANUP**: Closing socket and removing file
+7. **CLOSED**: Socket resources deallocated
 
-### Reconnection Strategy
+### Error Recovery Strategy
 
 ```typescript
-interface ReconnectionConfig {
+interface DatagramConfig {
   maxRetries: 3;
-  initialDelay: 1000;          // ms
-  backoffMultiplier: 2.0;
-  maxDelay: 30000;             // ms
-  jitterFactor: 0.1;           // Random variation
+  initialTimeout: 5000;        // ms per attempt
+  backoffMultiplier: 1.5;
+  maxTimeout: 15000;           // ms
+  socketCleanupDelay: 100;     // ms before cleanup
 }
 ```
 

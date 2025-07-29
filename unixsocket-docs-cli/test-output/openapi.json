@@ -1,0 +1,1201 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "User Management API",
+    "description": "Comprehensive user management operations with authentication and profile management",
+    "version": "1.0.0",
+    "x-protocol": "unix-socket",
+    "x-message-format": "json-with-length-prefix"
+  },
+  "servers": [
+    {
+      "url": "unix:/tmp/api.sock",
+      "description": "Unix Domain Socket Server",
+      "x-socket-path": "/tmp/api.sock"
+    }
+  ],
+  "paths": {
+    "/user-service/create-user": {
+      "post": {
+        "summary": "Create User",
+        "description": "Create a new user account with validation and security checks",
+        "x-channel": "user-service",
+        "x-command": "create-user",
+        "x-timeout": 30,
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "id",
+                  "channelId",
+                  "command",
+                  "timestamp"
+                ],
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "channelId": {
+                    "type": "string"
+                  },
+                  "command": {
+                    "type": "string"
+                  },
+                  "timestamp": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "timeout": {
+                    "type": "number",
+                    "minimum": 0.1,
+                    "maximum": 300
+                  },
+                  "args": {
+                    "type": "object",
+                    "properties": {
+                      "username": {
+                        "type": "string",
+                        "description": "Unique username for the account",
+                        "pattern": "^[a-zA-Z0-9_]{3,50}$",
+                        "minLength": 3,
+                        "maxLength": 50
+                      },
+                      "email": {
+                        "type": "string",
+                        "description": "User's email address for notifications and recovery",
+                        "pattern": "^[\\w\\.-]+@[\\w\\.-]+\\.[a-zA-Z]{2,}$"
+                      },
+                      "password": {
+                        "type": "string",
+                        "description": "Secure password meeting complexity requirements",
+                        "minLength": 8,
+                        "maxLength": 128
+                      },
+                      "role": {
+                        "type": "string",
+                        "description": "User's system role determining permissions",
+                        "enum": [
+                          "admin",
+                          "moderator",
+                          "user",
+                          "guest"
+                        ],
+                        "default": "user"
+                      },
+                      "profile": {
+                        "type": "object",
+                        "description": "Extended user profile information",
+                        "$ref": "#/components/schemas/UserProfile"
+                      }
+                    },
+                    "required": [
+                      "username",
+                      "email",
+                      "password"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "commandId",
+                    "channelId",
+                    "success",
+                    "timestamp"
+                  ],
+                  "properties": {
+                    "commandId": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "channelId": {
+                      "type": "string"
+                    },
+                    "success": {
+                      "type": "boolean",
+                      "enum": [
+                        true
+                      ]
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "result": {
+                      "type": "object",
+                      "description": "User creation result with generated ID and status",
+                      "$ref": "#/components/schemas/CreateUserResponse"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/user-service/authenticate-user": {
+      "post": {
+        "summary": "Authenticate User",
+        "description": "Authenticate user credentials and generate session token",
+        "x-channel": "user-service",
+        "x-command": "authenticate-user",
+        "x-timeout": 10,
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "id",
+                  "channelId",
+                  "command",
+                  "timestamp"
+                ],
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "channelId": {
+                    "type": "string"
+                  },
+                  "command": {
+                    "type": "string"
+                  },
+                  "timestamp": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "timeout": {
+                    "type": "number",
+                    "minimum": 0.1,
+                    "maximum": 300
+                  },
+                  "args": {
+                    "type": "object",
+                    "properties": {
+                      "username": {
+                        "type": "string",
+                        "description": "Username or email for authentication",
+                        "minLength": 1,
+                        "maxLength": 256
+                      },
+                      "password": {
+                        "type": "string",
+                        "description": "User's password",
+                        "minLength": 1,
+                        "maxLength": 128
+                      },
+                      "rememberMe": {
+                        "type": "boolean",
+                        "description": "Whether to create long-lived session",
+                        "default": false
+                      }
+                    },
+                    "required": [
+                      "username",
+                      "password"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "commandId",
+                    "channelId",
+                    "success",
+                    "timestamp"
+                  ],
+                  "properties": {
+                    "commandId": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "channelId": {
+                      "type": "string"
+                    },
+                    "success": {
+                      "type": "boolean",
+                      "enum": [
+                        true
+                      ]
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "result": {
+                      "type": "object",
+                      "description": "Authentication result with session information",
+                      "properties": {
+                        "sessionToken": {
+                          "type": "string",
+                          "description": "JWT token for authenticated requests"
+                        },
+                        "expiresAt": {
+                          "type": "string",
+                          "description": "ISO 8601 timestamp when session expires"
+                        },
+                        "user": {
+                          "type": "object",
+                          "description": "Basic user information",
+                          "$ref": "#/components/schemas/UserInfo"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/user-service/get-user": {
+      "post": {
+        "summary": "Get User",
+        "description": "Retrieve user information by ID or username",
+        "x-channel": "user-service",
+        "x-command": "get-user",
+        "x-timeout": 15,
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "id",
+                  "channelId",
+                  "command",
+                  "timestamp"
+                ],
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "channelId": {
+                    "type": "string"
+                  },
+                  "command": {
+                    "type": "string"
+                  },
+                  "timestamp": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "timeout": {
+                    "type": "number",
+                    "minimum": 0.1,
+                    "maximum": 300
+                  },
+                  "args": {
+                    "type": "object",
+                    "properties": {
+                      "userId": {
+                        "type": "string",
+                        "description": "Unique user identifier",
+                        "pattern": "^[a-zA-Z0-9-]+$"
+                      },
+                      "username": {
+                        "type": "string",
+                        "description": "Username to look up",
+                        "pattern": "^[a-zA-Z0-9_]{3,50}$"
+                      },
+                      "includeProfile": {
+                        "type": "boolean",
+                        "description": "Whether to include extended profile information",
+                        "default": false
+                      }
+                    },
+                    "required": []
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "commandId",
+                    "channelId",
+                    "success",
+                    "timestamp"
+                  ],
+                  "properties": {
+                    "commandId": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "channelId": {
+                      "type": "string"
+                    },
+                    "success": {
+                      "type": "boolean",
+                      "enum": [
+                        true
+                      ]
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "result": {
+                      "type": "object",
+                      "description": "User information",
+                      "$ref": "#/components/schemas/UserInfo"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/user-service/update-user": {
+      "post": {
+        "summary": "Update User",
+        "description": "Update user information and profile",
+        "x-channel": "user-service",
+        "x-command": "update-user",
+        "x-timeout": 30,
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "id",
+                  "channelId",
+                  "command",
+                  "timestamp"
+                ],
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "channelId": {
+                    "type": "string"
+                  },
+                  "command": {
+                    "type": "string"
+                  },
+                  "timestamp": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "timeout": {
+                    "type": "number",
+                    "minimum": 0.1,
+                    "maximum": 300
+                  },
+                  "args": {
+                    "type": "object",
+                    "properties": {
+                      "userId": {
+                        "type": "string",
+                        "description": "ID of user to update",
+                        "pattern": "^[a-zA-Z0-9-]+$"
+                      },
+                      "updates": {
+                        "type": "object",
+                        "description": "Fields to update",
+                        "$ref": "#/components/schemas/UserUpdateRequest"
+                      }
+                    },
+                    "required": [
+                      "userId",
+                      "updates"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "commandId",
+                    "channelId",
+                    "success",
+                    "timestamp"
+                  ],
+                  "properties": {
+                    "commandId": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "channelId": {
+                      "type": "string"
+                    },
+                    "success": {
+                      "type": "boolean",
+                      "enum": [
+                        true
+                      ]
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "result": {
+                      "type": "object",
+                      "description": "Updated user information",
+                      "$ref": "#/components/schemas/UserInfo"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/user-service/delete-user": {
+      "post": {
+        "summary": "Delete User",
+        "description": "Permanently delete a user account",
+        "x-channel": "user-service",
+        "x-command": "delete-user",
+        "x-timeout": 60,
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "id",
+                  "channelId",
+                  "command",
+                  "timestamp"
+                ],
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "channelId": {
+                    "type": "string"
+                  },
+                  "command": {
+                    "type": "string"
+                  },
+                  "timestamp": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "timeout": {
+                    "type": "number",
+                    "minimum": 0.1,
+                    "maximum": 300
+                  },
+                  "args": {
+                    "type": "object",
+                    "properties": {
+                      "userId": {
+                        "type": "string",
+                        "description": "ID of user to delete",
+                        "pattern": "^[a-zA-Z0-9-]+$"
+                      },
+                      "confirmation": {
+                        "type": "string",
+                        "description": "Must be 'DELETE' to confirm deletion",
+                        "enum": [
+                          "DELETE"
+                        ]
+                      }
+                    },
+                    "required": [
+                      "userId",
+                      "confirmation"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "commandId",
+                    "channelId",
+                    "success",
+                    "timestamp"
+                  ],
+                  "properties": {
+                    "commandId": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "channelId": {
+                      "type": "string"
+                    },
+                    "success": {
+                      "type": "boolean",
+                      "enum": [
+                        true
+                      ]
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "result": {
+                      "type": "object",
+                      "description": "Deletion confirmation",
+                      "properties": {
+                        "deleted": {
+                          "type": "boolean",
+                          "description": "Whether deletion was successful"
+                        },
+                        "deletedAt": {
+                          "type": "string",
+                          "description": "ISO 8601 timestamp of deletion"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/session-service/validate-session": {
+      "post": {
+        "summary": "Validate Session",
+        "description": "Validate session token and return user information",
+        "x-channel": "session-service",
+        "x-command": "validate-session",
+        "x-timeout": 5,
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "id",
+                  "channelId",
+                  "command",
+                  "timestamp"
+                ],
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "channelId": {
+                    "type": "string"
+                  },
+                  "command": {
+                    "type": "string"
+                  },
+                  "timestamp": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "timeout": {
+                    "type": "number",
+                    "minimum": 0.1,
+                    "maximum": 300
+                  },
+                  "args": {
+                    "type": "object",
+                    "properties": {
+                      "sessionToken": {
+                        "type": "string",
+                        "description": "JWT session token to validate",
+                        "minLength": 1
+                      }
+                    },
+                    "required": [
+                      "sessionToken"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "commandId",
+                    "channelId",
+                    "success",
+                    "timestamp"
+                  ],
+                  "properties": {
+                    "commandId": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "channelId": {
+                      "type": "string"
+                    },
+                    "success": {
+                      "type": "boolean",
+                      "enum": [
+                        true
+                      ]
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "result": {
+                      "type": "object",
+                      "description": "Session validation result",
+                      "properties": {
+                        "valid": {
+                          "type": "boolean",
+                          "description": "Whether session is valid"
+                        },
+                        "user": {
+                          "type": "object",
+                          "description": "User associated with session",
+                          "$ref": "#/components/schemas/UserInfo"
+                        },
+                        "expiresAt": {
+                          "type": "string",
+                          "description": "When session expires"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/session-service/logout": {
+      "post": {
+        "summary": "Logout",
+        "description": "Invalidate session token and logout user",
+        "x-channel": "session-service",
+        "x-command": "logout",
+        "x-timeout": 10,
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "id",
+                  "channelId",
+                  "command",
+                  "timestamp"
+                ],
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "channelId": {
+                    "type": "string"
+                  },
+                  "command": {
+                    "type": "string"
+                  },
+                  "timestamp": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "timeout": {
+                    "type": "number",
+                    "minimum": 0.1,
+                    "maximum": 300
+                  },
+                  "args": {
+                    "type": "object",
+                    "properties": {
+                      "sessionToken": {
+                        "type": "string",
+                        "description": "Session token to invalidate",
+                        "minLength": 1
+                      }
+                    },
+                    "required": [
+                      "sessionToken"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "commandId",
+                    "channelId",
+                    "success",
+                    "timestamp"
+                  ],
+                  "properties": {
+                    "commandId": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "channelId": {
+                      "type": "string"
+                    },
+                    "success": {
+                      "type": "boolean",
+                      "enum": [
+                        true
+                      ]
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "result": {
+                      "type": "object",
+                      "description": "Logout confirmation",
+                      "properties": {
+                        "loggedOut": {
+                          "type": "boolean",
+                          "description": "Whether logout was successful"
+                        },
+                        "loggedOutAt": {
+                          "type": "string",
+                          "description": "ISO 8601 timestamp of logout"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "UserProfile": {
+        "type": "object",
+        "description": "Extended user profile information",
+        "properties": {
+          "firstName": {
+            "type": "string",
+            "description": "User's first name",
+            "maxLength": 100
+          },
+          "lastName": {
+            "type": "string",
+            "description": "User's last name",
+            "maxLength": 100
+          },
+          "age": {
+            "type": "integer",
+            "description": "User's age in years",
+            "minimum": 13,
+            "maximum": 120
+          },
+          "bio": {
+            "type": "string",
+            "description": "User's biography or description",
+            "maxLength": 1000
+          },
+          "location": {
+            "type": "string",
+            "description": "User's location or city",
+            "maxLength": 200
+          },
+          "website": {
+            "type": "string",
+            "description": "User's personal website URL",
+            "pattern": "^https?://.+",
+            "maxLength": 500
+          },
+          "preferences": {
+            "type": "object",
+            "description": "User preferences and settings",
+            "$ref": "#/components/schemas/UserPreferences"
+          }
+        },
+        "required": []
+      },
+      "UserPreferences": {
+        "type": "object",
+        "description": "User preferences and settings",
+        "properties": {
+          "theme": {
+            "type": "string",
+            "description": "UI theme preference",
+            "enum": [
+              "light",
+              "dark",
+              "auto"
+            ],
+            "default": "light"
+          },
+          "language": {
+            "type": "string",
+            "description": "Preferred interface language",
+            "pattern": "^[a-z]{2}$",
+            "default": "en"
+          },
+          "timezone": {
+            "type": "string",
+            "description": "User's timezone identifier",
+            "pattern": "^[A-Za-z_/]+$"
+          },
+          "notifications": {
+            "type": "object",
+            "description": "Notification preferences",
+            "properties": {
+              "email": {
+                "type": "boolean",
+                "description": "Whether to send email notifications",
+                "default": true
+              },
+              "push": {
+                "type": "boolean",
+                "description": "Whether to send push notifications",
+                "default": false
+              }
+            }
+          }
+        },
+        "required": []
+      },
+      "CreateUserResponse": {
+        "type": "object",
+        "description": "Response from user creation operation",
+        "properties": {
+          "userId": {
+            "type": "string",
+            "description": "Unique identifier for the created user"
+          },
+          "status": {
+            "type": "string",
+            "description": "Creation status",
+            "enum": [
+              "created",
+              "pending",
+              "failed"
+            ]
+          },
+          "message": {
+            "type": "string",
+            "description": "Human-readable status message"
+          },
+          "createdAt": {
+            "type": "string",
+            "description": "ISO 8601 timestamp of creation"
+          },
+          "user": {
+            "type": "object",
+            "description": "Basic information about created user",
+            "$ref": "#/components/schemas/UserInfo"
+          }
+        },
+        "required": [
+          "userId",
+          "status",
+          "message",
+          "createdAt"
+        ]
+      },
+      "UserInfo": {
+        "type": "object",
+        "description": "Basic user information for API responses",
+        "properties": {
+          "userId": {
+            "type": "string",
+            "description": "Unique user identifier"
+          },
+          "username": {
+            "type": "string",
+            "description": "User's username"
+          },
+          "email": {
+            "type": "string",
+            "description": "User's email address"
+          },
+          "role": {
+            "type": "string",
+            "description": "User's system role",
+            "enum": [
+              "admin",
+              "moderator",
+              "user",
+              "guest"
+            ]
+          },
+          "status": {
+            "type": "string",
+            "description": "Account status",
+            "enum": [
+              "active",
+              "inactive",
+              "locked",
+              "pending"
+            ]
+          },
+          "createdAt": {
+            "type": "string",
+            "description": "ISO 8601 timestamp of account creation"
+          },
+          "lastLoginAt": {
+            "type": "string",
+            "description": "ISO 8601 timestamp of last login"
+          },
+          "profile": {
+            "type": "object",
+            "description": "Extended profile information",
+            "$ref": "#/components/schemas/UserProfile"
+          }
+        },
+        "required": [
+          "userId",
+          "username",
+          "email",
+          "role",
+          "status",
+          "createdAt"
+        ]
+      },
+      "UserUpdateRequest": {
+        "type": "object",
+        "description": "Request object for updating user information",
+        "properties": {
+          "email": {
+            "type": "string",
+            "description": "New email address",
+            "pattern": "^[\\w\\.-]+@[\\w\\.-]+\\.[a-zA-Z]{2,}$"
+          },
+          "role": {
+            "type": "string",
+            "description": "New user role",
+            "enum": [
+              "admin",
+              "moderator",
+              "user",
+              "guest"
+            ]
+          },
+          "status": {
+            "type": "string",
+            "description": "New account status",
+            "enum": [
+              "active",
+              "inactive",
+              "locked"
+            ]
+          },
+          "profile": {
+            "type": "object",
+            "description": "Profile fields to update",
+            "$ref": "#/components/schemas/UserProfile"
+          }
+        },
+        "required": []
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "required": [
+          "commandId",
+          "channelId",
+          "success",
+          "error",
+          "timestamp"
+        ],
+        "properties": {
+          "commandId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "channelId": {
+            "type": "string"
+          },
+          "success": {
+            "type": "boolean",
+            "enum": [
+              false
+            ]
+          },
+          "error": {
+            "$ref": "#/components/schemas/Error"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "Error": {
+        "type": "object",
+        "required": [
+          "code",
+          "message"
+        ],
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "details": {
+            "type": "string"
+          },
+          "field": {
+            "type": "string"
+          },
+          "value": {},
+          "constraints": {
+            "type": "object"
+          }
+        }
+      }
+    },
+    "x-channels": {
+      "user-service": {
+        "name": "User Service",
+        "description": "Core user management operations including registration, authentication, and profile management"
+      },
+      "session-service": {
+        "name": "Session Service",
+        "description": "Session management and token validation operations"
+      }
+    },
+    "x-commands": {}
+  }
+}

@@ -5,12 +5,13 @@ A comprehensive Unix Socket API library providing consistent, secure, and high-p
 ## 🚀 Features
 
 - **🌍 Cross-Platform**: Full implementations in Go, Rust, Swift, and TypeScript
-- **⚡ Async Communication**: True async patterns with UUID-based response correlation
+- **📡 Connectionless**: SOCK_DGRAM datagram sockets for true stateless communication
+- **⚡ Fast & Simple**: No connection overhead, direct datagram exchange
 - **🔒 Security First**: 25+ security validation mechanisms built-in
 - **📖 Auto Documentation**: Professional API docs with live reload CLI tool
 - **🧪 Comprehensive Testing**: All 16 cross-platform combinations validated
 - **📋 Type Safety**: Full type definitions and validation across all languages
-- **🎯 Sub-millisecond**: High-performance local socket communication
+- **🎯 Sub-millisecond**: High-performance connectionless socket communication
 
 ## 📦 Quick Start
 

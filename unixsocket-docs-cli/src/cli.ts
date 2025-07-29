@@ -252,7 +252,7 @@ program
       console.log(`📋 API: ${apiSpec.name} v${apiSpec.version}`);
       console.log(`📁 Channels: ${Object.keys(apiSpec.channels).length}`);
       
-      const totalCommands = Object.values(apiSpec.channels).reduce((total, channel: any) => {
+      const totalCommands = Object.values(apiSpec.channels).reduce((total: number, channel: any) => {
         return total + Object.keys(channel.commands).length;
       }, 0);
       
