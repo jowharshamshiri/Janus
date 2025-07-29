@@ -9,7 +9,7 @@ A comprehensive Unix Socket API library providing consistent, secure, and high-p
 - **⚡ Fast & Simple**: No connection overhead, direct datagram exchange
 - **🔒 Security First**: 25+ security validation mechanisms built-in
 - **📖 Auto Documentation**: Professional API docs with live reload CLI tool
-- **🧪 Comprehensive Testing**: All 16 cross-platform combinations validated
+- **🧪 Comprehensive Testing**: Unified test infrastructure with N×N matrix validation
 - **📋 Type Safety**: Full type definitions and validation across all languages
 - **🎯 Sub-millisecond**: High-performance connectionless socket communication
 
@@ -137,7 +137,7 @@ unixsocket-docs serve your-api-spec.json --watch
 ### Reference Documentation
 
 - **[PROTOCOL.md](PROTOCOL.md)** - Complete protocol specification
-- **[Example API Spec](example-api-spec.json)** - Sample API specification
+- **[tests/README.md](tests/README.md)** - Comprehensive testing guide  
 - **Language READMEs** - Implementation-specific documentation in each directory
 
 ## 🏗️ Implementation Details
@@ -185,11 +185,15 @@ UnixSockAPI/
 ├── TypeScriptUnixSockAPI/    # Node.js implementation  
 ├── SwiftUnixSockAPI/         # Swift implementation
 ├── RustUnixSockAPI/          # Rust implementation
-├── GoUnixSockAPI/          # Go implementation
+├── GoUnixSockAPI/            # Go implementation
 ├── unixsocket-docs-cli/      # Documentation CLI tool
+├── tests/                    # Comprehensive test infrastructure
+│   ├── run_all_tests.sh      # Master test runner
+│   ├── config/               # Test configurations
+│   ├── python/               # Python test suite
+│   └── README.md            # Complete testing guide
 ├── PROTOCOL.md               # Protocol specification
-├── example-api-spec.json     # Example API specification
-└── test_cross_platform.sh    # Cross-platform testing
+└── CLAUDE.md                 # Project instructions
 ```
 
 ### Contributing
@@ -203,8 +207,25 @@ UnixSockAPI/
 
 ### Running Tests
 
-Each implementation has its own test suite:
+**Master Test Runner (Recommended)**:
+```bash
+# Run all basic tests (builds, unit, cross-platform, security)
+./tests/run_all_tests.sh
 
+# Quick validation
+./tests/run_all_tests.sh --quick
+
+# Full comprehensive testing
+./tests/run_all_tests.sh --all
+
+# Test specific implementations
+./tests/run_all_tests.sh --implementations go,rust
+
+# CI/CD mode
+./tests/run_all_tests.sh --ci --performance
+```
+
+**Individual Implementation Tests**:
 ```bash
 # TypeScript
 cd TypeScriptUnixSockAPI && npm test
@@ -217,10 +238,9 @@ cd RustUnixSockAPI && cargo test
 
 # Go
 cd GoUnixSockAPI && go test ./...
-
-# Cross-platform integration
-./test_cross_platform.sh
 ```
+
+**See [tests/README.md](tests/README.md) for complete testing documentation.**
 
 ## 📊 API Specification Format
 

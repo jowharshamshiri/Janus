@@ -92,14 +92,14 @@ check_implementation() {
     fi
 }
 
-# Start a server implementation
-start_server() {
+# Start a listener implementation (SOCK_DGRAM unified process)
+start_listener() {
     local impl_name="$1"
     local impl_dir="$2"
-    local server_cmd="$3"
-    local pid_file="${LOG_DIR}/$(echo ${impl_name} | tr '[:upper:]' '[:lower:]')_server.pid"
+    local listen_cmd="$3"
+    local pid_file="${LOG_DIR}/$(echo ${impl_name} | tr '[:upper:]' '[:lower:]')_listener.pid"
     
-    log "Starting ${impl_name} server..."
+    log "Starting ${impl_name} listener..."
     
     cd "${impl_dir}"
     
@@ -107,15 +107,15 @@ start_server() {
     rm -f "${SOCKET_PATH}"
     
     if [[ ${VERBOSE} -eq 1 ]]; then
-        eval "${server_cmd}" &
+        eval "${listen_cmd}" &
     else
-        eval "${server_cmd}" > "${LOG_DIR}/$(echo ${impl_name} | tr '[:upper:]' '[:lower:]')_server.log" 2>&1 &
+        eval "${listen_cmd}" > "${LOG_DIR}/$(echo ${impl_name} | tr '[:upper:]' '[:lower:]')_listener.log" 2>&1 &
     fi
     
-    local server_pid=$!
-    echo "${server_pid}" > "${pid_file}"
+    local listener_pid=$!
+    echo "${listener_pid}" > "${pid_file}"
     
-    # Wait for server to be ready
+    # Wait for listener to be ready
     local attempts=0
     while [[ ${attempts} -lt 10 ]] && [[ ! -S "${SOCKET_PATH}" ]]; do
         sleep 0.5
@@ -123,60 +123,60 @@ start_server() {
     done
     
     if [[ -S "${SOCKET_PATH}" ]]; then
-        log_success "${impl_name} server started (PID: ${server_pid})"
+        log_success "${impl_name} listener started (PID: ${listener_pid})"
         return 0
     else
-        log_error "${impl_name} server failed to start"
-        kill -9 "${server_pid}" 2>/dev/null || true
+        log_error "${impl_name} listener failed to start"
+        kill -9 "${listener_pid}" 2>/dev/null || true
         return 1
     fi
 }
 
-# Stop a server implementation
-stop_server() {
+# Stop a listener implementation
+stop_listener() {
     local impl_name="$1"
-    local pid_file="${LOG_DIR}/$(echo ${impl_name} | tr '[:upper:]' '[:lower:]')_server.pid"
+    local pid_file="${LOG_DIR}/$(echo ${impl_name} | tr '[:upper:]' '[:lower:]')_listener.pid"
     
     if [[ -f "${pid_file}" ]]; then
-        local server_pid=$(cat "${pid_file}")
-        log "Stopping ${impl_name} server (PID: ${server_pid})..."
-        kill -TERM "${server_pid}" 2>/dev/null || true
+        local listener_pid=$(cat "${pid_file}")
+        log "Stopping ${impl_name} listener (PID: ${listener_pid})..."
+        kill -TERM "${listener_pid}" 2>/dev/null || true
         sleep 1
-        kill -9 "${server_pid}" 2>/dev/null || true
+        kill -9 "${listener_pid}" 2>/dev/null || true
         rm -f "${pid_file}"
         rm -f "${SOCKET_PATH}"
     fi
 }
 
-# Run a client test
-run_client_test() {
-    local client_impl="$1"
-    local client_dir="$2"
-    local client_cmd="$3"
-    local server_impl="$4"
+# Run a sender test against listener
+run_sender_test() {
+    local sender_impl="$1"
+    local sender_dir="$2"
+    local sender_cmd="$3"
+    local listener_impl="$4"
     
-    log "Testing ${client_impl} client → ${server_impl} server..."
+    log "Testing ${sender_impl} sender → ${listener_impl} listener..."
     
-    cd "${client_dir}"
+    cd "${sender_dir}"
     
-    local test_log="${LOG_DIR}/$(echo ${client_impl} | tr '[:upper:]' '[:lower:]')_to_$(echo ${server_impl} | tr '[:upper:]' '[:lower:]')_test.log"
+    local test_log="${LOG_DIR}/$(echo ${sender_impl} | tr '[:upper:]' '[:lower:]')_to_$(echo ${listener_impl} | tr '[:upper:]' '[:lower:]')_test.log"
     
     if [[ ${VERBOSE} -eq 1 ]]; then
-        gtimeout "${TIMEOUT}" bash -c "${client_cmd}"
+        gtimeout "${TIMEOUT}" bash -c "${sender_cmd}"
     else
-        gtimeout "${TIMEOUT}" bash -c "${client_cmd}" > "${test_log}" 2>&1
+        gtimeout "${TIMEOUT}" bash -c "${sender_cmd}" > "${test_log}" 2>&1
     fi
     
     local exit_code=$?
     
     if [[ ${exit_code} -eq 0 ]]; then
-        log_success "${client_impl} → ${server_impl} communication successful"
+        log_success "${sender_impl} → ${listener_impl} communication successful"
         return 0
     elif [[ ${exit_code} -eq 124 ]]; then
-        log_error "${client_impl} → ${server_impl} communication timed out"
+        log_error "${sender_impl} → ${listener_impl} communication timed out"
         return 1
     else
-        log_error "${client_impl} → ${server_impl} communication failed (exit code: ${exit_code})"
+        log_error "${sender_impl} → ${listener_impl} communication failed (exit code: ${exit_code})"
         if [[ ${VERBOSE} -eq 0 ]]; then
             log "Test log saved to: ${test_log}"
         fi
@@ -188,9 +188,9 @@ run_client_test() {
 run_cross_platform_tests() {
     local implementations=("Swift" "Rust" "Go" "TypeScript")
     local impl_dirs=("${TEST_DIR}/SwiftUnixSockAPI" "${TEST_DIR}/RustUnixSockAPI" "${TEST_DIR}/GoUnixSockAPI" "${TEST_DIR}/TypeScriptUnixSockAPI")
-    local build_cmds=("swift build" "cargo build" "go build -o bin/server ./cmd/server && go build -o bin/client ./cmd/client" "npm run build")
-    local server_cmds=(".build/arm64-apple-macosx/debug/SwiftUnixSockAPI-Server --socket-path=${SOCKET_PATH} --spec=test-api-spec.json" "cargo run --bin server -- --socket-path=${SOCKET_PATH} --spec=test-api-spec.json" "./bin/server --socket-path=${SOCKET_PATH} --spec=test-api-spec.json" "node dist/examples/simple-server.js --socket-path=${SOCKET_PATH} --spec=test-api-spec.json")
-    local client_cmds=("swift run SwiftUnixSockAPI-Client --socket-path=${SOCKET_PATH} --spec=test-api-spec.json" "cargo run --bin client -- --socket-path=${SOCKET_PATH} --spec=test-api-spec.json" "./bin/client --socket-path=${SOCKET_PATH} --spec=test-api-spec.json" "node dist/examples/simple-client.js --socket-path=${SOCKET_PATH} --spec=test-api-spec.json")
+    local build_cmds=("swift build" "cargo build" "go build -o unixsock-dgram ./cmd/unixsock-dgram" "npm run build")
+    local listen_cmds=("swift run SwiftUnixSockDgram --listen --socket ${SOCKET_PATH}" "cargo run --bin unixsock-dgram -- --listen --socket ${SOCKET_PATH}" "./unixsock-dgram --listen --socket ${SOCKET_PATH}" "node dist/bin/unixsock-dgram.js --listen --socket ${SOCKET_PATH}")
+    local send_cmds=("swift run SwiftUnixSockDgram --send-to ${SOCKET_PATH} --command ping --message test" "cargo run --bin unixsock-dgram -- --send-to ${SOCKET_PATH} --command ping --message test" "./unixsock-dgram --send-to ${SOCKET_PATH} --command ping --message test" "node dist/bin/unixsock-dgram.js --send-to ${SOCKET_PATH} --command ping --message test")
     
     local total_tests=0
     local passed_tests=0
@@ -204,15 +204,15 @@ run_cross_platform_tests() {
     # Check all implementations
     local available_implementations=()
     local available_dirs=()
-    local available_server_cmds=()
-    local available_client_cmds=()
+    local available_listen_cmds=()
+    local available_send_cmds=()
     
     for i in "${!implementations[@]}"; do
         if check_implementation "${implementations[i]}" "${impl_dirs[i]}" "${build_cmds[i]}"; then
             available_implementations+=("${implementations[i]}")
             available_dirs+=("${impl_dirs[i]}")
-            available_server_cmds+=("${server_cmds[i]}")
-            available_client_cmds+=("${client_cmds[i]}")
+            available_listen_cmds+=("${listen_cmds[i]}")
+            available_send_cmds+=("${send_cmds[i]}")
         fi
     done
     
@@ -225,25 +225,25 @@ run_cross_platform_tests() {
     log "Available implementations: ${available_implementations[*]}"
     echo
     
-    # Run cross-platform tests (each implementation as server, others as clients)
-    for server_idx in "${!available_implementations[@]}"; do
-        local server_impl="${available_implementations[server_idx]}"
-        local server_dir="${available_dirs[server_idx]}"
-        local server_cmd="${available_server_cmds[server_idx]}"
+    # Run cross-platform tests (each implementation as listener, others as senders)
+    for listener_idx in "${!available_implementations[@]}"; do
+        local listener_impl="${available_implementations[listener_idx]}"
+        local listener_dir="${available_dirs[listener_idx]}"
+        local listen_cmd="${available_listen_cmds[listener_idx]}"
         
-        echo "=== Testing with ${server_impl} as server ==="
+        echo "=== Testing with ${listener_impl} as listener ==="
         
-        if start_server "${server_impl}" "${server_dir}" "${server_cmd}"; then
-            sleep 2 # Give server time to stabilize
+        if start_listener "${listener_impl}" "${listener_dir}" "${listen_cmd}"; then
+            sleep 2 # Give listener time to stabilize
             
-            for client_idx in "${!available_implementations[@]}"; do
-                if [[ ${client_idx} -ne ${server_idx} ]]; then
-                    local client_impl="${available_implementations[client_idx]}"
-                    local client_dir="${available_dirs[client_idx]}"
-                    local client_cmd="${available_client_cmds[client_idx]}"
+            for sender_idx in "${!available_implementations[@]}"; do
+                if [[ ${sender_idx} -ne ${listener_idx} ]]; then
+                    local sender_impl="${available_implementations[sender_idx]}"
+                    local sender_dir="${available_dirs[sender_idx]}"
+                    local send_cmd="${available_send_cmds[sender_idx]}"
                     
                     ((total_tests++))
-                    if run_client_test "${client_impl}" "${client_dir}" "${client_cmd}" "${server_impl}"; then
+                    if run_sender_test "${sender_impl}" "${sender_dir}" "${send_cmd}" "${listener_impl}"; then
                         ((passed_tests++))
                     else
                         ((failed_tests++))
@@ -251,13 +251,13 @@ run_cross_platform_tests() {
                 fi
             done
             
-            stop_server "${server_impl}"
+            stop_listener "${listener_impl}"
         else
-            log_error "Failed to start ${server_impl} server, skipping client tests"
-            # Count failed tests for this server
-            local num_clients=$((${#available_implementations[@]} - 1))
-            total_tests=$((total_tests + num_clients))
-            failed_tests=$((failed_tests + num_clients))
+            log_error "Failed to start ${listener_impl} listener, skipping sender tests"
+            # Count failed tests for this listener
+            local num_senders=$((${#available_implementations[@]} - 1))
+            total_tests=$((total_tests + num_senders))
+            failed_tests=$((failed_tests + num_senders))
         fi
         
         echo

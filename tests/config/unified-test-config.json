@@ -1,0 +1,243 @@
+{
+  "name": "UnixSocketAPI Comprehensive Test Configuration",
+  "version": "2.0.0", 
+  "description": "Unified test configuration for SOCK_DGRAM Unix Socket API implementations",
+  "protocol": {
+    "type": "SOCK_DGRAM",
+    "transport": "unix_domain_sockets",
+    "message_format": "json",
+    "reply_mechanism": "temporary_socket"
+  },
+  "test_categories": {
+    "build_tests": {
+      "description": "Verify implementations compile successfully",
+      "timeout": 300,
+      "parallel": true
+    },
+    "unit_tests": {
+      "description": "Language-specific unit test suites", 
+      "timeout": 600,
+      "parallel": true
+    },
+    "integration_tests": {
+      "description": "Cross-language communication tests",
+      "timeout": 60,
+      "parallel": false
+    },
+    "feature_tests": {
+      "description": "Command variations and edge cases",
+      "timeout": 45,
+      "parallel": true
+    },
+    "performance_tests": {
+      "description": "Performance and benchmarking tests",
+      "timeout": 120,
+      "parallel": false
+    },
+    "security_tests": {
+      "description": "Security and protocol compliance tests",
+      "timeout": 45,
+      "parallel": true
+    },
+    "stress_tests": {
+      "description": "Concurrent load and stress testing",
+      "timeout": 180,
+      "parallel": false
+    }
+  },
+  "implementations": {
+    "go": {
+      "name": "GoUnixSockAPI",
+      "language": "go",
+      "directory": "GoUnixSockAPI",
+      "build_command": ["go", "build", "-o", "unixsock-dgram", "./cmd/unixsock-dgram"],
+      "test_command": ["go", "test", "./..."],
+      "unified_binary": "./unixsock-dgram",
+      "socket_path": "/tmp/go-unixsock-api.sock",
+      "build_artifacts": ["unixsock-dgram"],
+      "listen_args": ["--listen", "--socket"],
+      "send_args": ["--send-to", "{target_socket}", "--command", "{command}", "--message", "{message}"],
+      "test_timeout": 30
+    },
+    "rust": {
+      "name": "RustUnixSockAPI",
+      "language": "rust", 
+      "directory": "RustUnixSockAPI",
+      "build_command": ["cargo", "build"],
+      "test_command": ["cargo", "test"],
+      "unified_binary": "cargo run --bin unixsock-dgram --",
+      "socket_path": "/tmp/rust-unixsock-api.sock",
+      "build_artifacts": ["target/debug/unixsock-dgram"],
+      "listen_args": ["--listen", "--socket"],
+      "send_args": ["--send-to", "{target_socket}", "--command", "{command}", "--message", "{message}"],
+      "test_timeout": 30
+    },
+    "swift": {
+      "name": "SwiftUnixSockAPI",
+      "language": "swift",
+      "directory": "SwiftUnixSockAPI", 
+      "build_command": ["swift", "build"],
+      "test_command": ["swift", "test"],
+      "unified_binary": "swift run SwiftUnixSockDgram",
+      "socket_path": "/tmp/swift-unixsock-api.sock",
+      "build_artifacts": [".build/debug/SwiftUnixSockDgram"],
+      "listen_args": ["--listen", "--socket"],
+      "send_args": ["--send-to", "{target_socket}", "--command", "{command}", "--message", "{message}"],
+      "test_timeout": 30
+    },
+    "typescript": {
+      "name": "TypeScriptUnixSockAPI",
+      "language": "typescript",
+      "directory": "TypeScriptUnixSockAPI",
+      "build_command": ["npm", "run", "build"],
+      "test_command": ["npm", "test"],
+      "unified_binary": "node dist/bin/unixsock-dgram.js",
+      "socket_path": "/tmp/typescript-unixsock-api.sock",
+      "build_artifacts": ["dist/"],
+      "listen_args": ["--listen", "--socket"],
+      "send_args": ["--send-to", "{target_socket}", "--command", "{command}", "--message", "{message}"],
+      "test_timeout": 30
+    }
+  },
+  "test_matrix": {
+    "self_communication": {
+      "description": "Test each implementation communicates with itself",
+      "combinations": [
+        {"server": "go", "client": "go"},
+        {"server": "rust", "client": "rust"},
+        {"server": "swift", "client": "swift"},
+        {"server": "typescript", "client": "typescript"}
+      ]
+    },
+    "cross_communication": {
+      "description": "Test all implementations can communicate with each other",
+      "combinations": [
+        {"server": "go", "client": "rust"},
+        {"server": "go", "client": "swift"},
+        {"server": "go", "client": "typescript"},
+        {"server": "rust", "client": "go"},
+        {"server": "rust", "client": "swift"},
+        {"server": "rust", "client": "typescript"},
+        {"server": "swift", "client": "go"},
+        {"server": "swift", "client": "rust"},
+        {"server": "swift", "client": "typescript"},
+        {"server": "typescript", "client": "go"},
+        {"server": "typescript", "client": "rust"},
+        {"server": "typescript", "client": "swift"}
+      ]
+    }
+  },
+  "test_commands": {
+    "ping": {
+      "description": "Basic connectivity test",
+      "command": "ping",
+      "message": "hello",
+      "expected_response_fields": ["status", "echo"],
+      "timeout": 5
+    },
+    "echo": {
+      "description": "Echo message test",
+      "command": "echo", 
+      "message": "test_message",
+      "expected_response_fields": ["status", "data"],
+      "timeout": 5
+    },
+    "special_chars": {
+      "description": "Special character handling test",
+      "command": "ping",
+      "message": "special_chars_!@#$%^&*()",
+      "expected_response_fields": ["status"],
+      "timeout": 10
+    },
+    "long_message": {
+      "description": "Long message handling test", 
+      "command": "echo",
+      "message": "long_message_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+      "expected_response_fields": ["status"],
+      "timeout": 15
+    },
+    "empty_message": {
+      "description": "Empty message handling test",
+      "command": "ping",
+      "message": "",
+      "expected_response_fields": ["status"],
+      "timeout": 5
+    }
+  },
+  "performance_benchmarks": {
+    "latency_test": {
+      "description": "Measure request-response latency",
+      "iterations": 100,
+      "concurrent_clients": 1,
+      "target_p99_ms": 50,
+      "target_avg_ms": 10
+    },
+    "throughput_test": {
+      "description": "Measure message throughput",
+      "duration_seconds": 30,
+      "concurrent_clients": 10,
+      "target_rps": 500
+    },
+    "concurrent_test": {
+      "description": "Test concurrent client handling",
+      "concurrent_clients": 20,
+      "requests_per_client": 10,
+      "target_success_rate": 0.95
+    },
+    "stress_test": {
+      "description": "High-load stress testing",
+      "concurrent_clients": 50,
+      "requests_per_client": 100,
+      "target_success_rate": 0.90
+    }
+  },
+  "security_tests": [
+    {
+      "name": "sock_dgram_only",
+      "description": "Verify only SOCK_DGRAM sockets are used",
+      "validation": "source_code_scan"
+    },
+    {
+      "name": "no_persistent_connections",
+      "description": "Verify no persistent connections are maintained",
+      "validation": "protocol_analysis"
+    },
+    {
+      "name": "reply_to_mechanism",
+      "description": "Verify proper reply_to socket usage",
+      "validation": "message_inspection"
+    },
+    {
+      "name": "json_message_format",
+      "description": "Verify all messages use valid JSON",
+      "validation": "message_parsing"
+    },
+    {
+      "name": "timeout_handling", 
+      "description": "Verify proper timeout handling",
+      "validation": "timeout_simulation"
+    },
+    {
+      "name": "input_validation",
+      "description": "Verify input sanitization and validation",
+      "validation": "malformed_input_test"
+    }
+  ],
+  "environment": {
+    "required_platforms": ["macos", "linux"],
+    "optional_platforms": ["windows"],
+    "temp_directory": "/tmp/unixsock-api-tests",
+    "log_directory": "tests/test_logs",
+    "report_directory": "tests/test_reports", 
+    "max_parallel_tests": 4,
+    "cleanup_on_exit": true,
+    "socket_cleanup_timeout": 5
+  },
+  "reporting": {
+    "formats": ["json", "markdown", "junit"],
+    "include_logs": true,
+    "include_timing": true,
+    "include_environment": true,
+    "retention_days": 30
+  }
+}

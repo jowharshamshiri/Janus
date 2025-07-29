@@ -97,3 +97,4 @@ Thumbs.db
 .idea/
 *.sublime-workspace
 *.sublime-project
+.scrap/
