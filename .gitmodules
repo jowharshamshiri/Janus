@@ -7,3 +7,6 @@
 [submodule "GoUnixSocketAPI"]
 	path = GoUnixSocketAPI
 	url = ./GoUnixSocketAPI
+[submodule "TypeScriptUnixSockAPI"]
+	path = TypeScriptUnixSockAPI
+	url = ./TypeScriptUnixSockAPI

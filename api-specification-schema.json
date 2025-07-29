@@ -1,0 +1,377 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://unixsocketapi.org/schemas/api-specification.json",
+  "title": "Unix Socket API Specification",
+  "description": "Schema for Unix Socket API specification files",
+  "type": "object",
+  "required": ["version", "name", "channels"],
+  "properties": {
+    "version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$",
+      "description": "Semantic version of the API specification"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256,
+      "description": "Human-readable name of the API"
+    },
+    "description": {
+      "type": "string",
+      "description": "Detailed description of the API"
+    },
+    "channels": {
+      "type": "object",
+      "minProperties": 1,
+      "patternProperties": {
+        "^[a-zA-Z0-9_-]+$": {
+          "$ref": "#/definitions/Channel"
+        }
+      },
+      "additionalProperties": false,
+      "description": "Map of channel IDs to channel definitions"
+    },
+    "models": {
+      "type": "object",
+      "patternProperties": {
+        "^[a-zA-Z0-9_-]+$": {
+          "$ref": "#/definitions/Model"
+        }
+      },
+      "additionalProperties": false,
+      "description": "Reusable model definitions"
+    }
+  },
+  "definitions": {
+    "Channel": {
+      "type": "object",
+      "required": ["name", "commands"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256,
+          "description": "Human-readable channel name"
+        },
+        "description": {
+          "type": "string",
+          "description": "Detailed description of the channel"
+        },
+        "commands": {
+          "type": "object",
+          "minProperties": 1,
+          "patternProperties": {
+            "^[a-zA-Z0-9_-]+$": {
+              "$ref": "#/definitions/Command"
+            }
+          },
+          "additionalProperties": false,
+          "description": "Map of command names to command definitions"
+        }
+      },
+      "additionalProperties": false
+    },
+    "Command": {
+      "type": "object",
+      "required": ["name", "description"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256,
+          "description": "Human-readable command name"
+        },
+        "description": {
+          "type": "string",
+          "description": "Detailed description of the command"
+        },
+        "args": {
+          "type": "object",
+          "patternProperties": {
+            "^[a-zA-Z0-9_-]+$": {
+              "$ref": "#/definitions/Argument"
+            }
+          },
+          "additionalProperties": false,
+          "description": "Map of argument names to argument definitions"
+        },
+        "response": {
+          "$ref": "#/definitions/ResponseDefinition",
+          "description": "Expected response format"
+        },
+        "errorCodes": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[A-Z_]+$"
+          },
+          "uniqueItems": true,
+          "description": "List of possible error codes"
+        },
+        "timeout": {
+          "type": "number",
+          "minimum": 0.1,
+          "maximum": 300.0,
+          "description": "Default timeout in seconds"
+        }
+      },
+      "additionalProperties": false
+    },
+    "Argument": {
+      "type": "object",
+      "required": ["name", "type", "description"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256,
+          "description": "Human-readable argument name"
+        },
+        "type": {
+          "type": "string",
+          "enum": ["string", "number", "integer", "boolean", "array", "object"],
+          "description": "Data type of the argument"
+        },
+        "description": {
+          "type": "string",
+          "description": "Detailed description of the argument"
+        },
+        "required": {
+          "type": "boolean",
+          "default": false,
+          "description": "Whether this argument is required"
+        },
+        "default": {
+          "description": "Default value if argument is not provided"
+        },
+        "pattern": {
+          "type": "string",
+          "description": "Regular expression pattern for string validation"
+        },
+        "minLength": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Minimum string length"
+        },
+        "maxLength": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Maximum string length"
+        },
+        "minimum": {
+          "type": "number",
+          "description": "Minimum numeric value"
+        },
+        "maximum": {
+          "type": "number",
+          "description": "Maximum numeric value"
+        },
+        "enum": {
+          "type": "array",
+          "items": {},
+          "minItems": 1,
+          "uniqueItems": true,
+          "description": "List of allowed values"
+        },
+        "modelRef": {
+          "type": "string",
+          "pattern": "^[a-zA-Z0-9_-]+$",
+          "description": "Reference to a model definition"
+        },
+        "items": {
+          "$ref": "#/definitions/Argument",
+          "description": "Type definition for array items"
+        },
+        "properties": {
+          "type": "object",
+          "patternProperties": {
+            "^[a-zA-Z0-9_-]+$": {
+              "$ref": "#/definitions/Argument"
+            }
+          },
+          "additionalProperties": false,
+          "description": "Properties for object type"
+        }
+      },
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": { "type": { "const": "string" } }
+          },
+          "then": {
+            "properties": {
+              "pattern": true,
+              "minLength": true,
+              "maxLength": true,
+              "enum": true
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": { "type": { "enum": ["number", "integer"] } }
+          },
+          "then": {
+            "properties": {
+              "minimum": true,
+              "maximum": true,
+              "enum": true
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": { "type": { "const": "array" } }
+          },
+          "then": {
+            "required": ["items"],
+            "properties": {
+              "items": true
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": { "type": { "const": "object" } }
+          },
+          "then": {
+            "anyOf": [
+              { "required": ["properties"] },
+              { "required": ["modelRef"] }
+            ]
+          }
+        }
+      ]
+    },
+    "ResponseDefinition": {
+      "type": "object",
+      "required": ["type", "description"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["string", "number", "integer", "boolean", "array", "object"],
+          "description": "Data type of the response"
+        },
+        "description": {
+          "type": "string",
+          "description": "Detailed description of the response"
+        },
+        "properties": {
+          "type": "object",
+          "patternProperties": {
+            "^[a-zA-Z0-9_-]+$": {
+              "$ref": "#/definitions/Argument"
+            }
+          },
+          "additionalProperties": false,
+          "description": "Properties for object response type"
+        },
+        "modelRef": {
+          "type": "string",
+          "pattern": "^[a-zA-Z0-9_-]+$",
+          "description": "Reference to a model definition"
+        },
+        "items": {
+          "$ref": "#/definitions/Argument",
+          "description": "Type definition for array items"
+        }
+      },
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": { "type": { "const": "array" } }
+          },
+          "then": {
+            "required": ["items"]
+          }
+        },
+        {
+          "if": {
+            "properties": { "type": { "const": "object" } }
+          },
+          "then": {
+            "anyOf": [
+              { "required": ["properties"] },
+              { "required": ["modelRef"] }
+            ]
+          }
+        }
+      ]
+    },
+    "Model": {
+      "type": "object",
+      "required": ["name", "type", "description"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256,
+          "description": "Human-readable model name"
+        },
+        "type": {
+          "type": "string",
+          "enum": ["object", "string", "number", "integer", "boolean", "array"],
+          "description": "Base type of the model"
+        },
+        "description": {
+          "type": "string",
+          "description": "Detailed description of the model"
+        },
+        "properties": {
+          "type": "object",
+          "patternProperties": {
+            "^[a-zA-Z0-9_-]+$": {
+              "$ref": "#/definitions/Argument"
+            }
+          },
+          "additionalProperties": false,
+          "description": "Model properties for object types"
+        },
+        "required": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-zA-Z0-9_-]+$"
+          },
+          "uniqueItems": true,
+          "description": "List of required property names"
+        },
+        "extends": {
+          "type": "string",
+          "pattern": "^[a-zA-Z0-9_-]+$",
+          "description": "Reference to parent model for inheritance"
+        },
+        "items": {
+          "$ref": "#/definitions/Argument",
+          "description": "Type definition for array items"
+        }
+      },
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": { "type": { "const": "object" } }
+          },
+          "then": {
+            "properties": {
+              "properties": true,
+              "required": true,
+              "extends": true
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": { "type": { "const": "array" } }
+          },
+          "then": {
+            "required": ["items"]
+          }
+        }
+      ]
+    }
+  }
+}

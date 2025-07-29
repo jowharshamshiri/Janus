@@ -186,11 +186,11 @@ run_client_test() {
 
 # Main test function
 run_cross_platform_tests() {
-    local implementations=("Swift" "Rust" "Go")
-    local impl_dirs=("${TEST_DIR}/SwiftUnixSockAPI" "${TEST_DIR}/RustUnixSockAPI" "${TEST_DIR}/GoUnixSocketAPI")
-    local build_cmds=("swift build" "cargo build" "go build -o bin/server ./cmd/server && go build -o bin/client ./cmd/client")
-    local server_cmds=(".build/arm64-apple-macosx/debug/SwiftUnixSockAPI-Server --socket-path=${SOCKET_PATH} --spec=test-api-spec.json" "cargo run --bin server -- --socket-path=${SOCKET_PATH} --spec=test-api-spec.json" "./bin/server --socket-path=${SOCKET_PATH} --spec=test-api-spec.json")
-    local client_cmds=("swift run SwiftUnixSockAPI-Client --socket-path=${SOCKET_PATH} --spec=test-api-spec.json" "cargo run --bin client -- --socket-path=${SOCKET_PATH} --spec=test-api-spec.json" "./bin/client --socket-path=${SOCKET_PATH} --spec=test-api-spec.json")
+    local implementations=("Swift" "Rust" "Go" "TypeScript")
+    local impl_dirs=("${TEST_DIR}/SwiftUnixSockAPI" "${TEST_DIR}/RustUnixSockAPI" "${TEST_DIR}/GoUnixSocketAPI" "${TEST_DIR}/TypeScriptUnixSockAPI")
+    local build_cmds=("swift build" "cargo build" "go build -o bin/server ./cmd/server && go build -o bin/client ./cmd/client" "npm run build")
+    local server_cmds=(".build/arm64-apple-macosx/debug/SwiftUnixSockAPI-Server --socket-path=${SOCKET_PATH} --spec=test-api-spec.json" "cargo run --bin server -- --socket-path=${SOCKET_PATH} --spec=test-api-spec.json" "./bin/server --socket-path=${SOCKET_PATH} --spec=test-api-spec.json" "node dist/examples/simple-server.js --socket-path=${SOCKET_PATH} --spec=test-api-spec.json")
+    local client_cmds=("swift run SwiftUnixSockAPI-Client --socket-path=${SOCKET_PATH} --spec=test-api-spec.json" "cargo run --bin client -- --socket-path=${SOCKET_PATH} --spec=test-api-spec.json" "./bin/client --socket-path=${SOCKET_PATH} --spec=test-api-spec.json" "node dist/examples/simple-client.js --socket-path=${SOCKET_PATH} --spec=test-api-spec.json")
     
     local total_tests=0
     local passed_tests=0
