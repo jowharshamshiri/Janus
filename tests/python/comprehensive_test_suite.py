@@ -984,7 +984,11 @@ class ComprehensiveTestSuite:
             category = result.category.value
             if category not in results_by_category:
                 results_by_category[category] = []
-            results_by_category[category].append(asdict(result))
+            result_dict = asdict(result)
+            # Convert enum to string value for consistent comparison
+            result_dict['status'] = result.status.value
+            result_dict['category'] = result.category.value
+            results_by_category[category].append(result_dict)
         
         # Generate report
         report = {
@@ -1008,7 +1012,10 @@ class ComprehensiveTestSuite:
                 for name, impl in self.implementations.items()
             },
             "results_by_category": results_by_category,
-            "detailed_results": [asdict(result) for result in self.results]
+            "detailed_results": [
+                {**asdict(result), 'status': result.status.value, 'category': result.category.value} 
+                for result in self.results
+            ]
         }
         
         # Save JSON report
