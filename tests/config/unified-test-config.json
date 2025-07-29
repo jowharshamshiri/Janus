@@ -78,7 +78,7 @@
       "directory": "SwiftUnixSockAPI", 
       "build_command": ["swift", "build"],
       "test_command": ["swift", "test"],
-      "unified_binary": "swift run SwiftUnixSockDgram",
+      "unified_binary": "./.build/debug/SwiftUnixSockDgram",
       "socket_path": "/tmp/swift-unixsock-api.sock",
       "build_artifacts": [".build/debug/SwiftUnixSockDgram"],
       "listen_args": ["--listen", "--socket"],
