@@ -1,21 +1,22 @@
 # Cross-Platform Unix Socket API
 
-A collection of Unix domain socket communication libraries providing identical APIs across Swift, Rust, and Go implementations. These libraries enable secure, high-performance inter-process communication with comprehensive security features and API specification-driven development.
+A collection of Unix domain socket communication libraries providing **async-first architecture** and identical APIs across Swift, Rust, and Go implementations. These libraries enable secure, high-performance inter-process communication with proper async patterns and comprehensive security features.
 
 ## Status Overview
 
 | Implementation | Status | Features | Testing |
 |---|---|---|---|
-| **SwiftUnixSockAPI** | ✅ Complete | Full API, 129+ tests, production-ready | ✅ All tests passing |
-| **RustUnixSockAPI** | ✅ Complete | Full Swift parity achieved | ✅ Compiles, cross-platform ready |
-| **GoUnixSocketAPI** | ✅ Complete | Full Swift parity achieved | ✅ 63 tests, 100% passing |
+| **SwiftUnixSockAPI** | ✅ Complete | Async command handlers, 129+ tests, production-ready | ✅ All tests passing |
+| **RustUnixSockAPI** | ✅ Complete | Async message listener, background response tracking | ✅ Cross-platform validated |
+| **GoUnixSocketAPI** | ✅ Complete | Persistent connections, async response correlation | ✅ 63 tests, 100% passing |
 
-## Cross-Platform Communication
+## Async Communication Architecture
 
-All three implementations use **identical protocols** and can communicate seamlessly:
+All three implementations use **proper async patterns** with identical protocols for seamless cross-language communication:
 
-- **Message Format**: 4-byte big-endian length prefix + JSON payload
-- **Command Structure**: UUID-tracked commands with bilateral timeout support
+- **Async Response Tracking**: UUID-based command correlation with persistent connections
+- **Background Message Listeners**: Non-blocking async communication patterns across all languages  
+- **Cross-Platform Validation**: All 6 language pair combinations tested and working (Swift↔Rust, Swift↔Go, Rust↔Go)
 - **Security Features**: Path traversal protection, resource limits, input validation
 - **API Specification**: JSON/YAML-driven command and channel definitions
 
@@ -37,17 +38,26 @@ VERBOSE=1 ./test_cross_platform.sh test
 ./test_cross_platform.sh clean
 ```
 
-### Swift Implementation
+### Swift Implementation (Async Command Handlers)
 
 ```swift
 import SwiftUnixSockAPI
 
 let apiSpec = try await APISpecification.from(file: "api-spec.json")
-let client = try UnixSockAPIClient(
+let client = try await UnixSockAPIClient(
     socketPath: "/tmp/my_socket.sock",
     channelId: "my-channel",
     apiSpec: apiSpec
 )
+
+// Register async command handlers
+try await client.registerCommandHandler("echo") { command, args in
+    let message = args?["message"]?.value as? String ?? "No message"
+    return ["echo": AnyCodable(message)]
+}
+
+// Start async listening
+try await client.startListening()
 
 let response = try await client.sendCommand(
     "my-command",
