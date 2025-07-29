@@ -7,7 +7,7 @@ echo ""
 
 # Test Go implementation
 echo "1. Testing Go implementation..."
-cd GoUnixSocketAPI
+cd GoUnixSockAPI
 
 # Create a simple test program in examples directory
 mkdir -p examples
@@ -19,7 +19,7 @@ import (
     "fmt"
     "log"
     "time"
-    api "github.com/user/GoUnixSocketAPI"
+    api "github.com/user/GoUnixSockAPI"
 )
 
 func main() {
@@ -96,7 +96,7 @@ cd RustUnixSockAPI
 
 # Create a simple test program
 cat > examples/test_socket_creation.rs << 'EOF'
-use rs_unix_sock_comms::prelude::*;
+use rust_unix_sock_api::prelude::*;
 use std::sync::Arc;
 use std::path::Path;
 use tokio::time::{sleep, Duration};

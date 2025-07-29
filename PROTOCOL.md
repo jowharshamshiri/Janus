@@ -708,7 +708,7 @@ Each implementation must successfully communicate with every other implementatio
 
 ### Reference Implementations
 
-- **Go**: `/Users/bahram/ws/prj/UnixSocketAPI/GoUnixSocketAPI/`
+- **Go**: `/Users/bahram/ws/prj/UnixSocketAPI/GoUnixSockAPI/`
 - **Rust**: `/Users/bahram/ws/prj/UnixSocketAPI/RustUnixSockAPI/`  
 - **Swift**: `/Users/bahram/ws/prj/UnixSocketAPI/SwiftUnixSockAPI/`
 

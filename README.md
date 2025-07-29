@@ -70,7 +70,7 @@ cargo run --bin client
 
 #### Go
 ```bash
-cd GoUnixSocketAPI
+cd GoUnixSockAPI
 go build -o bin/server ./cmd/server
 go build -o bin/client ./cmd/client
 
@@ -160,7 +160,7 @@ unixsocket-docs serve your-api-spec.json --watch
 - **Testing**: 122 tests (library + integration)
 
 ### Go Implementation
-- **Location**: `GoUnixSocketAPI/`
+- **Location**: `GoUnixSockAPI/`
 - **Features**: Goroutines, channels, comprehensive error handling  
 - **Performance**: High-performance server implementation
 - **Testing**: 63 tests with full coverage
@@ -184,7 +184,7 @@ UnixSocketAPI/
 ├── TypeScriptUnixSockAPI/    # Node.js implementation  
 ├── SwiftUnixSockAPI/         # Swift implementation
 ├── RustUnixSockAPI/          # Rust implementation
-├── GoUnixSocketAPI/          # Go implementation
+├── GoUnixSockAPI/          # Go implementation
 ├── unixsocket-docs-cli/      # Documentation CLI tool
 ├── PROTOCOL.md               # Protocol specification
 ├── example-api-spec.json     # Example API specification
@@ -215,7 +215,7 @@ cd SwiftUnixSockAPI && swift test
 cd RustUnixSockAPI && cargo test
 
 # Go
-cd GoUnixSocketAPI && go test ./...
+cd GoUnixSockAPI && go test ./...
 
 # Cross-platform integration
 ./test_cross_platform.sh
