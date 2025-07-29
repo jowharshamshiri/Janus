@@ -1,0 +1,1178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Management API - Development Environment</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.36.1/min/vs/editor/editor.main.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.36.1/min/vs/loader.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header Bar -->
+        <header class="header-bar">
+            <div class="header-left">
+                <div class="app-logo">
+                    <i class="fas fa-code-branch"></i>
+                    <span class="app-title">User Management API</span>
+                    <span class="app-version">v1.0.0</span>
+                </div>
+            </div>
+            <div class="header-center">
+                <div class="connection-status" id="global-connection-status">
+                    <div class="status-indicator">
+                        <div class="status-dot status-disconnected"></div>
+                        <span>Disconnected</span>
+                    </div>
+                </div>
+            </div>
+            <div class="header-right">
+                <button class="header-btn" id="settings-btn" title="Settings">
+                    <i class="fas fa-cog"></i>
+                </button>
+                <button class="header-btn" id="help-btn" title="Help">
+                    <i class="fas fa-question-circle"></i>
+                </button>
+            </div>
+        </header>
+
+        <!-- Main Layout -->
+        <div class="main-layout">
+            <!-- Left Sidebar -->
+            <aside class="left-sidebar">
+                <nav class="sidebar-nav">
+                    <div class="nav-tabs">
+                        <button class="nav-tab active" data-panel="documentation">
+                            <i class="fas fa-book"></i>
+                            <span>Documentation</span>
+                        </button>
+                        <button class="nav-tab" data-panel="explorer">
+                            <i class="fas fa-play-circle"></i>
+                            <span>API Explorer</span>
+                        </button>
+                        <button class="nav-tab" data-panel="monitor">
+                            <i class="fas fa-chart-line"></i>
+                            <span>Monitor</span>
+                        </button>
+                        <button class="nav-tab" data-panel="tools">
+                            <i class="fas fa-tools"></i>
+                            <span>Tools</span>
+                        </button>
+                    </div>
+                </nav>
+
+                <!-- Documentation Panel -->
+                <div class="nav-panel active" id="documentation-panel">
+                    <div class="panel-header">
+                        <h3>API Reference</h3>
+                        <div class="search-container">
+                            <input type="text" id="doc-search" placeholder="Search API..." class="search-input">
+                            <i class="fas fa-search search-icon"></i>
+                        </div>
+                    </div>
+                    <div class="panel-content">
+                        <div class="doc-tree">
+                            <div class="tree-section">
+                                <div class="tree-header">
+                                    <i class="fas fa-info-circle"></i>
+                                    <span>Overview</span>
+                                </div>
+                                <div class="tree-items">
+                                    <a href="#overview" class="tree-item">Introduction</a>
+                                    <a href="#protocol" class="tree-item">Protocol</a>
+                                    <a href="#authentication" class="tree-item">Authentication</a>
+                                </div>
+                            </div>
+                            
+                                <div class="tree-section">
+                                    <div class="tree-header expandable" data-channel="user-service">
+                                        <i class="fas fa-folder tree-icon"></i>
+                                        <span>User Service</span>
+                                        <span class="command-count">5</span>
+                                    </div>
+                                    <div class="tree-items" id="tree-user-service">
+                                        
+                                            <a href="#user-service-create-user" class="tree-item command-item" 
+                                               data-channel="user-service" data-command="create-user">
+                                                <i class="fas fa-bolt"></i>
+                                                <span>create-user</span>
+                                            </a>
+                                        
+                                            <a href="#user-service-authenticate-user" class="tree-item command-item" 
+                                               data-channel="user-service" data-command="authenticate-user">
+                                                <i class="fas fa-bolt"></i>
+                                                <span>authenticate-user</span>
+                                            </a>
+                                        
+                                            <a href="#user-service-get-user" class="tree-item command-item" 
+                                               data-channel="user-service" data-command="get-user">
+                                                <i class="fas fa-bolt"></i>
+                                                <span>get-user</span>
+                                            </a>
+                                        
+                                            <a href="#user-service-update-user" class="tree-item command-item" 
+                                               data-channel="user-service" data-command="update-user">
+                                                <i class="fas fa-bolt"></i>
+                                                <span>update-user</span>
+                                            </a>
+                                        
+                                            <a href="#user-service-delete-user" class="tree-item command-item" 
+                                               data-channel="user-service" data-command="delete-user">
+                                                <i class="fas fa-bolt"></i>
+                                                <span>delete-user</span>
+                                            </a>
+                                        
+                                    </div>
+                                </div>
+                            
+                                <div class="tree-section">
+                                    <div class="tree-header expandable" data-channel="session-service">
+                                        <i class="fas fa-folder tree-icon"></i>
+                                        <span>Session Service</span>
+                                        <span class="command-count">2</span>
+                                    </div>
+                                    <div class="tree-items" id="tree-session-service">
+                                        
+                                            <a href="#session-service-validate-session" class="tree-item command-item" 
+                                               data-channel="session-service" data-command="validate-session">
+                                                <i class="fas fa-bolt"></i>
+                                                <span>validate-session</span>
+                                            </a>
+                                        
+                                            <a href="#session-service-logout" class="tree-item command-item" 
+                                               data-channel="session-service" data-command="logout">
+                                                <i class="fas fa-bolt"></i>
+                                                <span>logout</span>
+                                            </a>
+                                        
+                                    </div>
+                                </div>
+                            
+                        </div>
+                    </div>
+                </div>
+
+                <!-- API Explorer Panel -->
+                <div class="nav-panel" id="explorer-panel">
+                    <div class="panel-header">
+                        <h3>API Explorer</h3>
+                        <button class="panel-btn" id="new-request-btn">
+                            <i class="fas fa-plus"></i>
+                            New Request
+                        </button>
+                    </div>
+                    <div class="panel-content">
+                        <div class="request-builder">
+                            <div class="form-group">
+                                <label>Socket Path</label>
+                                <input type="text" id="explorer-socket-path" 
+                                       placeholder="/tmp/api.sock" class="form-input">
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Channel</label>
+                                    <select id="explorer-channel" class="form-select">
+                                        <option value="">Select Channel...</option>
+                                        <option value="user-service">User Service</option><option value="session-service">Session Service</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Command</label>
+                                    <select id="explorer-command" class="form-select" disabled>
+                                        <option value="">Select Command...</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="connection-controls">
+                                <button class="btn btn-primary" id="explorer-connect">
+                                    <i class="fas fa-plug"></i>
+                                    Connect
+                                </button>
+                                <button class="btn btn-secondary" id="explorer-disconnect" disabled>
+                                    <i class="fas fa-times"></i>
+                                    Disconnect
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Monitor Panel -->
+                <div class="nav-panel" id="monitor-panel">
+                    <div class="panel-header">
+                        <h3>Socket Monitor</h3>
+                        <div class="monitor-controls">
+                            <button class="panel-btn" id="start-monitor">
+                                <i class="fas fa-play"></i>
+                                Start
+                            </button>
+                            <button class="panel-btn" id="clear-monitor">
+                                <i class="fas fa-trash"></i>
+                                Clear
+                            </button>
+                        </div>
+                    </div>
+                    <div class="panel-content">
+                        <div class="form-group">
+                            <label>Monitor Socket</label>
+                            <input type="text" id="monitor-socket-path" 
+                                   placeholder="/tmp/api.sock" class="form-input">
+                        </div>
+                        <div class="monitor-stats">
+                            <div class="stat-item">
+                                <span class="stat-label">Messages</span>
+                                <span class="stat-value" id="message-count">0</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Errors</span>
+                                <span class="stat-value" id="error-count">0</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Uptime</span>
+                                <span class="stat-value" id="uptime">00:00</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tools Panel -->
+                <div class="nav-panel" id="tools-panel">
+                    <div class="panel-header">
+                        <h3>Development Tools</h3>
+                    </div>
+                    <div class="panel-content">
+                        <div class="tool-list">
+                            <div class="tool-item" data-tool="formatter">
+                                <i class="fas fa-code"></i>
+                                <div class="tool-info">
+                                    <div class="tool-name">Message Formatter</div>
+                                    <div class="tool-desc">Format and validate JSON messages</div>
+                                </div>
+                            </div>
+                            <div class="tool-item" data-tool="validator">
+                                <i class="fas fa-check-circle"></i>
+                                <div class="tool-info">
+                                    <div class="tool-name">Schema Validator</div>
+                                    <div class="tool-desc">Validate against API specification</div>
+                                </div>
+                            </div>
+                            <div class="tool-item" data-tool="generator">
+                                <i class="fas fa-magic"></i>
+                                <div class="tool-info">
+                                    <div class="tool-name">Code Generator</div>
+                                    <div class="tool-desc">Generate client code examples</div>
+                                </div>
+                            </div>
+                            <div class="tool-item" data-tool="tester">
+                                <i class="fas fa-vial"></i>
+                                <div class="tool-info">
+                                    <div class="tool-name">Connection Tester</div>
+                                    <div class="tool-desc">Test socket connectivity</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Main Content Area -->
+            <main class="main-content">
+                <div class="content-panels">
+                    <!-- Documentation Content -->
+                    <div class="content-panel active" id="doc-content">
+                        
+      <div class="doc-container">
+        <!-- Overview Section -->
+        <section id="overview" class="doc-section">
+          <div class="section-header">
+            <h1>User Management API</h1>
+            <div class="section-meta">
+              <span class="version-badge">v1.0.0</span>
+              <span class="protocol-badge">Unix Sockets</span>
+            </div>
+          </div>
+          <p class="section-description">Comprehensive user management operations with authentication and profile management</p>
+          
+          <div class="overview-cards">
+            <div class="overview-card">
+              <div class="card-icon">
+                <i class="fas fa-network-wired"></i>
+              </div>
+              <div class="card-content">
+                <h3>Protocol</h3>
+                <p>Unix Domain Sockets with JSON messaging</p>
+              </div>
+            </div>
+            <div class="overview-card">
+              <div class="card-icon">
+                <i class="fas fa-sitemap"></i>
+              </div>
+              <div class="card-content">
+                <h3>Channels</h3>
+                <p>2 service channels available</p>
+              </div>
+            </div>
+            <div class="overview-card">
+              <div class="card-icon">
+                <i class="fas fa-bolt"></i>
+              </div>
+              <div class="card-content">
+                <h3>Commands</h3>
+                <p>7 total commands</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Protocol Section -->
+        <section id="protocol" class="doc-section">
+          <div class="section-header">
+            <h2>Protocol Overview</h2>
+            <button class="try-btn" data-action="test-protocol">
+              <i class="fas fa-play"></i>
+              Try It
+            </button>
+          </div>
+          
+          <div class="protocol-info">
+            <div class="info-block">
+              <h3>Message Format</h3>
+              <div class="code-example">
+                <div class="code-header">
+                  <span>Request Format</span>
+                  <button class="copy-btn" data-copy="request-format">
+                    <i class="fas fa-copy"></i>
+                  </button>
+                </div>
+                <pre id="request-format"><code>{
+  "id": "uuid-v4",
+  "channelId": "channel-name",
+  "command": "command-name",
+  "args": { /* command arguments */ },
+  "timeout": 30.0,
+  "timestamp": "ISO-8601"
+}</code></pre>
+              </div>
+            </div>
+            
+            <div class="info-block">
+              <h3>Response Format</h3>
+              <div class="code-example">
+                <div class="code-header">
+                  <span>Response Format</span>
+                  <button class="copy-btn" data-copy="response-format">
+                    <i class="fas fa-copy"></i>
+                  </button>
+                </div>
+                <pre id="response-format"><code>{
+  "commandId": "original-request-id",
+  "channelId": "channel-name",
+  "success": true,
+  "result": { /* response data */ },
+  "error": null,
+  "timestamp": "ISO-8601"
+}</code></pre>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Channels Documentation -->
+        
+          <section id="user-service" class="doc-section channel-section">
+            <div class="section-header">
+              <h2>User Service</h2>
+              <div class="channel-meta">
+                <span class="command-count-badge">5 commands</span>
+              </div>
+            </div>
+            <p class="section-description">Core user management operations including registration, authentication, and profile management</p>
+            
+            <div class="commands-grid">
+              
+                <div class="command-card" id="user-service-create-user">
+                  <div class="command-header">
+                    <h3>create-user</h3>
+                    <div class="command-actions">
+                      <button class="action-btn" data-action="try-command" 
+                              data-channel="user-service" data-command="create-user">
+                        <i class="fas fa-play"></i>
+                        Try
+                      </button>
+                      <button class="action-btn" data-action="copy-example" 
+                              data-channel="user-service" data-command="create-user">
+                        <i class="fas fa-copy"></i>
+                        Copy
+                      </button>
+                    </div>
+                  </div>
+                  <p class="command-description">Create a new user account with validation and security checks</p>
+                  
+                  
+                  
+                  <div class="command-example">
+                    <div class="example-tabs">
+                      <button class="example-tab active" data-tab="request">Request</button>
+                      <button class="example-tab" data-tab="response">Response</button>
+                    </div>
+                    <div class="example-content">
+                      <div class="example-panel active" data-panel="request">
+                        <pre><code>{
+  "id": "550e8400-e29b-41d4-a716-446655440000",
+  "channelId": "user-service",
+  "command": "create-user",
+  "args": {},
+  "timeout": 30,
+  "timestamp": "2025-07-29T18:07:39.400Z"
+}</code></pre>
+                      </div>
+                      <div class="example-panel" data-panel="response">
+                        <pre><code>{
+  "commandId": "550e8400-e29b-41d4-a716-446655440000",
+  "channelId": "user-service",
+  "success": true,
+  "result": {
+    "message": "Command executed successfully",
+    "data": {}
+  },
+  "error": null,
+  "timestamp": "2025-07-29T18:07:39.400Z"
+}</code></pre>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              
+                <div class="command-card" id="user-service-authenticate-user">
+                  <div class="command-header">
+                    <h3>authenticate-user</h3>
+                    <div class="command-actions">
+                      <button class="action-btn" data-action="try-command" 
+                              data-channel="user-service" data-command="authenticate-user">
+                        <i class="fas fa-play"></i>
+                        Try
+                      </button>
+                      <button class="action-btn" data-action="copy-example" 
+                              data-channel="user-service" data-command="authenticate-user">
+                        <i class="fas fa-copy"></i>
+                        Copy
+                      </button>
+                    </div>
+                  </div>
+                  <p class="command-description">Authenticate user credentials and generate session token</p>
+                  
+                  
+                  
+                  <div class="command-example">
+                    <div class="example-tabs">
+                      <button class="example-tab active" data-tab="request">Request</button>
+                      <button class="example-tab" data-tab="response">Response</button>
+                    </div>
+                    <div class="example-content">
+                      <div class="example-panel active" data-panel="request">
+                        <pre><code>{
+  "id": "550e8400-e29b-41d4-a716-446655440000",
+  "channelId": "user-service",
+  "command": "authenticate-user",
+  "args": {},
+  "timeout": 10,
+  "timestamp": "2025-07-29T18:07:39.400Z"
+}</code></pre>
+                      </div>
+                      <div class="example-panel" data-panel="response">
+                        <pre><code>{
+  "commandId": "550e8400-e29b-41d4-a716-446655440000",
+  "channelId": "user-service",
+  "success": true,
+  "result": {
+    "message": "Command executed successfully",
+    "data": {}
+  },
+  "error": null,
+  "timestamp": "2025-07-29T18:07:39.400Z"
+}</code></pre>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              
+                <div class="command-card" id="user-service-get-user">
+                  <div class="command-header">
+                    <h3>get-user</h3>
+                    <div class="command-actions">
+                      <button class="action-btn" data-action="try-command" 
+                              data-channel="user-service" data-command="get-user">
+                        <i class="fas fa-play"></i>
+                        Try
+                      </button>
+                      <button class="action-btn" data-action="copy-example" 
+                              data-channel="user-service" data-command="get-user">
+                        <i class="fas fa-copy"></i>
+                        Copy
+                      </button>
+                    </div>
+                  </div>
+                  <p class="command-description">Retrieve user information by ID or username</p>
+                  
+                  
+                  
+                  <div class="command-example">
+                    <div class="example-tabs">
+                      <button class="example-tab active" data-tab="request">Request</button>
+                      <button class="example-tab" data-tab="response">Response</button>
+                    </div>
+                    <div class="example-content">
+                      <div class="example-panel active" data-panel="request">
+                        <pre><code>{
+  "id": "550e8400-e29b-41d4-a716-446655440000",
+  "channelId": "user-service",
+  "command": "get-user",
+  "args": {},
+  "timeout": 15,
+  "timestamp": "2025-07-29T18:07:39.400Z"
+}</code></pre>
+                      </div>
+                      <div class="example-panel" data-panel="response">
+                        <pre><code>{
+  "commandId": "550e8400-e29b-41d4-a716-446655440000",
+  "channelId": "user-service",
+  "success": true,
+  "result": {
+    "message": "Command executed successfully",
+    "data": {}
+  },
+  "error": null,
+  "timestamp": "2025-07-29T18:07:39.400Z"
+}</code></pre>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              
+                <div class="command-card" id="user-service-update-user">
+                  <div class="command-header">
+                    <h3>update-user</h3>
+                    <div class="command-actions">
+                      <button class="action-btn" data-action="try-command" 
+                              data-channel="user-service" data-command="update-user">
+                        <i class="fas fa-play"></i>
+                        Try
+                      </button>
+                      <button class="action-btn" data-action="copy-example" 
+                              data-channel="user-service" data-command="update-user">
+                        <i class="fas fa-copy"></i>
+                        Copy
+                      </button>
+                    </div>
+                  </div>
+                  <p class="command-description">Update user information and profile</p>
+                  
+                  
+                  
+                  <div class="command-example">
+                    <div class="example-tabs">
+                      <button class="example-tab active" data-tab="request">Request</button>
+                      <button class="example-tab" data-tab="response">Response</button>
+                    </div>
+                    <div class="example-content">
+                      <div class="example-panel active" data-panel="request">
+                        <pre><code>{
+  "id": "550e8400-e29b-41d4-a716-446655440000",
+  "channelId": "user-service",
+  "command": "update-user",
+  "args": {},
+  "timeout": 30,
+  "timestamp": "2025-07-29T18:07:39.400Z"
+}</code></pre>
+                      </div>
+                      <div class="example-panel" data-panel="response">
+                        <pre><code>{
+  "commandId": "550e8400-e29b-41d4-a716-446655440000",
+  "channelId": "user-service",
+  "success": true,
+  "result": {
+    "message": "Command executed successfully",
+    "data": {}
+  },
+  "error": null,
+  "timestamp": "2025-07-29T18:07:39.400Z"
+}</code></pre>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              
+                <div class="command-card" id="user-service-delete-user">
+                  <div class="command-header">
+                    <h3>delete-user</h3>
+                    <div class="command-actions">
+                      <button class="action-btn" data-action="try-command" 
+                              data-channel="user-service" data-command="delete-user">
+                        <i class="fas fa-play"></i>
+                        Try
+                      </button>
+                      <button class="action-btn" data-action="copy-example" 
+                              data-channel="user-service" data-command="delete-user">
+                        <i class="fas fa-copy"></i>
+                        Copy
+                      </button>
+                    </div>
+                  </div>
+                  <p class="command-description">Permanently delete a user account</p>
+                  
+                  
+                  
+                  <div class="command-example">
+                    <div class="example-tabs">
+                      <button class="example-tab active" data-tab="request">Request</button>
+                      <button class="example-tab" data-tab="response">Response</button>
+                    </div>
+                    <div class="example-content">
+                      <div class="example-panel active" data-panel="request">
+                        <pre><code>{
+  "id": "550e8400-e29b-41d4-a716-446655440000",
+  "channelId": "user-service",
+  "command": "delete-user",
+  "args": {},
+  "timeout": 60,
+  "timestamp": "2025-07-29T18:07:39.400Z"
+}</code></pre>
+                      </div>
+                      <div class="example-panel" data-panel="response">
+                        <pre><code>{
+  "commandId": "550e8400-e29b-41d4-a716-446655440000",
+  "channelId": "user-service",
+  "success": true,
+  "result": {
+    "message": "Command executed successfully",
+    "data": {}
+  },
+  "error": null,
+  "timestamp": "2025-07-29T18:07:39.400Z"
+}</code></pre>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              
+            </div>
+          </section>
+        
+          <section id="session-service" class="doc-section channel-section">
+            <div class="section-header">
+              <h2>Session Service</h2>
+              <div class="channel-meta">
+                <span class="command-count-badge">2 commands</span>
+              </div>
+            </div>
+            <p class="section-description">Session management and token validation operations</p>
+            
+            <div class="commands-grid">
+              
+                <div class="command-card" id="session-service-validate-session">
+                  <div class="command-header">
+                    <h3>validate-session</h3>
+                    <div class="command-actions">
+                      <button class="action-btn" data-action="try-command" 
+                              data-channel="session-service" data-command="validate-session">
+                        <i class="fas fa-play"></i>
+                        Try
+                      </button>
+                      <button class="action-btn" data-action="copy-example" 
+                              data-channel="session-service" data-command="validate-session">
+                        <i class="fas fa-copy"></i>
+                        Copy
+                      </button>
+                    </div>
+                  </div>
+                  <p class="command-description">Validate session token and return user information</p>
+                  
+                  
+                  
+                  <div class="command-example">
+                    <div class="example-tabs">
+                      <button class="example-tab active" data-tab="request">Request</button>
+                      <button class="example-tab" data-tab="response">Response</button>
+                    </div>
+                    <div class="example-content">
+                      <div class="example-panel active" data-panel="request">
+                        <pre><code>{
+  "id": "550e8400-e29b-41d4-a716-446655440000",
+  "channelId": "session-service",
+  "command": "validate-session",
+  "args": {},
+  "timeout": 5,
+  "timestamp": "2025-07-29T18:07:39.400Z"
+}</code></pre>
+                      </div>
+                      <div class="example-panel" data-panel="response">
+                        <pre><code>{
+  "commandId": "550e8400-e29b-41d4-a716-446655440000",
+  "channelId": "session-service",
+  "success": true,
+  "result": {
+    "message": "Command executed successfully",
+    "data": {}
+  },
+  "error": null,
+  "timestamp": "2025-07-29T18:07:39.400Z"
+}</code></pre>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              
+                <div class="command-card" id="session-service-logout">
+                  <div class="command-header">
+                    <h3>logout</h3>
+                    <div class="command-actions">
+                      <button class="action-btn" data-action="try-command" 
+                              data-channel="session-service" data-command="logout">
+                        <i class="fas fa-play"></i>
+                        Try
+                      </button>
+                      <button class="action-btn" data-action="copy-example" 
+                              data-channel="session-service" data-command="logout">
+                        <i class="fas fa-copy"></i>
+                        Copy
+                      </button>
+                    </div>
+                  </div>
+                  <p class="command-description">Invalidate session token and logout user</p>
+                  
+                  
+                  
+                  <div class="command-example">
+                    <div class="example-tabs">
+                      <button class="example-tab active" data-tab="request">Request</button>
+                      <button class="example-tab" data-tab="response">Response</button>
+                    </div>
+                    <div class="example-content">
+                      <div class="example-panel active" data-panel="request">
+                        <pre><code>{
+  "id": "550e8400-e29b-41d4-a716-446655440000",
+  "channelId": "session-service",
+  "command": "logout",
+  "args": {},
+  "timeout": 10,
+  "timestamp": "2025-07-29T18:07:39.400Z"
+}</code></pre>
+                      </div>
+                      <div class="example-panel" data-panel="response">
+                        <pre><code>{
+  "commandId": "550e8400-e29b-41d4-a716-446655440000",
+  "channelId": "session-service",
+  "success": true,
+  "result": {
+    "message": "Command executed successfully",
+    "data": {}
+  },
+  "error": null,
+  "timestamp": "2025-07-29T18:07:39.400Z"
+}</code></pre>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              
+            </div>
+          </section>
+        
+      </div>
+    
+                    </div>
+
+                    <!-- Explorer Content -->
+                    <div class="content-panel" id="explorer-content">
+                        
+      <div class="explorer-container">
+        <div class="request-section">
+          <div class="section-header">
+            <h2>API Request Builder</h2>
+            <div class="request-actions">
+              <button class="btn btn-primary" id="send-request">
+                <i class="fas fa-paper-plane"></i>
+                Send Request
+              </button>
+              <button class="btn btn-secondary" id="save-request">
+                <i class="fas fa-save"></i>
+                Save
+              </button>
+            </div>
+          </div>
+          
+          <div class="request-builder-main">
+            <div class="request-editor" id="request-editor">
+              <!-- Monaco editor will be initialized here -->
+            </div>
+          </div>
+        </div>
+        
+        <div class="response-section">
+          <div class="section-header">
+            <h2>Response</h2>
+            <div class="response-meta">
+              <span class="response-time" id="response-time">0ms</span>
+              <span class="response-status" id="response-status">Ready</span>
+            </div>
+          </div>
+          
+          <div class="response-content">
+            <div class="response-tabs">
+              <button class="response-tab active" data-tab="body">Response Body</button>
+              <button class="response-tab" data-tab="headers">Headers</button>
+              <button class="response-tab" data-tab="raw">Raw</button>
+            </div>
+            
+            <div class="response-panels">
+              <div class="response-panel active" id="response-body">
+                <div class="empty-response">
+                  <i class="fas fa-arrow-up"></i>
+                  <span>Send a request to see the response here</span>
+                </div>
+              </div>
+              <div class="response-panel" id="response-headers"></div>
+              <div class="response-panel" id="response-raw"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    
+                    </div>
+
+                    <!-- Monitor Content -->
+                    <div class="content-panel" id="monitor-content">
+                        
+      <div class="monitor-container">
+        <div class="monitor-view">
+          <div class="section-header">
+            <h2>Real-time Socket Monitor</h2>
+            <div class="monitor-actions">
+              <button class="btn btn-success" id="start-monitoring">
+                <i class="fas fa-play"></i>
+                Start Monitoring
+              </button>
+              <button class="btn btn-danger" id="stop-monitoring" disabled>
+                <i class="fas fa-stop"></i>
+                Stop
+              </button>
+            </div>
+          </div>
+          
+          <div class="message-stream">
+            <div class="stream-tabs">
+              <button class="stream-tab active" data-stream="all">All Messages</button>
+              <button class="stream-tab" data-stream="commands">Commands</button>
+              <button class="stream-tab" data-stream="responses">Responses</button>
+              <button class="stream-tab" data-stream="errors">Errors</button>
+            </div>
+            
+            <div class="stream-content">
+              <div class="message-list" id="message-stream">
+                <div class="empty-monitor">
+                  <i class="fas fa-satellite-dish"></i>
+                  <span>Start monitoring to see live socket communication</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="monitor-sidebar">
+          <div class="monitor-filters">
+            <h3>Filters</h3>
+            <div class="filter-group">
+              <label>Channel</label>
+              <select class="form-select" id="filter-channel">
+                <option value="">All Channels</option>
+                <option value="user-service">User Service</option><option value="session-service">Session Service</option>
+              </select>
+            </div>
+            <div class="filter-group">
+              <label>Message Type</label>
+              <div class="checkbox-group">
+                <label class="checkbox-label">
+                  <input type="checkbox" checked id="filter-commands">
+                  <span>Commands</span>
+                </label>
+                <label class="checkbox-label">
+                  <input type="checkbox" checked id="filter-responses">
+                  <span>Responses</span>
+                </label>
+                <label class="checkbox-label">
+                  <input type="checkbox" checked id="filter-errors">
+                  <span>Errors</span>
+                </label>
+              </div>
+            </div>
+          </div>
+          
+          <div class="monitor-analytics">
+            <h3>Analytics</h3>
+            <div class="analytics-grid">
+              <div class="metric-card">
+                <div class="metric-value" id="total-messages">0</div>
+                <div class="metric-label">Total Messages</div>
+              </div>
+              <div class="metric-card">
+                <div class="metric-value" id="avg-response-time">0ms</div>
+                <div class="metric-label">Avg Response Time</div>
+              </div>
+              <div class="metric-card">
+                <div class="metric-value" id="error-rate">0%</div>
+                <div class="metric-label">Error Rate</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    
+                    </div>
+
+                    <!-- Tools Content -->
+                    <div class="content-panel" id="tools-content">
+                        
+      <div class="tools-container">
+        <div class="tool-panels">
+          <!-- Message Formatter Tool -->
+          <div class="tool-panel active" id="formatter-tool">
+            <div class="section-header">
+              <h2>Message Formatter & Validator</h2>
+              <div class="tool-actions">
+                <button class="btn btn-primary" id="format-message">
+                  <i class="fas fa-magic"></i>
+                  Format
+                </button>
+                <button class="btn btn-secondary" id="validate-message">
+                  <i class="fas fa-check"></i>
+                  Validate
+                </button>
+              </div>
+            </div>
+            
+            <div class="formatter-layout">
+              <div class="input-section">
+                <h3>Raw JSON Input</h3>
+                <div class="json-editor" id="formatter-input">
+                  <!-- Monaco editor -->
+                </div>
+              </div>
+              
+              <div class="output-section">
+                <h3>Formatted Output</h3>
+                <div class="json-editor" id="formatter-output">
+                  <!-- Monaco editor -->
+                </div>
+              </div>
+            </div>
+            
+            <div class="validation-results" id="validation-results">
+              <!-- Validation results will appear here -->
+            </div>
+          </div>
+          
+          <!-- Code Generator Tool -->
+          <div class="tool-panel" id="generator-tool">
+            <div class="section-header">
+              <h2>Client Code Generator</h2>
+              <div class="tool-actions">
+                <button class="btn btn-primary" id="generate-code">
+                  <i class="fas fa-code"></i>
+                  Generate
+                </button>
+              </div>
+            </div>
+            
+            <div class="generator-config">
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Language</label>
+                  <select class="form-select" id="code-language">
+                    <option value="typescript">TypeScript</option>
+                    <option value="javascript">JavaScript</option>
+                    <option value="python">Python</option>
+                    <option value="go">Go</option>
+                    <option value="rust">Rust</option>
+                    <option value="swift">Swift</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label>Template</label>
+                  <select class="form-select" id="code-template">
+                    <option value="client">Client Library</option>
+                    <option value="example">Usage Example</option>
+                    <option value="types">Type Definitions</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            
+            <div class="generated-code">
+              <div class="code-editor" id="generated-code-output">
+                <!-- Generated code will appear here -->
+              </div>
+            </div>
+          </div>
+          
+          <!-- Connection Tester Tool -->
+          <div class="tool-panel" id="tester-tool">
+            <div class="section-header">
+              <h2>Connection Tester</h2>
+              <div class="tool-actions">
+                <button class="btn btn-primary" id="test-connection">
+                  <i class="fas fa-plug"></i>
+                  Test Connection
+                </button>
+              </div>
+            </div>
+            
+            <div class="tester-config">
+              <div class="form-group">
+                <label>Socket Path</label>
+                <input type="text" class="form-input" id="test-socket-path" 
+                       placeholder="/tmp/api.sock" value="/tmp/api.sock">
+              </div>
+              <div class="form-group">
+                <label>Timeout (seconds)</label>
+                <input type="number" class="form-input" id="test-timeout" 
+                       value="10" min="1" max="60">
+              </div>
+            </div>
+            
+            <div class="test-results" id="connection-test-results">
+              <div class="empty-results">
+                <i class="fas fa-vial"></i>
+                <span>Run a connection test to see results</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    
+                    </div>
+                </div>
+            </main>
+
+            <!-- Right Sidebar -->
+            <aside class="right-sidebar">
+                <div class="sidebar-header">
+                    <h3>Context Panel</h3>
+                </div>
+                <div class="context-content" id="context-content">
+                    
+      <div class="context-panel">
+        <div class="context-section">
+          <h4>Quick Actions</h4>
+          <div class="quick-actions">
+            <button class="quick-action" data-action="new-request">
+              <i class="fas fa-plus"></i>
+              <span>New Request</span>
+            </button>
+            <button class="quick-action" data-action="connect-socket">
+              <i class="fas fa-plug"></i>
+              <span>Connect</span>
+            </button>
+            <button class="quick-action" data-action="start-monitor">
+              <i class="fas fa-eye"></i>
+              <span>Monitor</span>
+            </button>
+          </div>
+        </div>
+        
+        <div class="context-section">
+          <h4>Connection Info</h4>
+          <div class="connection-info">
+            <div class="info-item">
+              <span class="info-label">Status</span>
+              <span class="info-value" id="ctx-status">Disconnected</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Socket</span>
+              <span class="info-value" id="ctx-socket">None</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Uptime</span>
+              <span class="info-value" id="ctx-uptime">00:00</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="context-section">
+          <h4>API Overview</h4>
+          <div class="api-overview">
+            <div class="overview-stat">
+              <span class="stat-number">2</span>
+              <span class="stat-label">Channels</span>
+            </div>
+            <div class="overview-stat">
+              <span class="stat-number">7</span>
+              <span class="stat-label">Commands</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="context-section">
+          <h4>Recent Activity</h4>
+          <div class="activity-list" id="recent-activity">
+            <div class="empty-activity">
+              <span>No recent activity</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    
+                </div>
+            </aside>
+        </div>
+
+        <!-- Bottom Console -->
+        <div class="bottom-console">
+            <div class="console-header">
+                <div class="console-tabs">
+                    <button class="console-tab active" data-console="output">
+                        <i class="fas fa-terminal"></i>
+                        Output
+                    </button>
+                    <button class="console-tab" data-console="logs">
+                        <i class="fas fa-list"></i>
+                        Logs
+                    </button>
+                    <button class="console-tab" data-console="errors">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        Errors
+                    </button>
+                </div>
+                <div class="console-controls">
+                    <button class="console-btn" id="clear-console">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                    <button class="console-btn" id="toggle-console">
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="console-content">
+                <div class="console-panel active" id="output-console">
+                    <div class="console-output" id="console-output">
+                        <div class="console-welcome">
+                            <i class="fas fa-code"></i>
+                            <span>Unix Socket API Development Environment Ready</span>
+                            <div class="console-info">API: User Management API | Channels: 2 | Commands: 7</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="console-panel" id="logs-console">
+                    <div class="console-output" id="logs-output"></div>
+                </div>
+                <div class="console-panel" id="errors-console">
+                    <div class="console-output" id="errors-output"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

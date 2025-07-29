@@ -1,0 +1,68 @@
+================================================================================
+UNIXSOCKETAPI CROSS-PLATFORM TEST REPORT
+================================================================================
+Generated: 2025-07-29 20:41:26
+Total Duration: 53.5s
+
+SUMMARY
+----------------------------------------
+Total Tests:   4
+Passed:        0 (0.0%)
+Failed:        4 (100.0%)
+Skipped:       0 (0.0%)
+Errors:        0 (0.0%)
+
+BUILD TESTS (0/4 passed)
+----------------------------------------
+❌ build_go                                    0.2s  Build failed with code 1
+❌ build_rust                                 24.6s  Build failed with code 101
+❌ build_swift                                26.0s  Build failed with code 1
+❌ build_typescript                            2.5s  Build failed with code 2
+
+FAILURE DETAILS
+----------------------------------------
+
+build_go:
+  Status: FAIL
+  Duration: 0.2s
+  Message: Build failed with code 1
+  stdout: 
+  stderr: # github.com/user/GoUnixSockAPI/pkg/core
+pkg/core/connection_pool.go:18:23: undefined: UnixSocketClient
+pkg/core/connection_pool.go:66:30: undefined: UnixSocketClient
+pkg/core/connection_pool.go:75:67...
+
+build_rust:
+  Status: FAIL
+  Duration: 24.6s
+  Message: Build failed with code 101
+  stdout: 
+  stderr: warning: file `/Users/bahram/ws/prj/UnixSocketAPI/RustUnixSockAPI/examples/simple_client.rs` found to be present in multiple build targets:
+  * `bin` target `client`
+  * `example` target `simple_clien...
+
+build_swift:
+  Status: FAIL
+  Duration: 26.0s
+  Message: Build failed with code 1
+  stdout: Building for production...
+[0/15] Write sources
+[4/15] Write swift-version--58304C5D6DBC2206.txt
+[5/15] Compiling reader.c
+[6/15] Compiling writer.c
+[7/15] Compiling parser.c
+[8/15] Compiling api.c
+[9...
+  stderr: 
+
+build_typescript:
+  Status: FAIL
+  Duration: 2.5s
+  Message: Build failed with code 2
+  stdout: 
+> typescript-unix-sock-api@1.0.0 build
+> tsc
+
+src/api/api-client.ts(6,30): error TS6133: 'UnixDatagramClientError' is declared but its value is never read.
+src/api/api-client.ts(57,25): error TS2339:...
+  stderr: 

@@ -1,0 +1,442 @@
+name: Cross-Platform Unix Socket API Tests
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+  schedule:
+    # Run daily at 02:00 UTC
+    - cron: '0 2 * * *'
+
+env:
+  CARGO_TERM_COLOR: always
+  SWIFT_VERSION: '5.9'
+
+jobs:
+  # Build matrix for all implementations
+  build-matrix:
+    name: Build ${{ matrix.implementation }} on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        implementation: [go, rust, swift, typescript]
+        exclude:
+          # Swift only runs on macOS
+          - os: ubuntu-latest
+            implementation: swift
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Setup Go
+      if: matrix.implementation == 'go'
+      uses: actions/setup-go@v4
+      with:
+        go-version: '1.21'
+    
+    - name: Setup Rust
+      if: matrix.implementation == 'rust'
+      uses: actions-rs/toolchain@v1
+      with:
+        toolchain: stable
+        components: rustfmt, clippy
+        override: true
+    
+    - name: Setup Swift
+      if: matrix.implementation == 'swift' && matrix.os == 'macos-latest'
+      uses: swift-actions/setup-swift@v1
+      with:
+        swift-version: ${{ env.SWIFT_VERSION }}
+    
+    - name: Setup Node.js
+      if: matrix.implementation == 'typescript'
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        cache-dependency-path: TypeScriptUnixSockAPI/package-lock.json
+    
+    - name: Install Python dependencies
+      run: |
+        python3 -m pip install --upgrade pip
+        python3 -m pip install pytest pytest-json-report
+    
+    - name: Build Go implementation
+      if: matrix.implementation == 'go'
+      run: |
+        cd GoUnixSockAPI
+        go mod download
+        go build -v ./...
+        go vet ./...
+    
+    - name: Build Rust implementation
+      if: matrix.implementation == 'rust'
+      run: |
+        cd RustUnixSockAPI
+        cargo build --verbose --all-features
+        cargo fmt -- --check
+        cargo clippy -- -D warnings
+    
+    - name: Build Swift implementation
+      if: matrix.implementation == 'swift'
+      run: |
+        cd SwiftUnixSockAPI
+        swift build -c release
+        swift package resolve
+    
+    - name: Build TypeScript implementation
+      if: matrix.implementation == 'typescript'
+      run: |
+        cd TypeScriptUnixSockAPI
+        npm ci
+        npm run build
+        npm run lint
+    
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: build-${{ matrix.implementation }}-${{ matrix.os }}
+        path: |
+          ${{ matrix.implementation == 'go' && 'GoUnixSockAPI/cmd/*/main' || '' }}
+          ${{ matrix.implementation == 'rust' && 'RustUnixSockAPI/target/release/' || '' }}
+          ${{ matrix.implementation == 'swift' && 'SwiftUnixSockAPI/.build/release/' || '' }}
+          ${{ matrix.implementation == 'typescript' && 'TypeScriptUnixSockAPI/dist/' || '' }}
+        retention-days: 1
+
+  # Unit tests for each implementation
+  unit-tests:
+    name: Unit Tests ${{ matrix.implementation }} on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    needs: build-matrix
+    
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        implementation: [go, rust, swift, typescript]
+        exclude:
+          - os: ubuntu-latest
+            implementation: swift
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Setup Go
+      if: matrix.implementation == 'go'
+      uses: actions/setup-go@v4
+      with:
+        go-version: '1.21'
+    
+    - name: Setup Rust
+      if: matrix.implementation == 'rust'
+      uses: actions-rs/toolchain@v1
+      with:
+        toolchain: stable
+        override: true
+    
+    - name: Setup Swift
+      if: matrix.implementation == 'swift'
+      uses: swift-actions/setup-swift@v1
+      with:
+        swift-version: ${{ env.SWIFT_VERSION }}
+    
+    - name: Setup Node.js
+      if: matrix.implementation == 'typescript'
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        cache-dependency-path: TypeScriptUnixSockAPI/package-lock.json
+    
+    - name: Run Go unit tests
+      if: matrix.implementation == 'go'
+      run: |
+        cd GoUnixSockAPI
+        go test -v -race -coverprofile=coverage.out ./...
+        go tool cover -html=coverage.out -o coverage.html
+    
+    - name: Run Rust unit tests
+      if: matrix.implementation == 'rust'
+      run: |
+        cd RustUnixSockAPI
+        cargo test --verbose --all-features
+    
+    - name: Run Swift unit tests
+      if: matrix.implementation == 'swift'
+      run: |
+        cd SwiftUnixSockAPI
+        swift test --enable-code-coverage
+    
+    - name: Run TypeScript unit tests
+      if: matrix.implementation == 'typescript'
+      run: |
+        cd TypeScriptUnixSockAPI
+        npm ci
+        npm test -- --coverage --coverageReporters=html,lcov,text
+    
+    - name: Upload test results
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: test-results-${{ matrix.implementation }}-${{ matrix.os }}
+        path: |
+          ${{ matrix.implementation == 'go' && 'GoUnixSockAPI/coverage.*' || '' }}
+          ${{ matrix.implementation == 'rust' && 'RustUnixSockAPI/target/debug/deps/' || '' }}
+          ${{ matrix.implementation == 'swift' && 'SwiftUnixSockAPI/.build/debug/codecov/' || '' }}
+          ${{ matrix.implementation == 'typescript' && 'TypeScriptUnixSockAPI/coverage/' || '' }}
+        retention-days: 7
+
+  # Cross-platform integration tests
+  integration-tests:
+    name: Integration Tests on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    needs: [build-matrix, unit-tests]
+    
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Setup Go
+      uses: actions/setup-go@v4
+      with:
+        go-version: '1.21'
+    
+    - name: Setup Rust
+      uses: actions-rs/toolchain@v1
+      with:
+        toolchain: stable
+        override: true
+    
+    - name: Setup Swift (macOS only)
+      if: matrix.os == 'macos-latest'
+      uses: swift-actions/setup-swift@v1
+      with:
+        swift-version: ${{ env.SWIFT_VERSION }}
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        cache-dependency-path: TypeScriptUnixSockAPI/package-lock.json
+    
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    
+    - name: Build all implementations
+      run: |
+        # Build Go
+        cd GoUnixSockAPI && go build -v ./... && cd ..
+        
+        # Build Rust
+        cd RustUnixSockAPI && cargo build --release && cd ..
+        
+        # Build Swift (macOS only)
+        if [ "${{ matrix.os }}" = "macos-latest" ]; then
+          cd SwiftUnixSockAPI && swift build -c release && cd ..
+        fi
+        
+        # Build TypeScript
+        cd TypeScriptUnixSockAPI && npm ci && npm run build && cd ..
+    
+    - name: Run cross-platform integration tests
+      run: |
+        python3 test_orchestrator.py \
+          --categories integration \
+          --verbose \
+          --report integration_report_${{ matrix.os }}.txt
+    
+    - name: Upload integration test report
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: integration-report-${{ matrix.os }}
+        path: |
+          integration_report_${{ matrix.os }}.txt
+          test_logs/
+        retention-days: 7
+
+  # Performance benchmarks
+  performance-tests:
+    name: Performance Tests
+    runs-on: ubuntu-latest
+    needs: integration-tests
+    if: github.event_name == 'schedule' || contains(github.event.head_commit.message, '[benchmark]')
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Setup all language environments
+      run: |
+        # Go
+        sudo apt-get update
+        wget https://go.dev/dl/go1.21.0.linux-amd64.tar.gz
+        sudo tar -C /usr/local -xzf go1.21.0.linux-amd64.tar.gz
+        echo 'export PATH=$PATH:/usr/local/go/bin' >> $GITHUB_ENV
+        
+        # Rust
+        curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+        echo 'source $HOME/.cargo/env' >> $GITHUB_ENV
+        
+        # Node.js
+        curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
+        sudo apt-get install -y nodejs
+        
+        # Python
+        sudo apt-get install -y python3 python3-pip
+    
+    - name: Build all implementations for performance testing
+      run: |
+        cd GoUnixSockAPI && go build -o server cmd/server/main.go && cd ..
+        cd RustUnixSockAPI && cargo build --release && cd ..
+        cd TypeScriptUnixSockAPI && npm ci && npm run build && cd ..
+    
+    - name: Run performance benchmarks
+      run: |
+        python3 test_orchestrator.py \
+          --categories performance \
+          --verbose \
+          --report performance_report.txt
+    
+    - name: Upload performance results
+      uses: actions/upload-artifact@v3
+      with:
+        name: performance-results
+        path: |
+          performance_report.txt
+          test_logs/
+        retention-days: 30
+
+  # Security and conformance tests
+  security-tests:
+    name: Security and Conformance Tests
+    runs-on: ubuntu-latest
+    needs: unit-tests
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    
+    - name: Install security scanning tools
+      run: |
+        pip install bandit safety semgrep
+        
+        # Install language-specific security tools
+        go install github.com/securecodewarrior/gosec/v2/cmd/gosec@latest
+        cargo install cargo-audit
+        npm install -g npm-audit
+    
+    - name: Run security scans
+      run: |
+        # Python security scan
+        bandit -r . -f json -o bandit_report.json || true
+        
+        # Go security scan
+        cd GoUnixSockAPI && gosec -fmt json -out ../gosec_report.json ./... || true && cd ..
+        
+        # Rust security scan
+        cd RustUnixSockAPI && cargo audit --json > ../rust_audit.json || true && cd ..
+        
+        # TypeScript security scan
+        cd TypeScriptUnixSockAPI && npm audit --json > ../npm_audit.json || true && cd ..
+    
+    - name: Run conformance tests
+      run: |
+        python3 test_orchestrator.py \
+          --categories conformance \
+          --verbose \
+          --report conformance_report.txt
+    
+    - name: Upload security and conformance results
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: security-conformance-results
+        path: |
+          *_report.json
+          conformance_report.txt
+          test_logs/
+        retention-days: 30
+
+  # Generate final test report
+  test-report:
+    name: Generate Final Test Report
+    runs-on: ubuntu-latest
+    needs: [unit-tests, integration-tests, security-tests]
+    if: always()
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Download all artifacts
+      uses: actions/download-artifact@v3
+    
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    
+    - name: Generate comprehensive report
+      run: |
+        python3 -c "
+        import os
+        import json
+        from datetime import datetime
+        
+        print('# UnixSocketAPI Cross-Platform Test Report')
+        print(f'Generated: {datetime.now().strftime(\"%Y-%m-%d %H:%M:%S UTC\")}')
+        print(f'Commit: ${{ github.sha }}')
+        print(f'Workflow: ${{ github.workflow }}')
+        print()
+        
+        # Collect all reports
+        for root, dirs, files in os.walk('.'):
+            for file in files:
+                if file.endswith('_report.txt'):
+                    print(f'## {file}')
+                    with open(os.path.join(root, file), 'r') as f:
+                        print(f.read())
+                    print()
+        " > final_test_report.md
+    
+    - name: Upload final report
+      uses: actions/upload-artifact@v3
+      with:
+        name: final-test-report
+        path: final_test_report.md
+        retention-days: 90
+    
+    - name: Comment PR with test results
+      if: github.event_name == 'pull_request'
+      uses: actions/github-script@v6
+      with:
+        script: |
+          const fs = require('fs');
+          try {
+            const report = fs.readFileSync('final_test_report.md', 'utf8');
+            await github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: '## Cross-Platform Test Results\n\n' + report
+            });
+          } catch (error) {
+            console.log('Could not read test report:', error);
+          }

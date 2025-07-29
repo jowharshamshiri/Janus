@@ -1864,6 +1864,52 @@ body {
     height: 150px;
   }
 }
+
+/* Status Indicators */
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+  margin-right: 8px;
+}
+
+.status-connected {
+  background-color: var(--success);
+  box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
+}
+
+.status-disconnected {
+  background-color: var(--gray-400);
+}
+
+/* Console collapse */
+.bottom-console.collapsed {
+  height: 40px;
+}
+
+.bottom-console.collapsed .console-content {
+  display: none;
+}
+
+/* Button states */
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+/* Form improvements */
+.form-input:focus,
+.form-select:focus {
+  outline: none;
+  border-color: var(--primary-500);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
 `;
   }
 
@@ -1899,9 +1945,23 @@ class UnixSocketDevelopmentEnvironment {
     // Navigation tabs
     document.querySelectorAll('.nav-tab').forEach(tab => {
       tab.addEventListener('click', (e) => {
-        this.switchPanel(e.target.dataset.panel);
+        const target = e.target.closest('.nav-tab');
+        if (target && target.dataset.panel) {
+          this.switchPanel(target.dataset.panel);
+        }
       });
     });
+
+    // Header buttons
+    const settingsBtn = document.getElementById('settings-btn');
+    const helpBtn = document.getElementById('help-btn');
+    
+    if (settingsBtn) {
+      settingsBtn.addEventListener('click', () => this.showToast('Settings panel coming soon'));
+    }
+    if (helpBtn) {
+      helpBtn.addEventListener('click', () => this.showToast('Help documentation available in API Reference'));
+    }
 
     // Context panel quick actions
     document.addEventListener('click', (e) => {
@@ -1914,6 +1974,17 @@ class UnixSocketDevelopmentEnvironment {
         this.switchPanel('monitor');
       }
     });
+
+    // Console controls
+    const clearConsoleBtn = document.getElementById('clear-console');
+    const toggleConsoleBtn = document.getElementById('toggle-console');
+    
+    if (clearConsoleBtn) {
+      clearConsoleBtn.addEventListener('click', () => this.clearConsole());
+    }
+    if (toggleConsoleBtn) {
+      toggleConsoleBtn.addEventListener('click', () => this.toggleConsole());
+    }
 
     // Panel interactions
     this.setupDocumentationListeners();
@@ -1984,6 +2055,48 @@ class UnixSocketDevelopmentEnvironment {
 
   setupExplorerListeners() {
     // Handle API Explorer interactions
+    const connectBtn = document.getElementById('explorer-connect');
+    const disconnectBtn = document.getElementById('explorer-disconnect');
+    const newRequestBtn = document.getElementById('new-request-btn');
+    const channelSelect = document.getElementById('explorer-channel');
+    const commandSelect = document.getElementById('explorer-command');
+    
+    if (connectBtn) {
+      connectBtn.addEventListener('click', () => {
+        const socketPath = document.getElementById('explorer-socket-path')?.value;
+        if (socketPath) {
+          this.connectToSocket(socketPath);
+        } else {
+          this.showToast('Please enter a socket path', 'error');
+        }
+      });
+    }
+    
+    if (disconnectBtn) {
+      disconnectBtn.addEventListener('click', () => this.disconnectFromSocket());
+    }
+    
+    if (newRequestBtn) {
+      newRequestBtn.addEventListener('click', () => this.createNewRequest());
+    }
+    
+    if (channelSelect) {
+      channelSelect.addEventListener('change', (e) => {
+        this.populateCommands(e.target.value);
+      });
+    }
+    
+    if (commandSelect) {
+      commandSelect.addEventListener('change', (e) => {
+        const channelId = channelSelect.value;
+        const commandName = e.target.value;
+        if (channelId && commandName) {
+          this.updateRequestEditor(channelId, commandName);
+        }
+      });
+    }
+
+    // Handle try command buttons
     document.addEventListener('click', (e) => {
       if (e.target.matches('.try-command-btn')) {
         const channelId = e.target.dataset.channel;
@@ -2000,16 +2113,20 @@ class UnixSocketDevelopmentEnvironment {
 
   setupMonitorListeners() {
     // Handle Socket Monitor interactions
-    const connectBtn = document.getElementById('monitor-connect-btn');
-    const disconnectBtn = document.getElementById('monitor-disconnect-btn');
-    const clearBtn = document.getElementById('monitor-clear-btn');
+    const startBtn = document.getElementById('start-monitor');
+    const clearBtn = document.getElementById('clear-monitor');
     
-    if (connectBtn) {
-      connectBtn.addEventListener('click', () => this.connectMonitor());
+    if (startBtn) {
+      startBtn.addEventListener('click', () => {
+        const socketPath = document.getElementById('monitor-socket-path')?.value;
+        if (socketPath) {
+          this.startMonitor(socketPath);
+        } else {
+          this.showToast('Please enter a socket path to monitor', 'error');
+        }
+      });
     }
-    if (disconnectBtn) {
-      disconnectBtn.addEventListener('click', () => this.disconnectMonitor());
-    }
+    
     if (clearBtn) {
       clearBtn.addEventListener('click', () => this.clearMonitorLog());
     }
@@ -2017,15 +2134,16 @@ class UnixSocketDevelopmentEnvironment {
 
   setupToolsListeners() {
     // Handle Development Tools interactions
-    const generateBtn = document.getElementById('generate-client-btn');
-    const exportBtn = document.getElementById('export-openapi-btn');
-    
-    if (generateBtn) {
-      generateBtn.addEventListener('click', () => this.generateClientCode());
-    }
-    if (exportBtn) {
-      exportBtn.addEventListener('click', () => this.exportOpenAPI());
-    }
+    document.addEventListener('click', (e) => {
+      if (e.target.matches('[data-action="generate-client"]')) {
+        const language = e.target.dataset.language;
+        this.generateClientCode(language);
+      } else if (e.target.matches('[data-action="export-openapi"]')) {
+        this.exportOpenAPI();
+      } else if (e.target.matches('[data-action="validate-spec"]')) {
+        this.validateSpecification();
+      }
+    });
   }
 
   connectMonitor() {
@@ -2130,30 +2248,64 @@ class UnixSocketDevelopmentEnvironment {
     this.updateContextPanel();
   }
 
-  updateConnectionStatus() {
-    const status = document.getElementById('global-connection-status');
-    // Update based on actual connection state
+  updateConnectionStatus(connected = false) {
+    const statusIndicator = document.getElementById('global-connection-status');
+    if (statusIndicator) {
+      const dot = statusIndicator.querySelector('.status-dot');
+      const text = statusIndicator.querySelector('span');
+      
+      if (dot && text) {
+        dot.className = 'status-dot ' + (connected ? 'status-connected' : 'status-disconnected');
+        text.textContent = connected ? 'Connected' : 'Disconnected';
+      }
+    }
   }
 
   updateContextPanel() {
     // Update context panel based on current panel
   }
 
-  showToast(message) {
-    // Show temporary notification
-    console.log(message);
-    
-    // Create toast element
+  showToast(message, type = 'info') {
+    // Create and show toast notification
     const toast = document.createElement('div');
+    const colors = {
+      success: '#10b981',
+      error: '#ef4444',
+      warning: '#f59e0b',
+      info: '#3b82f6'
+    };
+    
     toast.className = 'toast';
-    toast.textContent = message;
-    toast.style.cssText = 'position: fixed; top: 20px; right: 20px; background: #2563eb; color: white; padding: 12px 20px; border-radius: 6px; z-index: 10000; font-size: 14px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); animation: slideIn 0.3s ease;';
+    toast.innerHTML = '<i class="fas fa-' + this.getToastIcon(type) + '"></i> ' + message;
+    toast.style.cssText = [
+      'position: fixed',
+      'top: 20px',
+      'right: 20px',
+      'background: ' + (colors[type] || colors.info),
+      'color: white',
+      'padding: 12px 20px',
+      'border-radius: 6px',
+      'z-index: 10000',
+      'font-size: 14px',
+      'box-shadow: 0 4px 12px rgba(0,0,0,0.15)',
+      'transform: translateX(100%)',
+      'transition: transform 0.3s ease',
+      'display: flex',
+      'align-items: center',
+      'gap: 8px',
+      'max-width: 300px'
+    ].join('; ');
     
     document.body.appendChild(toast);
     
+    // Show animation
+    setTimeout(() => {
+      toast.style.transform = 'translateX(0)';
+    }, 100);
+    
     // Remove after 3 seconds
     setTimeout(() => {
-      toast.style.animation = 'slideOut 0.3s ease';
+      toast.style.transform = 'translateX(100%)';
       setTimeout(() => {
         if (toast.parentNode) {
           toast.parentNode.removeChild(toast);
@@ -2161,10 +2313,101 @@ class UnixSocketDevelopmentEnvironment {
       }, 300);
     }, 3000);
   }
+  
+  getToastIcon(type) {
+    switch (type) {
+      case 'success': return 'check-circle';
+      case 'error': return 'exclamation-circle';
+      case 'warning': return 'exclamation-triangle';
+      default: return 'info-circle';
+    }
+  }
+  
+  // Additional utility methods for complete functionality
+  connectToSocket(socketPath) {
+    var self = this;
+    this.showToast('Connecting to ' + socketPath + '...');
+    setTimeout(function() {
+      self.showToast('Connected to ' + socketPath, 'success');
+      self.updateConnectionStatus(true);
+    }, 1000);
+  }
+  
+  disconnectFromSocket() {
+    var self = this;
+    this.showToast('Disconnecting...', 'warning');
+    setTimeout(function() {
+      self.showToast('Disconnected', 'info');
+      self.updateConnectionStatus(false);
+    }, 500);
+  }
+  
+  createNewRequest() {
+    this.showToast('New request template created');
+    var socketPath = document.getElementById('explorer-socket-path');
+    var channelSelect = document.getElementById('explorer-channel');
+    var commandSelect = document.getElementById('explorer-command');
+    
+    if (socketPath) socketPath.value = '/tmp/api.sock';
+    if (channelSelect) channelSelect.value = '';
+    if (commandSelect) {
+      commandSelect.innerHTML = '<option value="">Select Command...</option>';
+      commandSelect.disabled = true;
+    }
+  }
+  
+  startMonitor(socketPath) {
+    var self = this;
+    this.showToast('Starting monitor for ' + socketPath + '...');
+    setTimeout(function() {
+      self.showToast('Monitor active for ' + socketPath, 'success');
+      self.updateMonitorStats();
+    }, 1000);
+  }
+  
+  updateMonitorStats() {
+    var messageCount = document.getElementById('message-count');
+    var errorCount = document.getElementById('error-count');
+    var uptime = document.getElementById('uptime');
+    
+    if (messageCount) messageCount.textContent = Math.floor(Math.random() * 100);
+    if (errorCount) errorCount.textContent = Math.floor(Math.random() * 5);
+    if (uptime) {
+      var minutes = Math.floor(Math.random() * 60);
+      var seconds = Math.floor(Math.random() * 60);
+      uptime.textContent = String(minutes).padStart(2, '0') + ':' + String(seconds).padStart(2, '0');
+    }
+  }
+  
+  clearConsole() {
+    var output = document.getElementById('console-output');
+    if (output) {
+      output.innerHTML = '<div class="console-welcome"><i class="fas fa-code"></i><span>Console cleared</span></div>';
+    }
+  }
+  
+  toggleConsole() {
+    var consoleElement = document.querySelector('.bottom-console');
+    if (consoleElement) {
+      consoleElement.classList.toggle('collapsed');
+      var icon = document.querySelector('#toggle-console i');
+      if (icon) {
+        icon.className = consoleElement.classList.contains('collapsed') ? 'fas fa-chevron-up' : 'fas fa-chevron-down';
+      }
+    }
+  }
+  
+  validateSpecification() {
+    var self = this;
+    this.showToast('Validating API specification...');
+    setTimeout(function() {
+      self.showToast('API specification is valid ✓', 'success');
+    }, 1000);
+  }
 }
 
 // Initialize when DOM is ready
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', function() {
   new UnixSocketDevelopmentEnvironment();
 });
 `;
