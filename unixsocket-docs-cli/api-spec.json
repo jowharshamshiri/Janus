@@ -1,0 +1,38 @@
+{
+  "version": "1.0.0",
+  "name": "Test API",
+  "description": "Test API - Unix Socket API",
+  "channels": {
+    "example-service": {
+      "name": "Example Service",
+      "description": "Example service demonstrating the API",
+      "commands": {
+        "ping": {
+          "name": "Ping",
+          "description": "Simple ping command",
+          "args": {},
+          "response": {
+            "type": "object",
+            "description": "Ping response",
+            "properties": {
+              "pong": {
+                "name": "Pong",
+                "type": "boolean",
+                "description": "Always true"
+              },
+              "timestamp": {
+                "name": "Timestamp",
+                "type": "string",
+                "description": "Server timestamp"
+              }
+            }
+          },
+          "errorCodes": [
+            "INTERNAL_ERROR"
+          ]
+        }
+      }
+    }
+  },
+  "models": {}
+}

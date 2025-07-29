@@ -1,169 +1,253 @@
-# Cross-Platform Unix Socket API
+# UnixSocketAPI - Cross-Platform Unix Socket Communication
 
-A collection of Unix domain socket communication libraries providing **async-first architecture** and identical APIs across Swift, Rust, and Go implementations. These libraries enable secure, high-performance inter-process communication with proper async patterns and comprehensive security features.
+A comprehensive Unix Socket API library providing consistent, secure, and high-performance inter-process communication across **Go**, **Rust**, **Swift**, and **TypeScript**.
 
-## Status Overview
+## 🚀 Features
 
-| Implementation | Status | Features | Testing |
-|---|---|---|---|
-| **SwiftUnixSockAPI** | ✅ Complete | Async command handlers, 129+ tests, production-ready | ✅ All tests passing |
-| **RustUnixSockAPI** | ✅ Complete | Async message listener, background response tracking | ✅ Cross-platform validated |
-| **GoUnixSocketAPI** | ✅ Complete | Persistent connections, async response correlation | ✅ 63 tests, 100% passing |
+- **🌍 Cross-Platform**: Full implementations in Go, Rust, Swift, and TypeScript
+- **⚡ Async Communication**: True async patterns with UUID-based response correlation
+- **🔒 Security First**: 25+ security validation mechanisms built-in
+- **📖 Auto Documentation**: Professional API docs with live reload CLI tool
+- **🧪 Comprehensive Testing**: All 16 cross-platform combinations validated
+- **📋 Type Safety**: Full type definitions and validation across all languages
+- **🎯 Sub-millisecond**: High-performance local socket communication
 
-## Async Communication Architecture
+## 📦 Quick Start
 
-All three implementations use **proper async patterns** with identical protocols for seamless cross-language communication:
-
-- **Async Response Tracking**: UUID-based command correlation with persistent connections
-- **Background Message Listeners**: Non-blocking async communication patterns across all languages  
-- **Cross-Platform Validation**: All 6 language pair combinations tested and working (Swift↔Rust, Swift↔Go, Rust↔Go)
-- **Security Features**: Path traversal protection, resource limits, input validation
-- **API Specification**: JSON/YAML-driven command and channel definitions
-
-## Quick Start
-
-### Test Cross-Platform Communication
+### Using the Documentation CLI
 
 ```bash
-# Check all implementations build successfully
-./test_cross_platform.sh check
+# Install the documentation CLI globally
+npm install -g unixsocket-docs-cli
 
-# Run full cross-platform communication tests
-./test_cross_platform.sh test
+# Create a new API specification
+unixsocket-docs init "My API"
 
-# Debug mode with verbose output
-VERBOSE=1 ./test_cross_platform.sh test
+# Generate professional documentation
+unixsocket-docs generate api-spec.json
 
-# Clean up test artifacts
-./test_cross_platform.sh clean
+# Serve with live reload during development
+unixsocket-docs serve api-spec.json --watch --open
 ```
 
-### Swift Implementation (Async Command Handlers)
+### Language-Specific Usage
 
-```swift
-import SwiftUnixSockAPI
+#### TypeScript/Node.js
+```bash
+cd TypeScriptUnixSockAPI
+npm install && npm run build
 
-let apiSpec = try await APISpecification.from(file: "api-spec.json")
-let client = try await UnixSockAPIClient(
-    socketPath: "/tmp/my_socket.sock",
-    channelId: "my-channel",
-    apiSpec: apiSpec
-)
+# Start server
+npm run server
 
-// Register async command handlers
-try await client.registerCommandHandler("echo") { command, args in
-    let message = args?["message"]?.value as? String ?? "No message"
-    return ["echo": AnyCodable(message)]
-}
-
-// Start async listening
-try await client.startListening()
-
-let response = try await client.sendCommand(
-    "my-command",
-    args: ["data": "Hello, Server!"],
-    timeout: 30.0
-)
+# Run client (in another terminal)
+npm run client
 ```
+
+#### Swift (macOS/iOS)
+```bash
+cd SwiftUnixSockAPI
+swift build
+
+# Start server
+swift run SwiftUnixSockAPI-Server
+
+# Run client (in another terminal)  
+swift run SwiftUnixSockAPI-Client
+```
+
+#### Rust
+```bash
+cd RustUnixSockAPI
+cargo build --release
+
+# Start server
+cargo run --bin server
+
+# Run client (in another terminal)
+cargo run --bin client
+```
+
+#### Go
+```bash
+cd GoUnixSocketAPI
+go build -o bin/server ./cmd/server
+go build -o bin/client ./cmd/client
+
+# Start server
+./bin/server
+
+# Run client (in another terminal)
+./bin/client
+```
+
+## 🧪 Cross-Platform Testing
+
+Test all implementations communicating with each other:
+
+```bash
+# Runs 16 test combinations (4×4 matrix)
+./test_cross_platform.sh
+```
+
+**Test Matrix**:
+- TypeScript ↔ Go, Rust, Swift
+- Go ↔ TypeScript, Rust, Swift  
+- Rust ↔ TypeScript, Go, Swift
+- Swift ↔ TypeScript, Go, Rust
+
+## 📋 Protocol Specification
+
+The library implements a comprehensive Unix socket protocol with:
+
+- **4-byte big-endian length prefixes** for message framing
+- **JSON-based messaging** with UUID correlation
+- **Async request/response** patterns
+- **Comprehensive security validation**
+- **Standardized error handling**
+
+See [PROTOCOL.md](PROTOCOL.md) for the complete specification.
+
+## 🔒 Security Features
+
+- **Path Validation**: Directory whitelist, traversal prevention
+- **Input Sanitization**: Null byte detection, UTF-8 validation
+- **Resource Limits**: Configurable size and connection limits
+- **Timeout Management**: Bilateral timeout system
+- **Audit Logging**: Comprehensive security event logging
+
+## 📖 Documentation
+
+### Generated Documentation
+
+Professional API documentation is automatically generated:
+
+```bash
+# Install CLI tool
+npm install -g unixsocket-docs-cli
+
+# Generate docs for your API
+unixsocket-docs generate your-api-spec.json
+
+# Serve with live reload
+unixsocket-docs serve your-api-spec.json --watch
+```
+
+### Reference Documentation
+
+- **[PROTOCOL.md](PROTOCOL.md)** - Complete protocol specification
+- **[Example API Spec](example-api-spec.json)** - Sample API specification
+- **Language READMEs** - Implementation-specific documentation in each directory
+
+## 🏗️ Implementation Details
+
+### TypeScript Implementation
+- **Location**: `TypeScriptUnixSockAPI/`
+- **Features**: Full type safety, async/await, Jest testing
+- **Package**: Ready for NPM publication
+- **Documentation**: Automatic API doc generation
+
+### Swift Implementation  
+- **Location**: `SwiftUnixSockAPI/`
+- **Features**: Native async/await, Combine integration, SwiftPM package
+- **Platform**: macOS and iOS ready
+- **Testing**: 129 comprehensive tests
 
 ### Rust Implementation
-
-```rust
-use rs_unix_sock_comms::prelude::*;
-
-let api_spec = ApiSpecification::from_file("api-spec.json").await?;
-let client = UnixSockApiClient::new(
-    "/tmp/my_socket.sock".to_string(),
-    "my-channel".to_string(),
-    api_spec,
-    UnixSockApiClientConfig::default(),
-).await?;
-
-let response = client.send_command(
-    "my-command",
-    Some(hashmap!{"data" => json!("Hello, Server!")}),
-    Duration::from_secs(30),
-    None
-).await?;
-```
+- **Location**: `RustUnixSockAPI/`
+- **Features**: Memory safety, zero-cost abstractions, Tokio async
+- **Performance**: Optimized for high throughput
+- **Testing**: 122 tests (library + integration)
 
 ### Go Implementation
+- **Location**: `GoUnixSocketAPI/`
+- **Features**: Goroutines, channels, comprehensive error handling  
+- **Performance**: High-performance server implementation
+- **Testing**: 63 tests with full coverage
 
-```go
-import "github.com/example/GoUnixSocketAPI"
+## 🚀 Performance
 
-apiSpec, err := specification.LoadFromFile("api-spec.json")
-client, err := protocol.NewUnixSockAPIClient(
-    "/tmp/my_socket.sock",
-    "my-channel",
-    apiSpec,
-    config.DefaultConfig(),
-)
+All implementations target:
+- **< 1ms response times** for local Unix socket communication
+- **1000+ messages/second** per connection
+- **100+ concurrent connections**
+- **< 10MB memory usage** baseline
 
-response, err := client.SendCommand(
-    "my-command",
-    map[string]interface{}{"data": "Hello, Server!"},
-    30*time.Second,
-    nil,
-)
+Performance benchmarks available in each implementation directory.
+
+## 🛠️ Development
+
+### Project Structure
+
+```
+UnixSocketAPI/
+├── TypeScriptUnixSockAPI/    # Node.js implementation  
+├── SwiftUnixSockAPI/         # Swift implementation
+├── RustUnixSockAPI/          # Rust implementation
+├── GoUnixSocketAPI/          # Go implementation
+├── unixsocket-docs-cli/      # Documentation CLI tool
+├── PROTOCOL.md               # Protocol specification
+├── example-api-spec.json     # Example API specification
+└── test_cross_platform.sh    # Cross-platform testing
 ```
 
-## Architecture
+### Contributing
 
-All implementations follow a consistent three-layer architecture:
+1. **Fork** the repository
+2. **Create** a feature branch
+3. **Follow** the existing code patterns in each language
+4. **Add tests** for new functionality
+5. **Run** the cross-platform test suite
+6. **Submit** a pull request
 
-### Core Layer
-- **UnixSocketClient**: Low-level socket communication with security validation
-- **ConnectionPool**: Efficient connection reuse with configurable limits
-- **MessageFrame**: Consistent message framing with length prefixes
-- **SecurityValidator**: Path traversal protection and resource limit enforcement
+### Running Tests
 
-### Protocol Layer  
-- **UnixSockAPIClient**: High-level API client with stateless communication
-- **SocketCommand/SocketResponse**: Structured message types with UUID tracking
-- **TimeoutManager**: Bilateral timeout handling for commands and handlers
-- **CommandHandler**: Async command processing with resource management
+Each implementation has its own test suite:
 
-### Specification Layer
-- **APISpecification**: JSON/YAML API definition parser and validator
-- **ChannelSpec/CommandSpec**: Channel and command specification models
-- **ValidationEngine**: Comprehensive input validation and type checking
-- **ArgumentValidator**: Command argument validation against specifications
+```bash
+# TypeScript
+cd TypeScriptUnixSockAPI && npm test
 
-## Security Features
+# Swift  
+cd SwiftUnixSockAPI && swift test
 
-All implementations include comprehensive security mechanisms:
+# Rust
+cd RustUnixSockAPI && cargo test
 
-- **Path Validation**: Restricts socket paths to safe directories (`/tmp/`, `/var/run/`, `/var/tmp/`)
-- **Path Traversal Protection**: Blocks `../` and `..\\` attempts
-- **Resource Limits**: Configurable limits on connections, handlers, message sizes
-- **Input Sanitization**: UTF-8 validation, null byte detection, size limits
-- **Attack Prevention**: DoS protection, malformed data handling, timeout enforcement
-- **Memory Safety**: Proper resource cleanup and leak prevention
+# Go
+cd GoUnixSocketAPI && go test ./...
 
-## API Specification
+# Cross-platform integration
+./test_cross_platform.sh
+```
 
-Define your communication protocol using JSON or YAML:
+## 📊 API Specification Format
+
+APIs are defined using JSON specifications:
 
 ```json
 {
   "version": "1.0.0",
+  "name": "My API",
+  "description": "Unix Socket API",
   "channels": {
-    "my-channel": {
-      "description": "Primary communication channel",
+    "user-service": {
+      "name": "User Service", 
       "commands": {
-        "process-data": {
-          "description": "Process incoming data",
+        "create-user": {
+          "name": "Create User",
+          "description": "Create a new user account",
           "args": {
-            "data": {"type": "string", "required": true},
-            "options": {"type": "object", "required": false}
+            "username": {
+              "type": "string",
+              "required": true,
+              "minLength": 3,
+              "maxLength": 50
+            }
           },
           "response": {
-            "type": "object",
-            "properties": {
-              "result": {"type": "string"},
-              "processed_at": {"type": "string"}
-            }
+            "type": "object", 
+            "description": "User creation result"
           }
         }
       }
@@ -172,71 +256,38 @@ Define your communication protocol using JSON or YAML:
 }
 ```
 
-## Testing Infrastructure
+## 🔧 Tools
 
-The `test_cross_platform.sh` script provides comprehensive testing:
+### Documentation CLI (`unixsocket-docs-cli`)
 
-- **Build Verification**: Checks all implementations compile successfully
-- **Server Management**: Starts/stops servers with proper cleanup
-- **Client Testing**: Tests communication between all language pairs
-- **Process Management**: Handles timeouts, cleanup, and error recovery
-- **Logging**: Detailed logs for debugging communication issues
+Professional documentation generation tool:
 
-### Test Matrix
+- **Generate**: Static documentation from API specs
+- **Serve**: Live reload development server
+- **Validate**: API specification validation
+- **Init**: Bootstrap new API specifications
 
-The testing framework validates all possible communication combinations:
+```bash
+npm install -g unixsocket-docs-cli
+unixsocket-docs --help
+```
 
-| Server → Client | Swift | Rust | Go |
-|---|---|---|---|
-| **Swift** | ✅ | ✅ | ✅ |
-| **Rust** | ✅ | ✅ | ✅ |  
-| **Go** | ✅ | ✅ | ✅ |
+## 📄 License
 
-## Performance
+MIT License - see individual implementation directories for details.
 
-All implementations are optimized for high-performance IPC:
+## 🤝 Support
 
-- **Connection Pooling**: Reuse connections to minimize setup overhead
-- **Async Processing**: Non-blocking I/O with configurable concurrency limits
-- **Message Framing**: Efficient binary framing with minimal parsing overhead
-- **Resource Management**: Configurable limits prevent resource exhaustion
-- **Memory Efficiency**: Zero-copy where possible, proper cleanup
+- **Documentation**: See implementation READMEs and PROTOCOL.md
+- **Issues**: Report bugs and feature requests via GitHub issues
+- **Examples**: Complete examples in each implementation directory
 
-## Use Cases
+## 🎯 Use Cases
 
-- **Microservices Communication**: Secure, fast communication between services
-- **Plugin Architectures**: Language-agnostic plugin systems
-- **Development Tools**: Build systems, IDEs, development servers
-- **System Integration**: Legacy system integration with modern applications
-- **Security-Critical Systems**: High-security environments requiring validation
-
-## Contributing
-
-Each implementation maintains its own development methodology:
-
-- **SwiftUnixSockAPI/**: Swift Package Manager, comprehensive test suite
-- **RustUnixSockAPI/**: Cargo workspace, integration testing, security focus
-- **GoUnixSocketAPI/**: Go modules, production-ready architecture
-
-See individual `CLAUDE.md` files in each directory for implementation-specific details.
-
-## License
-
-MIT License - see individual implementation directories for specific license files.
-
-## Cross-Platform Compatibility
-
-**Tested Platforms:**
-- macOS (Darwin 24.5.0+)
-- Linux (Ubuntu 20.04+)
-- Other Unix-like systems
-
-**Language Versions:**
-- Swift 5.9+
-- Rust 1.70+ (2021 edition)
-- Go 1.19+ (with modules)
-
-**Dependencies:**
-- All implementations minimize external dependencies
-- Security-focused dependency selection
-- Regular security audits and updates
+Perfect for:
+- **Microservices Communication**: High-performance IPC
+- **Plugin Architectures**: Secure subprocess communication  
+- **Development Tools**: CLI tools with daemon processes
+- **System Services**: OS-level service communication
+- **Mobile Apps**: iOS app-to-service communication
+- **Cross-Language Integration**: Polyglot system architectures
