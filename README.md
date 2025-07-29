@@ -1,4 +1,4 @@
-# UnixSocketAPI - Cross-Platform Unix Socket Communication
+# UnixSockAPI - Cross-Platform Unix Socket Communication
 
 A comprehensive Unix Socket API library providing consistent, secure, and high-performance inter-process communication across **Go**, **Rust**, **Swift**, and **TypeScript**.
 
@@ -180,7 +180,7 @@ Performance benchmarks available in each implementation directory.
 ### Project Structure
 
 ```
-UnixSocketAPI/
+UnixSockAPI/
 ├── TypeScriptUnixSockAPI/    # Node.js implementation  
 ├── SwiftUnixSockAPI/         # Swift implementation
 ├── RustUnixSockAPI/          # Rust implementation

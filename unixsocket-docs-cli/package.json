@@ -21,7 +21,7 @@
     "swagger",
     "openapi"
   ],
-  "author": "UnixSocketAPI Project",
+  "author": "UnixSockAPI Project",
   "license": "MIT",
   "dependencies": {
     "chokidar": "^3.5.3",

@@ -708,9 +708,9 @@ Each implementation must successfully communicate with every other implementatio
 
 ### Reference Implementations
 
-- **Go**: `/Users/bahram/ws/prj/UnixSocketAPI/GoUnixSockAPI/`
-- **Rust**: `/Users/bahram/ws/prj/UnixSocketAPI/RustUnixSockAPI/`  
-- **Swift**: `/Users/bahram/ws/prj/UnixSocketAPI/SwiftUnixSockAPI/`
+- **Go**: `/Users/bahram/ws/prj/UnixSockAPI/GoUnixSockAPI/`
+- **Rust**: `/Users/bahram/ws/prj/UnixSockAPI/RustUnixSockAPI/`  
+- **Swift**: `/Users/bahram/ws/prj/UnixSockAPI/SwiftUnixSockAPI/`
 
 ### Protocol Version History
 
@@ -718,4 +718,4 @@ Each implementation must successfully communicate with every other implementatio
 
 ### Contributing
 
-This specification is maintained as part of the UnixSocketAPI project. Changes must maintain backward compatibility and cross-language consistency.
+This specification is maintained as part of the UnixSockAPI project. Changes must maintain backward compatibility and cross-language consistency.
