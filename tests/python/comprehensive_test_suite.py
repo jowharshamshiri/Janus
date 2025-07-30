@@ -599,6 +599,61 @@ class ComprehensiveTestSuite:
         """Test comprehensive features for a single implementation"""
         results = []
         
+        # Import comprehensive feature tests
+        try:
+            import sys
+            from pathlib import Path
+            sys.path.insert(0, str(Path(__file__).parent))
+            from comprehensive_feature_tests import ComprehensiveFeatureTests
+            
+            # Run comprehensive feature tests
+            feature_tester = ComprehensiveFeatureTests(
+                config_path=str(Path(__file__).parent.parent / "config" / "unified-test-config.json"),
+                verbose=self.verbose
+            )
+            
+            feature_results = feature_tester.run_comprehensive_feature_tests([impl_name])
+            
+            # Convert feature test results to TestResult objects
+            for feature_result in feature_results:
+                test_result = TestResult(
+                    name=feature_result.test_name,
+                    category=TestCategory.INTEGRATION,
+                    status=TestStatus.PASS if feature_result.passed else TestStatus.FAIL,
+                    duration=feature_result.duration,
+                    implementation=impl_name,
+                    message=feature_result.error_message if not feature_result.passed else f"Feature test passed: {feature_result.feature_category}",
+                    details={
+                        "feature_category": feature_result.feature_category,
+                        "response_data": feature_result.response_data,
+                        "validation_details": feature_result.validation_details
+                    }
+                )
+                results.append(test_result)
+                
+        except ImportError as e:
+            self.logger.warning(f"Comprehensive feature tests not available: {e}")
+            # Fallback to basic tests
+            results.extend(self._run_basic_feature_tests(impl_name, impl))
+        except Exception as e:
+            self.logger.error(f"Error running comprehensive feature tests: {e}")
+            # Create error result
+            error_result = TestResult(
+                name=f"feature_test_error_{impl_name}",
+                category=TestCategory.INTEGRATION,
+                status=TestStatus.ERROR,
+                duration=0.0,
+                implementation=impl_name,
+                message=f"Feature testing failed: {str(e)}"
+            )
+            results.append(error_result)
+        
+        return results
+    
+    def _run_basic_feature_tests(self, impl_name: str, impl: ImplementationInfo) -> List[TestResult]:
+        """Fallback basic feature tests if comprehensive tests unavailable"""
+        results = []
+        
         # Test different commands and features
         test_commands = [
             ("ping", "hello", "Basic ping command"),

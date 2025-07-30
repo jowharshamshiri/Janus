@@ -99,3 +99,4 @@ Thumbs.db
 *.sublime-project
 .scrap/
 tests/reports/
+tests/tests/reports/

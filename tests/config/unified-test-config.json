@@ -55,7 +55,7 @@
       "unified_binary": "./unixsock-dgram",
       "socket_path": "/tmp/go-unixsock-api.sock",
       "build_artifacts": ["unixsock-dgram"],
-      "listen_args": ["--listen", "--socket"],
+      "listen_args": ["--listen", "--socket", "/tmp/go-unixsock-api.sock"],
       "send_args": ["--send-to", "{target_socket}", "--command", "{command}", "--message", "{message}"],
       "test_timeout": 30
     },
@@ -68,7 +68,7 @@
       "unified_binary": "cargo run --bin unixsock-dgram --",
       "socket_path": "/tmp/rust-unixsock-api.sock",
       "build_artifacts": ["target/debug/unixsock-dgram"],
-      "listen_args": ["--listen", "--socket"],
+      "listen_args": ["--listen", "--socket", "/tmp/rust-unixsock-api.sock"],
       "send_args": ["--send-to", "{target_socket}", "--command", "{command}", "--message", "{message}"],
       "test_timeout": 30
     },
@@ -81,7 +81,7 @@
       "unified_binary": "./.build/debug/SwiftUnixSockDgram",
       "socket_path": "/tmp/swift-unixsock-api.sock",
       "build_artifacts": [".build/debug/SwiftUnixSockDgram"],
-      "listen_args": ["--listen", "--socket"],
+      "listen_args": ["--listen", "--socket", "/tmp/swift-unixsock-api.sock"],
       "send_args": ["--send-to", "{target_socket}", "--command", "{command}", "--message", "{message}"],
       "test_timeout": 30
     },
@@ -132,35 +132,181 @@
       "description": "Basic connectivity test",
       "command": "ping",
       "message": "hello",
-      "expected_response_fields": ["status", "echo"],
+      "expected_response_fields": ["status", "echo", "timestamp"],
+      "expected_values": {
+        "status": "pong"
+      },
       "timeout": 5
     },
     "echo": {
       "description": "Echo message test",
       "command": "echo", 
       "message": "test_message",
-      "expected_response_fields": ["status", "data"],
+      "expected_response_fields": ["status", "data", "original_length"],
+      "expected_values": {
+        "status": "success",
+        "data": "test_message",
+        "original_length": 12
+      },
+      "timeout": 5
+    },
+    "math_add": {
+      "description": "Mathematical addition test",
+      "command": "math",
+      "args": {
+        "operation": "add",
+        "a": 15,
+        "b": 25
+      },
+      "expected_response_fields": ["result", "operation"],
+      "expected_values": {
+        "result": 40,
+        "operation": "add"
+      },
+      "timeout": 5
+    },
+    "math_multiply": {
+      "description": "Mathematical multiplication test",
+      "command": "math",
+      "args": {
+        "operation": "multiply",
+        "a": 7,
+        "b": 8
+      },
+      "expected_response_fields": ["result", "operation"],
+      "expected_values": {
+        "result": 56,
+        "operation": "multiply"
+      },
+      "timeout": 5
+    },
+    "validate_data": {
+      "description": "Data validation test",
+      "command": "validate",
+      "args": {
+        "data": {
+          "username": "test_user",
+          "email": "test@example.com",
+          "age": 25
+        }
+      },
+      "expected_response_fields": ["valid"],
+      "expected_values": {
+        "valid": true
+      },
       "timeout": 5
     },
     "special_chars": {
       "description": "Special character handling test",
-      "command": "ping",
+      "command": "echo",
       "message": "special_chars_!@#$%^&*()",
-      "expected_response_fields": ["status"],
+      "expected_response_fields": ["status", "data"],
+      "expected_values": {
+        "status": "success",
+        "data": "special_chars_!@#$%^&*()"
+      },
+      "timeout": 10
+    },
+    "unicode_handling": {
+      "description": "Unicode character handling test",
+      "command": "echo",
+      "message": "unicode_测试_🚀_émojis",
+      "expected_response_fields": ["status", "data"],
+      "expected_values": {
+        "status": "success",
+        "data": "unicode_测试_🚀_émojis"
+      },
       "timeout": 10
     },
     "long_message": {
       "description": "Long message handling test", 
       "command": "echo",
-      "message": "long_message_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
-      "expected_response_fields": ["status"],
+      "message": "long_message_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+      "expected_response_fields": ["status", "data"],
+      "expected_values": {
+        "status": "success"
+      },
       "timeout": 15
     },
     "empty_message": {
       "description": "Empty message handling test",
-      "command": "ping",
+      "command": "echo",
       "message": "",
-      "expected_response_fields": ["status"],
+      "expected_response_fields": ["status", "data"],
+      "expected_values": {
+        "status": "success",
+        "data": ""
+      },
+      "timeout": 5
+    },
+    "json_payload": {
+      "description": "JSON payload handling test",
+      "command": "echo",
+      "message": "{\"nested\": \"json\", \"number\": 42}",
+      "expected_response_fields": ["status", "data"],
+      "expected_values": {
+        "status": "success",
+        "data": "{\"nested\": \"json\", \"number\": 42}"
+      },
+      "timeout": 5
+    },
+    "null_handling": {
+      "description": "Null value handling test",
+      "command": "validate",
+      "args": {
+        "data": {
+          "nullable_field": null,
+          "empty_string": "",
+          "zero_value": 0
+        }
+      },
+      "expected_response_fields": ["valid"],
+      "expected_values": {
+        "valid": true
+      },
+      "timeout": 5
+    },
+    "timeout_test_quick": {
+      "description": "Quick timeout test",
+      "command": "timeout_test",
+      "args": {
+        "delay_seconds": 0.5
+      },
+      "expected_response_fields": ["completed", "actual_delay"],
+      "expected_values": {
+        "completed": true
+      },
+      "timeout": 2
+    },
+    "error_invalid_command": {
+      "description": "Invalid command error test",
+      "command": "nonexistent_command",
+      "message": "test",
+      "expect_error": true,
+      "expected_error_code": "COMMAND_NOT_FOUND",
+      "timeout": 5
+    },
+    "error_invalid_args": {
+      "description": "Invalid arguments error test",
+      "command": "math",
+      "args": {
+        "operation": "add",
+        "a": "not_a_number",
+        "b": 5
+      },
+      "expect_error": true,
+      "expected_error_code": "VALIDATION_ERROR",
+      "timeout": 5
+    },
+    "security_injection_test": {
+      "description": "Security injection test",
+      "command": "echo",
+      "message": "; rm -rf /tmp/test; echo 'injected'",
+      "expected_response_fields": ["status", "data"],
+      "expected_values": {
+        "status": "success",
+        "data": "; rm -rf /tmp/test; echo 'injected'"
+      },
       "timeout": 5
     }
   },
