@@ -1,7 +1,7 @@
 {
   "name": "janus-docs-cli",
   "version": "1.0.0",
-  "description": "CLI tool for generating and serving Unix Socket API documentation",
+  "description": "CLI tool for generating and serving Janus documentation",
   "main": "dist/index.js",
   "bin": {
     "janus-docs": "dist/cli.js"

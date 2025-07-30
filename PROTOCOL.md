@@ -1,4 +1,4 @@
-# Unix Socket API Protocol Specification
+# Janus Protocol Specification
 
 **Version**: 2.0.0  
 **Status**: Production Ready  
@@ -8,7 +8,7 @@
 
 ## Overview
 
-The Unix Socket API Protocol provides a standardized approach to inter-process communication using **connectionless Unix domain datagram sockets (SOCK_DGRAM)** with JSON-based messaging, comprehensive security validation, and stateless communication patterns. This specification ensures compatibility across multiple programming language implementations while maintaining the simplicity and efficiency of connectionless communication.
+The Janus Protocol provides a standardized approach to inter-process communication using **connectionless Unix domain datagram sockets (SOCK_DGRAM)** with JSON-based messaging, comprehensive security validation, and stateless communication patterns. This specification ensures compatibility across multiple programming language implementations while maintaining the simplicity and efficiency of connectionless communication.
 
 ## Table of Contents
 

@@ -1,4 +1,4 @@
-name: Cross-Platform Unix Socket API Tests
+name: Cross-Platform Janus Tests
 
 on:
   push:

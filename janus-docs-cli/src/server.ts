@@ -46,7 +46,7 @@ export class DocumentationServer {
     // API info endpoint
     this.app.get('/api/info', (_req, res) => {
       res.json({
-        name: 'Unix Socket API Documentation Server',
+        name: 'Janus Documentation Server',
         version: '1.0.0',
         docsDir: this.docsDir,
         timestamp: new Date().toISOString()

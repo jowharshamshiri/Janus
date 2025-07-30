@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Cross-Platform Unix Socket API Testing Infrastructure
+# Cross-Platform Janus Testing Infrastructure
 # Tests SOCK_DGRAM connectionless communication between Swift, Rust, Go, and TypeScript implementations
 
 set -e
@@ -371,7 +371,7 @@ case "${1:-test}" in
         log_success "Cleanup complete"
         ;;
     "help"|"-h"|"--help")
-        echo "Cross-Platform Unix Socket API Test Infrastructure"
+        echo "Cross-Platform Janus Test Infrastructure"
         echo
         echo "Usage: $0 [command]"
         echo

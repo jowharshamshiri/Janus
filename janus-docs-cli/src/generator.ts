@@ -25,7 +25,7 @@ export class DocumentationGenerator {
     this.apiSpec = apiSpec;
     this.options = {
       title: options.title ?? apiSpec.name,
-      description: options.description ?? apiSpec.description ?? 'Unix Socket API Documentation',
+      description: options.description ?? apiSpec.description ?? 'Janus Documentation',
       version: options.version ?? apiSpec.version,
       includeExamples: options.includeExamples ?? true,
       includeTypes: options.includeTypes ?? true,
@@ -397,7 +397,7 @@ export class DocumentationGenerator {
                     <div class="console-output" id="console-output">
                         <div class="console-welcome">
                             <i class="fas fa-code"></i>
-                            <span>Unix Socket API Development Environment Ready</span>
+                            <span>Janus Development Environment Ready</span>
                             <div class="console-info">API: ${this.options.title} | Channels: ${channels.length} | Commands: ${totalCommands}</div>
                         </div>
                     </div>
@@ -1005,7 +1005,7 @@ export class DocumentationGenerator {
    */
   private generateEnhancedCSS(_baseCss: string): string {
     return `
-/* Professional Unix Socket API Development Environment */
+/* Professional Janus Development Environment */
 
 :root {
   /* Color Palette - Professional Blue/Gray Theme */
@@ -1918,7 +1918,7 @@ body {
    */
   private generateEnhancedJavaScript(_baseJs: string): string {
     return `
-// Professional Unix Socket API Development Environment
+// Professional Janus Development Environment
 class JanusDevelopmentEnvironment {
   constructor() {
     this.apiSpec = null;
@@ -2419,7 +2419,7 @@ document.addEventListener('DOMContentLoaded', function() {
   private generateReadme(_outputDir: string): string {
     return `# ${this.options.title} - Development Environment
 
-This is a professional Unix Socket API development environment with comprehensive tooling.
+This is a professional Janus development environment with comprehensive tooling.
 
 ## Features
 

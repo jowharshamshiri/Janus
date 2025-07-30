@@ -1,7 +1,7 @@
 {
   "version": "1.0.0",
   "name": "Test API",
-  "description": "Test API - Unix Socket API",
+  "description": "Test API - Janus",
   "channels": {
     "example-service": {
       "name": "Example Service",

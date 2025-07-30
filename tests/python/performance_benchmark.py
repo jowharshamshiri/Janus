@@ -29,7 +29,7 @@ class BenchmarkResult:
     details: Dict[str, Any] = None
 
 class PerformanceBenchmark:
-    """Performance benchmark suite for Unix Socket API implementations"""
+    """Performance benchmark suite for Janus implementations"""
     
     def __init__(self, config_path: str = "test-spec.json", verbose: bool = False):
         self.config_path = config_path

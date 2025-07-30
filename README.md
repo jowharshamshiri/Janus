@@ -1,6 +1,6 @@
 # Janus - Cross-Platform Unix Socket Communication
 
-A comprehensive Unix Socket API library providing consistent, secure, and high-performance inter-process communication across **Go**, **Rust**, **Swift**, and **TypeScript**.
+A comprehensive Janus library providing consistent, secure, and high-performance inter-process communication across **Go**, **Rust**, **Swift**, and **TypeScript**.
 
 ## 🚀 Features
 
@@ -250,7 +250,7 @@ APIs are defined using JSON specifications:
 {
   "version": "1.0.0",
   "name": "My API",
-  "description": "Unix Socket API",
+  "description": "Janus",
   "channels": {
     "user-service": {
       "name": "User Service", 

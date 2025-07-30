@@ -1,8 +1,8 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://janus.org/schemas/api-specification.json",
-  "title": "Unix Socket API Specification",
-  "description": "Schema for Unix Socket API specification files",
+  "title": "Janus Specification",
+  "description": "Schema for Janus specification files",
   "type": "object",
   "required": ["version", "name", "channels"],
   "properties": {

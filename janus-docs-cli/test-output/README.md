@@ -1,6 +1,6 @@
 # User Management API Documentation
 
-This directory contains automatically generated documentation for the Unix Socket API with Development Hub features.
+This directory contains automatically generated documentation for the Janus with Development Hub features.
 
 ## Files
 
@@ -56,7 +56,7 @@ This directory contains automatically generated documentation for the Unix Socke
 
 ## Development Hub Architecture
 
-The development hub integrates directly with the TypeScript Unix Socket API library, providing:
+The development hub integrates directly with the TypeScript Janus library, providing:
 
 - **Type-safe message construction** based on API specification
 - **Real-time socket monitoring** without affecting existing connections

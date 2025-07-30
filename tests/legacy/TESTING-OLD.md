@@ -16,7 +16,9 @@ The testing infrastructure provides:
 ## Test Architecture
 
 ### Central API Specification
+
 All tests are driven by a central API specification (`test-spec.json`) that defines:
+
 - Protocol requirements (SOCK_DGRAM only)
 - Test commands and expected responses
 - Performance targets and benchmarks
@@ -59,6 +61,7 @@ swift (5.9+)
 ### Running Tests
 
 #### Full Test Suite
+
 ```bash
 # Run complete test suite (builds, unit tests, integration tests)
 ./run_comprehensive_tests.sh
@@ -73,21 +76,25 @@ swift (5.9+)
 #### Individual Test Components
 
 **Build Validation:**
+
 ```bash
 ./run_comprehensive_tests.sh --no-unit --no-integration --no-security
 ```
 
 **Unit Tests Only:**
+
 ```bash
 ./run_comprehensive_tests.sh --no-builds --no-integration --no-security
 ```
 
 **Cross-Platform Integration Tests:**
+
 ```bash
 python3 test_orchestrator.py --categories integration --verbose
 ```
 
 **API Specification Compliance:**
+
 ```bash
 python3 api_spec_validator.py \
   --implementation GoJanus \
@@ -96,6 +103,7 @@ python3 api_spec_validator.py \
 ```
 
 **Performance Benchmarks:**
+
 ```bash
 python3 performance_benchmark.py --verbose --implementations go,rust
 ```
@@ -103,6 +111,7 @@ python3 performance_benchmark.py --verbose --implementations go,rust
 ## Test Categories
 
 ### 1. Build Tests
+
 Validates that all implementations compile successfully:
 
 - **Go**: `go build ./...`
@@ -111,6 +120,7 @@ Validates that all implementations compile successfully:
 - **TypeScript**: `npm ci && npm run build`
 
 ### 2. Unit Tests
+
 Runs language-specific unit test suites:
 
 - **Go**: `go test ./...`
@@ -119,6 +129,7 @@ Runs language-specific unit test suites:
 - **TypeScript**: `npm test`
 
 ### 3. Integration Tests
+
 Cross-platform communication validation:
 
 - **Self-communication**: Each implementation talks to itself (4 tests)
@@ -127,6 +138,7 @@ Cross-platform communication validation:
 - **Test commands**: ping, echo, get_info, stress_test
 
 ### 4. API Specification Compliance
+
 Validates adherence to SOCK_DGRAM protocol:
 
 - **SOCK_DGRAM only**: No SOCK_STREAM or TCP usage
@@ -136,6 +148,7 @@ Validates adherence to SOCK_DGRAM protocol:
 - **Security constraints**: Input validation and sanitization
 
 ### 5. Performance Benchmarks
+
 Measures performance characteristics:
 
 - **Latency test**: Request-response latency (1000 iterations)
@@ -144,6 +157,7 @@ Measures performance characteristics:
 - **Memory usage**: Memory consumption during operation
 
 ### 6. Security Tests
+
 Security validation and vulnerability scanning:
 
 - **Code analysis**: Pattern matching for forbidden constructs
@@ -190,11 +204,13 @@ The central `test-spec.json` defines the complete test configuration:
 The project includes comprehensive GitHub Actions workflows (`.github/workflows/cross-platform-tests.yml`):
 
 #### Build Matrix
+
 - **Platforms**: Ubuntu, macOS
 - **Languages**: Go, Rust, Swift (macOS only), TypeScript
 - **Parallel execution**: All builds run simultaneously
 
 #### Test Phases
+
 1. **Build validation** - Compile all implementations
 2. **Unit tests** - Language-specific test suites
 3. **Integration tests** - Cross-platform communication
@@ -202,11 +218,13 @@ The project includes comprehensive GitHub Actions workflows (`.github/workflows/
 5. **Performance tests** - Benchmarks (on schedule or `[benchmark]` commit message)
 
 #### Reporting
+
 - **Artifacts**: Test results, coverage reports, logs
 - **PR comments**: Automatic test result summaries
 - **Reports**: Comprehensive test reports with 90-day retention
 
 ### Triggering CI
+
 ```bash
 # Regular push/PR - runs build, unit, integration, security tests
 git push origin feature-branch
@@ -221,6 +239,7 @@ git push origin main
 ## Test Reports
 
 ### Comprehensive Report Structure
+
 ```
 test_reports/YYYYMMDD_HHMMSS/
 ├── comprehensive_test_report.md      # Main report
@@ -233,6 +252,7 @@ test_reports/YYYYMMDD_HHMMSS/
 ```
 
 ### Report Contents
+
 - **Executive Summary**: Pass/fail status, timing, coverage
 - **Build Status**: Compilation results for each implementation
 - **Unit Test Results**: Language-specific test outcomes
@@ -244,21 +264,25 @@ test_reports/YYYYMMDD_HHMMSS/
 ## Performance Targets
 
 ### Latency Targets
+
 - **P95 latency**: < 10ms
 - **P99 latency**: < 50ms
 - **Average latency**: < 5ms
 
 ### Throughput Targets
+
 - **Single client**: > 1000 req/s
 - **10 concurrent clients**: > 5000 req/s
 - **Success rate**: > 99%
 
 ### Memory Targets
+
 - **Average memory usage**: < 50MB
 - **Peak memory usage**: < 100MB
 - **Memory growth**: < 1MB/hour
 
 ### Concurrency Targets
+
 - **50 concurrent clients**: > 99% success rate
 - **100 requests per client**: < 1% failure rate
 - **Total throughput**: > 1000 req/s
@@ -268,6 +292,7 @@ test_reports/YYYYMMDD_HHMMSS/
 ### Common Issues
 
 **Build Failures:**
+
 ```bash
 # Check build logs
 cat test_logs/latest/build_*.log
@@ -277,6 +302,7 @@ cd GoJanus && go build ./...
 ```
 
 **Integration Test Failures:**
+
 ```bash
 # Run with verbose logging
 python3 test_orchestrator.py --categories integration --verbose
@@ -286,6 +312,7 @@ python3 test_orchestrator.py --categories integration --verbose
 ```
 
 **Performance Issues:**
+
 ```bash
 # Run isolated performance test
 python3 performance_benchmark.py --implementations go --verbose
@@ -298,16 +325,19 @@ df -h /tmp
 ### Debugging Commands
 
 **Check socket files:**
+
 ```bash
 ls -la /tmp/*sock* /tmp/*unix*
 ```
 
 **Monitor test processes:**
+
 ```bash
 ps aux | grep -E "(test|server|client)"
 ```
 
 **Check test logs:**
+
 ```bash
 tail -f test_logs/latest/comprehensive_test.log
 ```
@@ -344,6 +374,7 @@ tail -f test_logs/latest/comprehensive_test.log
 ### Custom Test Configurations
 
 **Create custom test spec:**
+
 ```json
 {
   "name": "Custom Test Suite",
@@ -354,6 +385,7 @@ tail -f test_logs/latest/comprehensive_test.log
 ```
 
 **Run with custom config:**
+
 ```bash
 python3 test_orchestrator.py --config custom-test-spec.json
 ```
@@ -361,11 +393,13 @@ python3 test_orchestrator.py --config custom-test-spec.json
 ### Parallel Testing
 
 **Run tests in parallel:**
+
 ```bash
 ./run_comprehensive_tests.sh --parallel --performance
 ```
 
 **Limit concurrent tests:**
+
 ```bash
 # Modify test-spec.json
 "environment": {
@@ -376,6 +410,7 @@ python3 test_orchestrator.py --config custom-test-spec.json
 ### Extended Performance Testing
 
 **Long-running benchmarks:**
+
 ```bash
 python3 performance_benchmark.py \
   --config extended-perf-spec.json \
@@ -384,6 +419,7 @@ python3 performance_benchmark.py \
 ```
 
 **Memory leak detection:**
+
 ```bash
 # Run extended memory benchmark
 python3 performance_benchmark.py --memory-duration 3600  # 1 hour
@@ -402,12 +438,14 @@ When contributing to the test infrastructure:
 ### Test Infrastructure Changes
 
 **Adding new test categories:**
+
 1. Update `test-spec.json` with new category
 2. Add implementation in `test_orchestrator.py`
 3. Update CI workflow
 4. Add documentation
 
 **Modifying performance targets:**
+
 1. Update targets in `test-spec.json`
 2. Validate with current implementations
 3. Update CI thresholds

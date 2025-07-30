@@ -1,7 +1,7 @@
 {
   "name": "Janus Comprehensive Test Configuration",
   "version": "2.0.0", 
-  "description": "Unified test configuration for SOCK_DGRAM Unix Socket API implementations",
+  "description": "Unified test configuration for SOCK_DGRAM Janus implementations",
   "protocol": {
     "type": "SOCK_DGRAM",
     "transport": "unix_domain_sockets",

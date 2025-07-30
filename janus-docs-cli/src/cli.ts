@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 /**
- * Unix Socket API Documentation CLI Tool
+ * Janus Documentation CLI Tool
  * Generate and serve documentation with live reload
  */
 
@@ -34,7 +34,7 @@ interface ServeOptions {
 
 program
   .name('janus-docs')
-  .description('Generate and serve Unix Socket API documentation')
+  .description('Generate and serve Janus documentation')
   .version('1.0.0');
 
 program
@@ -51,7 +51,7 @@ program
   .option('--no-types', 'Exclude TypeScript types')
   .action(async (specFile: string, options: GenerateOptions) => {
     try {
-      console.log('🚀 Generating Unix Socket API documentation...');
+      console.log('🚀 Generating Janus documentation...');
       
       // Validate spec file
       const specPath = path.resolve(specFile);
@@ -122,7 +122,7 @@ program
   .option('--no-types', 'Exclude TypeScript types')
   .action(async (specFile: string, options: ServeOptions & GenerateOptions) => {
     try {
-      console.log('🚀 Starting Unix Socket API documentation server...');
+      console.log('🚀 Starting Janus documentation server...');
       
       const specPath = path.resolve(specFile);
       const outputDir = path.resolve(options.output);
@@ -280,7 +280,7 @@ program
       const template = {
         version: '1.0.0',
         name,
-        description: `${name} - Unix Socket API`,
+        description: `${name} - Janus`,
         channels: {
           'example-service': {
             name: 'Example Service',

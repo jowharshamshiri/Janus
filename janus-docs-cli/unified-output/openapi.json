@@ -2,7 +2,7 @@
   "openapi": "3.0.3",
   "info": {
     "title": "Professional API Hub",
-    "description": "Unified development environment for Unix Socket APIs",
+    "description": "Unified development environment for Januss",
     "version": "1.0.0",
     "x-protocol": "unix-socket",
     "x-message-format": "json-with-length-prefix"

@@ -1,5 +1,5 @@
 
-// Professional Unix Socket API Development Environment
+// Professional Janus Development Environment
 class JanusDevelopmentEnvironment {
   constructor() {
     this.apiSpec = null;

@@ -37,7 +37,7 @@ class TestResult:
             self.details = {}
 
 class TestOrchestrator:
-    """Main test orchestrator for cross-platform Unix Socket API testing"""
+    """Main test orchestrator for cross-platform Janus testing"""
     
     def __init__(self, config_path: str = "test-spec.json", verbose: bool = False):
         self.config_path = config_path

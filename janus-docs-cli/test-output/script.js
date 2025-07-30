@@ -1,4 +1,4 @@
-// Unix Socket API Documentation JavaScript
+// Janus Documentation JavaScript
 
 document.addEventListener('DOMContentLoaded', function() {
     // Smooth scrolling for navigation links

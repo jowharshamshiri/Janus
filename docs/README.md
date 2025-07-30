@@ -1,6 +1,6 @@
 # User Management API - Development Environment
 
-This is a professional Unix Socket API development environment with comprehensive tooling.
+This is a professional Janus development environment with comprehensive tooling.
 
 ## Features
 

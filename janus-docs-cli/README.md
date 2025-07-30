@@ -1,6 +1,6 @@
-# Unix Socket API Documentation CLI
+# Janus Documentation CLI
 
-A powerful CLI tool for generating and serving professional documentation from Unix Socket API specifications.
+A powerful CLI tool for generating and serving professional documentation from Janus specifications.
 
 ## Features
 
@@ -111,7 +111,7 @@ Options:
 
 ## API Specification Format
 
-The CLI expects JSON files following the Unix Socket API specification format:
+The CLI expects JSON files following the Janus specification format:
 
 ```json
 {

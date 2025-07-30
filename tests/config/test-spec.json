@@ -1,7 +1,7 @@
 {
   "name": "Janus Cross-Platform Test Suite",
   "version": "1.0.0",
-  "description": "Comprehensive test specification for SOCK_DGRAM Unix Socket API implementations",
+  "description": "Comprehensive test specification for SOCK_DGRAM Janus implementations",
   "protocol": {
     "type": "SOCK_DGRAM",
     "transport": "unix_domain_sockets",
