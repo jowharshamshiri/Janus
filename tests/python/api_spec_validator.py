@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-API Specification Validator for UnixSocketAPI
+API Specification Validator for Janus
 Validates implementations against the central API specification
 """
 

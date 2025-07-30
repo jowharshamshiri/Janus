@@ -44,4 +44,4 @@ This environment uses a modern, professional design system with:
 - Accessibility features and keyboard navigation
 - IDE-like interface familiar to developers
 
-Generated with: unixsocket-docs-cli v1.0.0 (Professional Development Environment)
+Generated with: janus-docs-cli v1.0.0 (Professional Development Environment)

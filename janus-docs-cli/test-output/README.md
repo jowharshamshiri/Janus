@@ -64,4 +64,4 @@ The development hub integrates directly with the TypeScript Unix Socket API libr
 - **Professional debugging interface** for development workflows
 
 Generated on: 2025-07-29T13:15:58.985Z
-Generated with: unixsocket-docs-cli v1.0.0 (Enhanced Development Hub)
+Generated with: janus-docs-cli v1.0.0 (Enhanced Development Hub)

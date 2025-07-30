@@ -1,6 +1,6 @@
 {
   "version": "3.0.0",
-  "name": "Comprehensive UnixSocketAPI Test Specification",
+  "name": "Comprehensive Janus Test Specification",
   "description": "Production-grade API specification covering all data types, edge cases, concurrent patterns, failure modes, and extended session scenarios",
   "channels": {
     "test": {

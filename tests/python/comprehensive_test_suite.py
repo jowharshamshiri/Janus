@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-UnixSocketAPI Comprehensive Test Suite
+Janus Comprehensive Test Suite
 Complete test coverage for SOCK_DGRAM implementations across Go, Rust, Swift, and TypeScript
 """
 
@@ -87,7 +87,7 @@ class ComprehensiveTestSuite:
         self.verbose = verbose
         self.config = self._load_config()
         self.results: List[TestResult] = []
-        self.temp_dir = Path(tempfile.mkdtemp(prefix="unixsock_comprehensive_test_"))
+        self.temp_dir = Path(tempfile.mkdtemp(prefix="janus_comprehensive_test_"))
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         self.log_dir = Path.cwd() / "tests" / "logs" / timestamp
         self.report_dir = Path.cwd() / "tests" / "reports" / timestamp
@@ -156,13 +156,13 @@ class ComprehensiveTestSuite:
     def _get_unified_binary_path(self, impl_name: str, config: Dict) -> str:
         """Get unified binary path for SOCK_DGRAM process"""
         if impl_name == "go":
-            return "./unixsock-dgram"
+            return "./janus"
         elif impl_name == "rust":
-            return "cargo run --bin unixsock-dgram --"
+            return "cargo run --bin janus --"
         elif impl_name == "swift":
-            return "swift run SwiftUnixSockDgram"
+            return "swift run SwiftJanusDgram"
         elif impl_name == "typescript":
-            return "node dist/bin/unixsock-dgram.js"
+            return "node dist/bin/janus.js"
         else:
             return config.get("unified_binary", "")
     
@@ -1089,7 +1089,7 @@ class ComprehensiveTestSuite:
     def _generate_markdown_report(self, report: Dict, output_path: Path):
         """Generate markdown test report"""
         with open(output_path, 'w') as f:
-            f.write("# UnixSocketAPI Comprehensive Test Report\n\n")
+            f.write("# Janus Comprehensive Test Report\n\n")
             f.write(f"**Generated**: {report['summary']['timestamp']}\n\n")
             
             # Summary
@@ -1174,7 +1174,7 @@ class ComprehensiveTestSuite:
 
 def main():
     """Main entry point"""
-    parser = argparse.ArgumentParser(description="UnixSocketAPI Comprehensive Test Suite")
+    parser = argparse.ArgumentParser(description="Janus Comprehensive Test Suite")
     parser.add_argument("--config", default="test-spec.json", help="Test configuration file")
     parser.add_argument("--verbose", "-v", action="store_true", help="Enable verbose output")
     parser.add_argument("--categories", default="build,unit,cross_platform", 

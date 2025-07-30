@@ -187,10 +187,10 @@ run_sender_test() {
 # Main test function
 run_cross_platform_tests() {
     local implementations=("Swift" "Rust" "Go" "TypeScript")
-    local impl_dirs=("${TEST_DIR}/SwiftUnixSockAPI" "${TEST_DIR}/RustUnixSockAPI" "${TEST_DIR}/GoUnixSockAPI" "${TEST_DIR}/TypeScriptUnixSockAPI")
-    local build_cmds=("swift build" "cargo build" "go build -o unixsock-dgram ./cmd/unixsock-dgram" "npm run build")
-    local listen_cmds=("swift run SwiftUnixSockDgram --listen --socket ${SOCKET_PATH}" "cargo run --bin unixsock-dgram -- --listen --socket ${SOCKET_PATH}" "./unixsock-dgram --listen --socket ${SOCKET_PATH}" "node dist/bin/unixsock-dgram.js --listen --socket ${SOCKET_PATH}")
-    local send_cmds=("swift run SwiftUnixSockDgram --send-to ${SOCKET_PATH} --command ping --message test" "cargo run --bin unixsock-dgram -- --send-to ${SOCKET_PATH} --command ping --message test" "./unixsock-dgram --send-to ${SOCKET_PATH} --command ping --message test" "node dist/bin/unixsock-dgram.js --send-to ${SOCKET_PATH} --command ping --message test")
+    local impl_dirs=("${TEST_DIR}/SwiftJanus" "${TEST_DIR}/RustJanus" "${TEST_DIR}/GoJanus" "${TEST_DIR}/TypeScriptJanus")
+    local build_cmds=("swift build" "cargo build" "go build -o janus ./cmd/janus" "npm run build")
+    local listen_cmds=("swift run SwiftJanusDgram --listen --socket ${SOCKET_PATH}" "cargo run --bin janus -- --listen --socket ${SOCKET_PATH}" "./janus --listen --socket ${SOCKET_PATH}" "node dist/bin/janus.js --listen --socket ${SOCKET_PATH}")
+    local send_cmds=("swift run SwiftJanusDgram --send-to ${SOCKET_PATH} --command ping --message test" "cargo run --bin janus -- --send-to ${SOCKET_PATH} --command ping --message test" "./janus --send-to ${SOCKET_PATH} --command ping --message test" "node dist/bin/janus.js --send-to ${SOCKET_PATH} --command ping --message test")
     
     local total_tests=0
     local passed_tests=0
@@ -344,9 +344,9 @@ create_test_examples() {
 EOF
     
     # Copy spec to each implementation directory for consistent paths
-    cp "${TEST_DIR}/test-api-spec.json" "${TEST_DIR}/RustUnixSockAPI/test-api-spec.json" 2>/dev/null || true
-    cp "${TEST_DIR}/test-api-spec.json" "${TEST_DIR}/GoUnixSockAPI/test-api-spec.json" 2>/dev/null || true
-    cp "${TEST_DIR}/test-api-spec.json" "${TEST_DIR}/SwiftUnixSockAPI/test-api-spec.json" 2>/dev/null || true
+    cp "${TEST_DIR}/test-api-spec.json" "${TEST_DIR}/RustJanus/test-api-spec.json" 2>/dev/null || true
+    cp "${TEST_DIR}/test-api-spec.json" "${TEST_DIR}/GoJanus/test-api-spec.json" 2>/dev/null || true
+    cp "${TEST_DIR}/test-api-spec.json" "${TEST_DIR}/SwiftJanus/test-api-spec.json" 2>/dev/null || true
     
     log_success "Test API specification created: test-api-spec.json"
 }
@@ -359,9 +359,9 @@ case "${1:-test}" in
         ;;
     "check")
         log "Checking implementations only..."
-        check_implementation "Swift" "${TEST_DIR}/SwiftUnixSockAPI" "swift build"
-        check_implementation "Rust" "${TEST_DIR}/RustUnixSockAPI" "cargo build"
-        check_implementation "Go" "${TEST_DIR}/GoUnixSockAPI" "go build"
+        check_implementation "Swift" "${TEST_DIR}/SwiftJanus" "swift build"
+        check_implementation "Rust" "${TEST_DIR}/RustJanus" "cargo build"
+        check_implementation "Go" "${TEST_DIR}/GoJanus" "go build"
         ;;
     "clean")
         log "Cleaning up test artifacts..."

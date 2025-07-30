@@ -1,6 +1,6 @@
 
 // Professional Unix Socket API Development Environment
-class UnixSocketDevelopmentEnvironment {
+class JanusDevelopmentEnvironment {
   constructor() {
     this.apiSpec = null;
     this.connections = new Map();
@@ -292,5 +292,5 @@ class UnixSocketDevelopmentEnvironment {
 
 // Initialize when DOM is ready
 document.addEventListener('DOMContentLoaded', () => {
-  new UnixSocketDevelopmentEnvironment();
+  new JanusDevelopmentEnvironment();
 });

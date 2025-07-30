@@ -172,7 +172,7 @@ document.addEventListener('DOMContentLoaded', function() {
     createSearch();
 });
       // Development Hub JavaScript
-      class UnixSocketDevHub {
+      class JanusDevHub {
         constructor() {
           this.apiSpec = null;
           this.socketClient = null;
@@ -612,6 +612,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
       // Initialize development hub when page loads
       document.addEventListener('DOMContentLoaded', () => {
-        new UnixSocketDevHub();
+        new JanusDevHub();
       });
     

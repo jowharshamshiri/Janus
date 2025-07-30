@@ -1,4 +1,4 @@
-# UnixSockAPI - Cross-Platform Unix Socket Communication
+# Janus - Cross-Platform Unix Socket Communication
 
 A comprehensive Unix Socket API library providing consistent, secure, and high-performance inter-process communication across **Go**, **Rust**, **Swift**, and **TypeScript**.
 
@@ -19,23 +19,23 @@ A comprehensive Unix Socket API library providing consistent, secure, and high-p
 
 ```bash
 # Install the documentation CLI globally
-npm install -g unixsocket-docs-cli
+npm install -g janus-docs-cli
 
 # Create a new API specification
-unixsocket-docs init "My API"
+janus-docs init "My API"
 
 # Generate professional documentation
-unixsocket-docs generate api-spec.json
+janus-docs generate api-spec.json
 
 # Serve with live reload during development
-unixsocket-docs serve api-spec.json --watch --open
+janus-docs serve api-spec.json --watch --open
 ```
 
 ### Language-Specific Usage
 
 #### TypeScript/Node.js
 ```bash
-cd TypeScriptUnixSockAPI
+cd TypeScriptJanus
 npm install && npm run build
 
 # Start server
@@ -47,19 +47,19 @@ npm run client
 
 #### Swift (macOS/iOS)
 ```bash
-cd SwiftUnixSockAPI
+cd SwiftJanus
 swift build
 
 # Start server
-swift run SwiftUnixSockAPI-Server
+swift run SwiftJanus-Server
 
 # Run client (in another terminal)  
-swift run SwiftUnixSockAPI-Client
+swift run SwiftJanus-Client
 ```
 
 #### Rust
 ```bash
-cd RustUnixSockAPI
+cd RustJanus
 cargo build --release
 
 # Start server
@@ -71,7 +71,7 @@ cargo run --bin client
 
 #### Go
 ```bash
-cd GoUnixSockAPI
+cd GoJanus
 go build -o bin/server ./cmd/server
 go build -o bin/client ./cmd/client
 
@@ -125,13 +125,13 @@ Professional API documentation is automatically generated:
 
 ```bash
 # Install CLI tool
-npm install -g unixsocket-docs-cli
+npm install -g janus-docs-cli
 
 # Generate docs for your API
-unixsocket-docs generate your-api-spec.json
+janus-docs generate your-api-spec.json
 
 # Serve with live reload
-unixsocket-docs serve your-api-spec.json --watch
+janus-docs serve your-api-spec.json --watch
 ```
 
 ### Reference Documentation
@@ -143,25 +143,25 @@ unixsocket-docs serve your-api-spec.json --watch
 ## 🏗️ Implementation Details
 
 ### TypeScript Implementation
-- **Location**: `TypeScriptUnixSockAPI/`
+- **Location**: `TypeScriptJanus/`
 - **Features**: Full type safety, async/await, Jest testing
 - **Package**: Ready for NPM publication
 - **Documentation**: Automatic API doc generation
 
 ### Swift Implementation  
-- **Location**: `SwiftUnixSockAPI/`
+- **Location**: `SwiftJanus/`
 - **Features**: Native async/await, Combine integration, SwiftPM package
 - **Platform**: macOS and iOS ready
 - **Testing**: 129 comprehensive tests
 
 ### Rust Implementation
-- **Location**: `RustUnixSockAPI/`
+- **Location**: `RustJanus/`
 - **Features**: Memory safety, zero-cost abstractions, Tokio async
 - **Performance**: Optimized for high throughput
 - **Testing**: 122 tests (library + integration)
 
 ### Go Implementation
-- **Location**: `GoUnixSockAPI/`
+- **Location**: `GoJanus/`
 - **Features**: Goroutines, channels, comprehensive error handling  
 - **Performance**: High-performance server implementation
 - **Testing**: 63 tests with full coverage
@@ -181,12 +181,12 @@ Performance benchmarks available in each implementation directory.
 ### Project Structure
 
 ```
-UnixSockAPI/
-├── TypeScriptUnixSockAPI/    # Node.js implementation  
-├── SwiftUnixSockAPI/         # Swift implementation
-├── RustUnixSockAPI/          # Rust implementation
-├── GoUnixSockAPI/            # Go implementation
-├── unixsocket-docs-cli/      # Documentation CLI tool
+Janus/
+├── TypeScriptJanus/    # Node.js implementation  
+├── SwiftJanus/         # Swift implementation
+├── RustJanus/          # Rust implementation
+├── GoJanus/            # Go implementation
+├── janus-docs-cli/      # Documentation CLI tool
 ├── tests/                    # Comprehensive test infrastructure
 │   ├── run_all_tests.sh      # Master test runner
 │   ├── config/               # Test configurations
@@ -228,16 +228,16 @@ UnixSockAPI/
 **Individual Implementation Tests**:
 ```bash
 # TypeScript
-cd TypeScriptUnixSockAPI && npm test
+cd TypeScriptJanus && npm test
 
 # Swift  
-cd SwiftUnixSockAPI && swift test
+cd SwiftJanus && swift test
 
 # Rust
-cd RustUnixSockAPI && cargo test
+cd RustJanus && cargo test
 
 # Go
-cd GoUnixSockAPI && go test ./...
+cd GoJanus && go test ./...
 ```
 
 **See [tests/README.md](tests/README.md) for complete testing documentation.**
@@ -279,7 +279,7 @@ APIs are defined using JSON specifications:
 
 ## 🔧 Tools
 
-### Documentation CLI (`unixsocket-docs-cli`)
+### Documentation CLI (`janus-docs-cli`)
 
 Professional documentation generation tool:
 
@@ -289,8 +289,8 @@ Professional documentation generation tool:
 - **Init**: Bootstrap new API specifications
 
 ```bash
-npm install -g unixsocket-docs-cli
-unixsocket-docs --help
+npm install -g janus-docs-cli
+janus-docs --help
 ```
 
 ## 📄 License

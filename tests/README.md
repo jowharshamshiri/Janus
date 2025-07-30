@@ -1,4 +1,4 @@
-# UnixSocketAPI Unified Test Infrastructure
+# Janus Unified Test Infrastructure
 
 This directory contains the complete, organized test infrastructure for validating SOCK_DGRAM Unix Socket implementations across Go, Rust, Swift, and TypeScript.
 
@@ -158,11 +158,11 @@ Tests are configured via `test-spec.json` in the project root:
 {
   "implementations": {
     "go": {
-      "directory": "GoUnixSockAPI",
-      "build_command": ["go", "build", "-o", "unixsock-dgram", "./cmd/unixsock-dgram"],
+      "directory": "GoJanus",
+      "build_command": ["go", "build", "-o", "janus", "./cmd/janus"],
       "test_command": ["go", "test", "./..."],
-      "unified_binary": "./unixsock-dgram",
-      "socket_path": "/tmp/go-unixsock-api.sock"
+      "unified_binary": "./janus",
+      "socket_path": "/tmp/go-janus-api.sock"
     }
   }
 }
@@ -181,10 +181,10 @@ All tests validate the unified SOCK_DGRAM process model:
 
 ```bash
 # Start listener
-./unixsock-dgram --listen --socket /tmp/test.sock
+./janus --listen --socket /tmp/test.sock
 
 # Send message
-./unixsock-dgram --send-to /tmp/test.sock --command ping --message hello
+./janus --send-to /tmp/test.sock --command ping --message hello
 ```
 
 ## Advanced Usage
@@ -242,7 +242,7 @@ python tests/run_comprehensive_tests.py --categories cross_platform --verbose
 ### Socket Issues
 ```bash
 # Clean up any stuck socket files
-rm -f /tmp/*unixsock*.sock
+rm -f /tmp/*janus*.sock
 ```
 
 ## Development Guidelines

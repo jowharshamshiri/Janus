@@ -1,12 +1,12 @@
-# UnixSocketAPI - Usage Guide
+# Janus - Usage Guide
 
 This guide shows how to use the high-level APIs in each implementation to create servers and clients with minimal code.
 
 ## Overview
 
 Each implementation provides two simple classes:
-- **Server**: `UnixSocketServer` - One-line listening with command handlers
-- **Client**: `UnixSocketClient` - One-line command sending with automatic response handling
+- **Server**: `JanusServer` - One-line listening with command handlers
+- **Client**: `JanusClient` - One-line command sending with automatic response handling
 
 All implementations have identical APIs (adapted for language conventions) and are fully cross-compatible.
 
@@ -17,14 +17,14 @@ All implementations have identical APIs (adapted for language conventions) and a
 ### Server Usage
 
 ```rust
-use RustUnixSockAPI::{UnixSocketServer, SocketError};
+use RustJanus::{JanusServer, SocketError};
 use serde_json::json;
 use std::collections::HashMap;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Create server
-    let mut server = UnixSocketServer::new();
+    let mut server = JanusServer::new();
     
     // Register command handlers
     server.register_handler("ping", |_cmd| {
@@ -61,7 +61,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 ### Client Usage
 
 ```rust
-use RustUnixSockAPI::UnixSocketClient;
+use RustJanus::JanusClient;
 use std::collections::HashMap;
 use std::time::Duration;
 use serde_json::json;
@@ -69,7 +69,7 @@ use serde_json::json;
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Create client
-    let client = UnixSocketClient::new(Some("my-app"), Some(Duration::from_secs(30)));
+    let client = JanusClient::new(Some("my-app"), Some(Duration::from_secs(30)));
     
     // Simple ping
     let response = client.send_command("/tmp/my-server.sock", "ping", None).await?;
@@ -126,7 +126,7 @@ import (
 
 func main() {
     // Create server
-    srv := &server.UnixSocketServer{}
+    srv := &server.JanusServer{}
     
     // Register command handlers
     srv.RegisterHandler("ping", func(cmd *models.SocketCommand) (interface{}, *models.SocketError) {
@@ -191,7 +191,7 @@ import (
 
 func main() {
     // Create client
-    client := &client.UnixSocketClient{}
+    client := &client.JanusClient{}
     client.SetChannelID("my-app")
     client.SetTimeout(30 * time.Second)
     
@@ -248,14 +248,14 @@ func main() {
 
 ```swift
 import Foundation
-import SwiftUnixSockAPI
+import SwiftJanus
 
 @available(macOS 10.14, iOS 12.0, *)
 @main
 struct ServerApp {
     static func main() async throws {
         // Create server
-        let server = UnixSocketServer()
+        let server = JanusServer()
         
         // Register command handlers
         server.registerHandler("ping") { cmd in
@@ -301,14 +301,14 @@ struct ServerApp {
 
 ```swift
 import Foundation
-import SwiftUnixSockAPI
+import SwiftJanus
 
 @available(macOS 10.14, iOS 12.0, *)
 @main
 struct ClientApp {
     static func main() async throws {
         // Create client
-        let client = UnixSocketClient(channelId: "my-app", timeout: 30.0)
+        let client = JanusClient(channelId: "my-app", timeout: 30.0)
         
         // Simple ping
         let response = try await client.sendCommand("/tmp/my-server.sock", "ping")
@@ -352,7 +352,7 @@ All implementations are fully compatible. You can mix and match:
 
 **Go Server:**
 ```go
-server := &server.UnixSocketServer{}
+server := &server.JanusServer{}
 server.RegisterHandler("process", func(cmd *models.SocketCommand) (interface{}, *models.SocketError) {
     // Process data from any language
     return map[string]interface{}{"processed": true, "language": "go"}, nil
@@ -362,7 +362,7 @@ server.StartListening("/tmp/mixed-server.sock")
 
 **Rust Client:**
 ```rust
-let client = UnixSocketClient::new(Some("rust-client"), Some(Duration::from_secs(10)));
+let client = JanusClient::new(Some("rust-client"), Some(Duration::from_secs(10)));
 let mut args = HashMap::new();
 args.insert("data".to_string(), json!("from rust"));
 
@@ -374,7 +374,7 @@ println!("Go server responded: {:?}", response.result);
 
 **Swift Server:**
 ```swift
-let server = UnixSocketServer()
+let server = JanusServer()
 server.registerHandler("analyze") { cmd in
     return .success(["analysis": "complete", "language": "swift"])
 }
@@ -383,7 +383,7 @@ try await server.startListening("/tmp/swift-server.sock")
 
 **Go Client:**
 ```go
-client := &client.UnixSocketClient{}
+client := &client.JanusClient{}
 response, err := client.SendCommand("/tmp/swift-server.sock", "analyze", nil)
 fmt.Printf("Swift server responded: %v\n", response.Result)
 ```
@@ -500,13 +500,13 @@ server.registerHandler("validate") { cmd in
 ## Quick Start Checklist
 
 ### Server Setup:
-1. ✅ Create `UnixSocketServer` instance
+1. ✅ Create `JanusServer` instance
 2. ✅ Register command handlers with `registerHandler`/`RegisterHandler`
 3. ✅ Call `start_listening`/`StartListening`/`startListening` with socket path
 4. ✅ Handle graceful shutdown (optional but recommended)
 
 ### Client Setup:
-1. ✅ Create `UnixSocketClient` instance with optional channel ID and timeout
+1. ✅ Create `JanusClient` instance with optional channel ID and timeout
 2. ✅ Call `send_command`/`SendCommand`/`sendCommand` with socket path, command, and args
 3. ✅ Handle response success/error cases
 4. ✅ Use `ping` for connectivity testing

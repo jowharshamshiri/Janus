@@ -1,12 +1,12 @@
-[submodule "SwiftUnixSockAPI"]
-	path = SwiftUnixSockAPI
-	url = ./SwiftUnixSockAPI
-[submodule "RustUnixSockAPI"]
-	path = RustUnixSockAPI
-	url = ./RustUnixSockAPI
-[submodule "GoUnixSocketAPI"]
-	path = GoUnixSocketAPI
-	url = ./GoUnixSocketAPI
-[submodule "TypeScriptUnixSockAPI"]
-	path = TypeScriptUnixSockAPI
-	url = ./TypeScriptUnixSockAPI
+[submodule "SwiftJanus"]
+	path = SwiftJanus
+	url = ./SwiftJanus
+[submodule "RustJanus"]
+	path = RustJanus
+	url = ./RustJanus
+[submodule "GoJanus"]
+	path = GoJanus
+	url = ./GoJanus
+[submodule "TypeScriptJanus"]
+	path = TypeScriptJanus
+	url = ./TypeScriptJanus

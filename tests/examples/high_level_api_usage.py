@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 High-Level API Usage Examples for Testing
-Shows how to use UnixSocketServer and UnixSocketClient instead of direct socket access
+Shows how to use JanusServer and JanusClient instead of direct socket access
 """
 
 import json
@@ -17,7 +17,7 @@ from dataclasses import dataclass
 
 @dataclass
 class TestServer:
-    """High-level server abstraction using UnixSocketServer APIs"""
+    """High-level server abstraction using JanusServer APIs"""
     implementation: str
     socket_path: str
     process: Optional[subprocess.Popen] = None
@@ -32,18 +32,18 @@ class HighLevelTestFramework:
         self.temp_dir = tempfile.mkdtemp(prefix="highlevel_test_")
         
     def start_server_rust(self, socket_path: str, handlers: Dict[str, str]) -> TestServer:
-        """Start Rust server using high-level UnixSocketServer API"""
+        """Start Rust server using high-level JanusServer API"""
         
         # Create Rust test server code using high-level API
         rust_server_code = f'''
-use rust_unix_sock_api::{{UnixSocketServer, SocketError}};
+use rust_janus::{{JanusServer, SocketError}};
 use serde_json::json;
 use std::collections::HashMap;
 use tokio::signal;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {{
-    let mut server = UnixSocketServer::new();
+    let mut server = JanusServer::new();
     
     // Register ping handler
     server.register_handler("ping", |_cmd| {{
@@ -126,7 +126,7 @@ name = "test_server"
 path = "rust_test_server.rs"
 
 [dependencies]
-rust-unix-sock-api = {{ path = "{self.base_dir}/RustUnixSockAPI" }}
+rust-unix-sock-api = {{ path = "{self.base_dir}/RustJanus" }}
 serde_json = "1.0"
 tokio = {{ version = "1.0", features = ["full"] }}
 chrono = {{ version = "0.4", features = ["serde"] }}
@@ -160,7 +160,7 @@ chrono = {{ version = "0.4", features = ["serde"] }}
         return server
     
     def start_server_go(self, socket_path: str, handlers: Dict[str, str]) -> TestServer:
-        """Start Go server using high-level UnixSocketServer API"""
+        """Start Go server using high-level JanusServer API"""
         
         go_server_code = f'''
 package main
@@ -174,12 +174,12 @@ import (
     "time"
     "strconv"
     
-    "github.com/user/GoUnixSockAPI/pkg/server"
-    "github.com/user/GoUnixSockAPI/pkg/models"
+    "github.com/user/GoJanus/pkg/server"
+    "github.com/user/GoJanus/pkg/models"
 )
 
 func main() {{
-    srv := &server.UnixSocketServer{{}}
+    srv := &server.JanusServer{{}}
     
     // Register ping handler
     srv.RegisterHandler("ping", func(cmd *models.SocketCommand) (interface{{}}, *models.SocketError) {{
@@ -302,9 +302,9 @@ module test_server
 
 go 1.21
 
-replace github.com/user/GoUnixSockAPI => {self.base_dir}/GoUnixSockAPI
+replace github.com/user/GoJanus => {self.base_dir}/GoJanus
 
-require github.com/user/GoUnixSockAPI v0.0.0-00010101000000-000000000000
+require github.com/user/GoJanus v0.0.0-00010101000000-000000000000
 '''
         
         mod_file = Path(self.temp_dir) / "go.mod"
@@ -335,20 +335,20 @@ require github.com/user/GoUnixSockAPI v0.0.0-00010101000000-000000000000
         return server
     
     def send_command_rust(self, target_socket: str, command: str, args: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
-        """Send command using Rust high-level UnixSocketClient API"""
+        """Send command using Rust high-level JanusClient API"""
         
         # Create Rust client code using high-level API
         args_json = json.dumps(args) if args else "None"
         
         rust_client_code = f'''
-use rust_unix_sock_api::UnixSocketClient;
+use rust_janus::JanusClient;
 use std::collections::HashMap;
 use std::time::Duration;
 use serde_json::json;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {{
-    let client = UnixSocketClient::new(Some("test"), Some(Duration::from_secs(30)));
+    let client = JanusClient::new(Some("test"), Some(Duration::from_secs(30)));
     
     let args: Option<HashMap<String, serde_json::Value>> = {args_json}.map(|_| {{
         let mut map = HashMap::new();
@@ -384,7 +384,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {{
         return json.loads(result.stdout.strip())
     
     def send_command_go(self, target_socket: str, command: str, args: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
-        """Send command using Go high-level UnixSocketClient API"""
+        """Send command using Go high-level JanusClient API"""
         
         go_client_code = f'''
 package main
@@ -394,11 +394,11 @@ import (
     "fmt"
     "time"
     
-    "github.com/user/GoUnixSockAPI/pkg/client"
+    "github.com/user/GoJanus/pkg/client"
 )
 
 func main() {{
-    client := &client.UnixSocketClient{{}}
+    client := &client.JanusClient{{}}
     client.SetChannelID("test")
     client.SetTimeout(30 * time.Second)
     

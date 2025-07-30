@@ -58,7 +58,7 @@ jobs:
       with:
         node-version: '18'
         cache: 'npm'
-        cache-dependency-path: TypeScriptUnixSockAPI/package-lock.json
+        cache-dependency-path: TypeScriptJanus/package-lock.json
     
     - name: Install Python dependencies
       run: |
@@ -68,7 +68,7 @@ jobs:
     - name: Build Go implementation
       if: matrix.implementation == 'go'
       run: |
-        cd GoUnixSockAPI
+        cd GoJanus
         go mod download
         go build -v ./...
         go vet ./...
@@ -76,7 +76,7 @@ jobs:
     - name: Build Rust implementation
       if: matrix.implementation == 'rust'
       run: |
-        cd RustUnixSockAPI
+        cd RustJanus
         cargo build --verbose --all-features
         cargo fmt -- --check
         cargo clippy -- -D warnings
@@ -84,14 +84,14 @@ jobs:
     - name: Build Swift implementation
       if: matrix.implementation == 'swift'
       run: |
-        cd SwiftUnixSockAPI
+        cd SwiftJanus
         swift build -c release
         swift package resolve
     
     - name: Build TypeScript implementation
       if: matrix.implementation == 'typescript'
       run: |
-        cd TypeScriptUnixSockAPI
+        cd TypeScriptJanus
         npm ci
         npm run build
         npm run lint
@@ -101,10 +101,10 @@ jobs:
       with:
         name: build-${{ matrix.implementation }}-${{ matrix.os }}
         path: |
-          ${{ matrix.implementation == 'go' && 'GoUnixSockAPI/cmd/*/main' || '' }}
-          ${{ matrix.implementation == 'rust' && 'RustUnixSockAPI/target/release/' || '' }}
-          ${{ matrix.implementation == 'swift' && 'SwiftUnixSockAPI/.build/release/' || '' }}
-          ${{ matrix.implementation == 'typescript' && 'TypeScriptUnixSockAPI/dist/' || '' }}
+          ${{ matrix.implementation == 'go' && 'GoJanus/cmd/*/main' || '' }}
+          ${{ matrix.implementation == 'rust' && 'RustJanus/target/release/' || '' }}
+          ${{ matrix.implementation == 'swift' && 'SwiftJanus/.build/release/' || '' }}
+          ${{ matrix.implementation == 'typescript' && 'TypeScriptJanus/dist/' || '' }}
         retention-days: 1
 
   # Unit tests for each implementation
@@ -150,31 +150,31 @@ jobs:
       with:
         node-version: '18'
         cache: 'npm'
-        cache-dependency-path: TypeScriptUnixSockAPI/package-lock.json
+        cache-dependency-path: TypeScriptJanus/package-lock.json
     
     - name: Run Go unit tests
       if: matrix.implementation == 'go'
       run: |
-        cd GoUnixSockAPI
+        cd GoJanus
         go test -v -race -coverprofile=coverage.out ./...
         go tool cover -html=coverage.out -o coverage.html
     
     - name: Run Rust unit tests
       if: matrix.implementation == 'rust'
       run: |
-        cd RustUnixSockAPI
+        cd RustJanus
         cargo test --verbose --all-features
     
     - name: Run Swift unit tests
       if: matrix.implementation == 'swift'
       run: |
-        cd SwiftUnixSockAPI
+        cd SwiftJanus
         swift test --enable-code-coverage
     
     - name: Run TypeScript unit tests
       if: matrix.implementation == 'typescript'
       run: |
-        cd TypeScriptUnixSockAPI
+        cd TypeScriptJanus
         npm ci
         npm test -- --coverage --coverageReporters=html,lcov,text
     
@@ -184,10 +184,10 @@ jobs:
       with:
         name: test-results-${{ matrix.implementation }}-${{ matrix.os }}
         path: |
-          ${{ matrix.implementation == 'go' && 'GoUnixSockAPI/coverage.*' || '' }}
-          ${{ matrix.implementation == 'rust' && 'RustUnixSockAPI/target/debug/deps/' || '' }}
-          ${{ matrix.implementation == 'swift' && 'SwiftUnixSockAPI/.build/debug/codecov/' || '' }}
-          ${{ matrix.implementation == 'typescript' && 'TypeScriptUnixSockAPI/coverage/' || '' }}
+          ${{ matrix.implementation == 'go' && 'GoJanus/coverage.*' || '' }}
+          ${{ matrix.implementation == 'rust' && 'RustJanus/target/debug/deps/' || '' }}
+          ${{ matrix.implementation == 'swift' && 'SwiftJanus/.build/debug/codecov/' || '' }}
+          ${{ matrix.implementation == 'typescript' && 'TypeScriptJanus/coverage/' || '' }}
         retention-days: 7
 
   # Cross-platform integration tests
@@ -226,7 +226,7 @@ jobs:
       with:
         node-version: '18'
         cache: 'npm'
-        cache-dependency-path: TypeScriptUnixSockAPI/package-lock.json
+        cache-dependency-path: TypeScriptJanus/package-lock.json
     
     - name: Setup Python
       uses: actions/setup-python@v4
@@ -236,18 +236,18 @@ jobs:
     - name: Build all implementations
       run: |
         # Build Go
-        cd GoUnixSockAPI && go build -v ./... && cd ..
+        cd GoJanus && go build -v ./... && cd ..
         
         # Build Rust
-        cd RustUnixSockAPI && cargo build --release && cd ..
+        cd RustJanus && cargo build --release && cd ..
         
         # Build Swift (macOS only)
         if [ "${{ matrix.os }}" = "macos-latest" ]; then
-          cd SwiftUnixSockAPI && swift build -c release && cd ..
+          cd SwiftJanus && swift build -c release && cd ..
         fi
         
         # Build TypeScript
-        cd TypeScriptUnixSockAPI && npm ci && npm run build && cd ..
+        cd TypeScriptJanus && npm ci && npm run build && cd ..
     
     - name: Run cross-platform integration tests
       run: |
@@ -298,9 +298,9 @@ jobs:
     
     - name: Build all implementations for performance testing
       run: |
-        cd GoUnixSockAPI && go build -o server cmd/server/main.go && cd ..
-        cd RustUnixSockAPI && cargo build --release && cd ..
-        cd TypeScriptUnixSockAPI && npm ci && npm run build && cd ..
+        cd GoJanus && go build -o server cmd/server/main.go && cd ..
+        cd RustJanus && cargo build --release && cd ..
+        cd TypeScriptJanus && npm ci && npm run build && cd ..
     
     - name: Run performance benchmarks
       run: |
@@ -348,13 +348,13 @@ jobs:
         bandit -r . -f json -o bandit_report.json || true
         
         # Go security scan
-        cd GoUnixSockAPI && gosec -fmt json -out ../gosec_report.json ./... || true && cd ..
+        cd GoJanus && gosec -fmt json -out ../gosec_report.json ./... || true && cd ..
         
         # Rust security scan
-        cd RustUnixSockAPI && cargo audit --json > ../rust_audit.json || true && cd ..
+        cd RustJanus && cargo audit --json > ../rust_audit.json || true && cd ..
         
         # TypeScript security scan
-        cd TypeScriptUnixSockAPI && npm audit --json > ../npm_audit.json || true && cd ..
+        cd TypeScriptJanus && npm audit --json > ../npm_audit.json || true && cd ..
     
     - name: Run conformance tests
       run: |
@@ -400,7 +400,7 @@ jobs:
         import json
         from datetime import datetime
         
-        print('# UnixSocketAPI Cross-Platform Test Report')
+        print('# Janus Cross-Platform Test Report')
         print(f'Generated: {datetime.now().strftime(\"%Y-%m-%d %H:%M:%S UTC\")}')
         print(f'Commit: ${{ github.sha }}')
         print(f'Workflow: ${{ github.workflow }}')

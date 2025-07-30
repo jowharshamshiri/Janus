@@ -1,5 +1,5 @@
 ================================================================================
-UNIXSOCKETAPI CROSS-PLATFORM TEST REPORT
+JANUS CROSS-PLATFORM TEST REPORT
 ================================================================================
 Generated: 2025-07-29 20:41:26
 Total Duration: 53.5s
@@ -27,9 +27,9 @@ build_go:
   Duration: 0.2s
   Message: Build failed with code 1
   stdout: 
-  stderr: # github.com/user/GoUnixSockAPI/pkg/core
-pkg/core/connection_pool.go:18:23: undefined: UnixSocketClient
-pkg/core/connection_pool.go:66:30: undefined: UnixSocketClient
+  stderr: # github.com/user/GoJanus/pkg/core
+pkg/core/connection_pool.go:18:23: undefined: JanusClient
+pkg/core/connection_pool.go:66:30: undefined: JanusClient
 pkg/core/connection_pool.go:75:67...
 
 build_rust:
@@ -37,7 +37,7 @@ build_rust:
   Duration: 24.6s
   Message: Build failed with code 101
   stdout: 
-  stderr: warning: file `/Users/bahram/ws/prj/UnixSocketAPI/RustUnixSockAPI/examples/simple_client.rs` found to be present in multiple build targets:
+  stderr: warning: file `/Users/bahram/ws/prj/Janus/RustJanus/examples/simple_client.rs` found to be present in multiple build targets:
   * `bin` target `client`
   * `example` target `simple_clien...
 

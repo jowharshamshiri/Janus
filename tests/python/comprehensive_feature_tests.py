@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Comprehensive Feature Tests for UnixSocketAPI
+Comprehensive Feature Tests for Janus
 Rigorous validation of all API features, edge cases, and protocol compliance
 """
 
@@ -892,13 +892,13 @@ class ComprehensiveFeatureTests:
     def _build_listener_command(self, impl_name: str, impl_config: Dict, socket_path: str, spec_path: str) -> List[str]:
         """Build listener command for implementation"""
         if impl_name == "go":
-            return ["./unixsock-dgram", "--listen", "--socket", socket_path, "--spec", spec_path, "--channel", "test"]
+            return ["./janus", "--listen", "--socket", socket_path, "--spec", spec_path, "--channel", "test"]
         elif impl_name == "rust":
-            return ["cargo", "run", "--bin", "unixsock-dgram", "--", "--listen", "--socket", socket_path, "--spec", spec_path, "--channel", "test"]
+            return ["cargo", "run", "--bin", "janus", "--", "--listen", "--socket", socket_path, "--spec", spec_path, "--channel", "test"]
         elif impl_name == "swift":
-            return ["swift", "run", "SwiftUnixSockDgram", "--listen", "--socket", socket_path, "--spec", spec_path, "--channel", "test"]
+            return ["swift", "run", "SwiftJanusDgram", "--listen", "--socket", socket_path, "--spec", spec_path, "--channel", "test"]
         elif impl_name == "typescript":
-            return ["node", "dist/bin/unixsock-dgram.js", "--listen", "--socket", socket_path, "--spec", spec_path, "--channel", "test"]
+            return ["node", "dist/bin/janus.js", "--listen", "--socket", socket_path, "--spec", spec_path, "--channel", "test"]
         else:
             raise ValueError(f"Unknown implementation: {impl_name}")
     
@@ -951,13 +951,13 @@ class ComprehensiveFeatureTests:
         args_json = json.dumps(message["args"]) if message["args"] else "{}"
         
         if impl_name == "go":
-            return ["./unixsock-dgram", "--send-to", socket_path, "--command", command, "--message", args_json]
+            return ["./janus", "--send-to", socket_path, "--command", command, "--message", args_json]
         elif impl_name == "rust":
-            return ["cargo", "run", "--bin", "unixsock-dgram", "--", "--send-to", socket_path, "--command", command, "--message", args_json]
+            return ["cargo", "run", "--bin", "janus", "--", "--send-to", socket_path, "--command", command, "--message", args_json]
         elif impl_name == "swift":
-            return ["swift", "run", "SwiftUnixSockDgram", "--send-to", socket_path, "--command", command, "--message", args_json]
+            return ["swift", "run", "SwiftJanusDgram", "--send-to", socket_path, "--command", command, "--message", args_json]
         elif impl_name == "typescript":
-            return ["node", "dist/bin/unixsock-dgram.js", "--send-to", socket_path, "--command", command, "--message", args_json]
+            return ["node", "dist/bin/janus.js", "--send-to", socket_path, "--command", command, "--message", args_json]
         else:
             raise ValueError(f"Unknown implementation: {impl_name}")
     
@@ -1143,7 +1143,7 @@ def main():
     """Main entry point for comprehensive feature tests"""
     import argparse
     
-    parser = argparse.ArgumentParser(description="Comprehensive Feature Tests for UnixSocketAPI")
+    parser = argparse.ArgumentParser(description="Comprehensive Feature Tests for Janus")
     parser.add_argument("--config", default="tests/config/unified-test-config.json", help="Test configuration file")
     parser.add_argument("--implementations", default="go,rust,swift", help="Implementations to test (comma-separated)")
     parser.add_argument("--verbose", "-v", action="store_true", help="Enable verbose output")

@@ -724,9 +724,9 @@ Each implementation must successfully communicate with every other implementatio
 
 ### Reference Implementations
 
-- **Go**: `/Users/bahram/ws/prj/UnixSockAPI/GoUnixSockAPI/`
-- **Rust**: `/Users/bahram/ws/prj/UnixSockAPI/RustUnixSockAPI/`  
-- **Swift**: `/Users/bahram/ws/prj/UnixSockAPI/SwiftUnixSockAPI/`
+- **Go**: `/Users/bahram/ws/prj/Janus/GoJanus/`
+- **Rust**: `/Users/bahram/ws/prj/Janus/RustJanus/`  
+- **Swift**: `/Users/bahram/ws/prj/Janus/SwiftJanus/`
 
 ### Protocol Version History
 
@@ -734,4 +734,4 @@ Each implementation must successfully communicate with every other implementatio
 
 ### Contributing
 
-This specification is maintained as part of the UnixSockAPI project. Changes must maintain backward compatibility and cross-language consistency.
+This specification is maintained as part of the Janus project. Changes must maintain backward compatibility and cross-language consistency.

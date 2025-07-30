@@ -33,7 +33,7 @@ interface ServeOptions {
 }
 
 program
-  .name('unixsocket-docs')
+  .name('janus-docs')
   .description('Generate and serve Unix Socket API documentation')
   .version('1.0.0');
 
@@ -322,9 +322,9 @@ program
       console.log('');
       console.log('🚀 Next steps:');
       console.log(`   1. Edit: ${options.output}`);
-      console.log(`   2. Validate: unixsocket-docs validate ${options.output}`);
-      console.log(`   3. Generate docs: unixsocket-docs generate ${options.output}`);
-      console.log(`   4. Serve with live reload: unixsocket-docs serve ${options.output}`);
+      console.log(`   2. Validate: janus-docs validate ${options.output}`);
+      console.log(`   3. Generate docs: janus-docs generate ${options.output}`);
+      console.log(`   4. Serve with live reload: janus-docs serve ${options.output}`);
       
     } catch (error) {
       console.error('❌ Error creating specification:', error);

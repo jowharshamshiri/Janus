@@ -1,4 +1,4 @@
-# Comprehensive Testing Guide - UnixSocketAPI
+# Comprehensive Testing Guide - Janus
 
 ## 🎯 Problem Statement
 

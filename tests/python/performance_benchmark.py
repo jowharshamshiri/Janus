@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Cross-Platform Performance Benchmark Suite for UnixSocketAPI
+Cross-Platform Performance Benchmark Suite for Janus
 Measures latency, throughput, and concurrent performance across all implementations
 """
 
@@ -534,7 +534,7 @@ class PerformanceBenchmark:
         
         report = []
         report.append("=" * 80)
-        report.append("UNIXSOCKETAPI CROSS-PLATFORM PERFORMANCE BENCHMARK REPORT")
+        report.append("JANUS CROSS-PLATFORM PERFORMANCE BENCHMARK REPORT")
         report.append("=" * 80)
         report.append(f"Generated: {time.strftime('%Y-%m-%d %H:%M:%S UTC', time.gmtime())}")
         report.append("")

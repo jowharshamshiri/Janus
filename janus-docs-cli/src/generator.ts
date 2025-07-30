@@ -1,6 +1,6 @@
 /**
  * Documentation Generator
- * Uses TypeScriptUnixSockAPI library for full functionality
+ * Uses TypeScriptJanus library for full functionality
  */
 
 import * as fs from 'fs/promises';
@@ -34,7 +34,7 @@ export class DocumentationGenerator {
       // Enhanced development hub options
       enableSocketMonitoring: options.enableSocketMonitoring ?? true,
       enableMessageSending: options.enableMessageSending ?? true,
-      monitoringSocketPath: options.monitoringSocketPath ?? '/tmp/unixsocket-api-monitor.sock',
+      monitoringSocketPath: options.monitoringSocketPath ?? '/tmp/janus-api-monitor.sock',
       debugMode: options.debugMode ?? true
     };
     
@@ -1919,7 +1919,7 @@ body {
   private generateEnhancedJavaScript(_baseJs: string): string {
     return `
 // Professional Unix Socket API Development Environment
-class UnixSocketDevelopmentEnvironment {
+class JanusDevelopmentEnvironment {
   constructor() {
     this.apiSpec = null;
     this.connections = new Map();
@@ -2408,7 +2408,7 @@ class UnixSocketDevelopmentEnvironment {
 
 // Initialize when DOM is ready
 document.addEventListener('DOMContentLoaded', function() {
-  new UnixSocketDevelopmentEnvironment();
+  new JanusDevelopmentEnvironment();
 });
 `;
   }
@@ -2463,7 +2463,7 @@ This environment uses a modern, professional design system with:
 - Accessibility features and keyboard navigation
 - IDE-like interface familiar to developers
 
-Generated with: unixsocket-docs-cli v1.0.0 (Professional Development Environment)
+Generated with: janus-docs-cli v1.0.0 (Professional Development Environment)
 `;
   }
 }

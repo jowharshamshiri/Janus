@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-UnixSocketAPI Unified Test Suite
+Janus Unified Test Suite
 Complete test coverage for SOCK_DGRAM implementations across Go, Rust, Swift, and TypeScript
 Consolidates all testing functionality into a single comprehensive runner
 """
@@ -75,7 +75,7 @@ class ImplementationInfo:
     build_successful: bool = False
 
 class UnifiedTestSuite:
-    """Unified test suite for all UnixSocketAPI implementations"""
+    """Unified test suite for all Janus implementations"""
     
     def __init__(self, config_path: str, verbose: bool = False, stress_duration: int = 60):
         self.config_path = Path(config_path)
@@ -1064,7 +1064,7 @@ class UnifiedTestSuite:
         """Generate markdown report"""
         summary = report["summary"]
         
-        md = f"""# UnixSocketAPI Comprehensive Test Report
+        md = f"""# Janus Comprehensive Test Report
 
 **Generated**: {summary['generated_at']}
 
@@ -1109,7 +1109,7 @@ class UnifiedTestSuite:
 def main():
     """Main entry point for unified testing"""
     parser = argparse.ArgumentParser(
-        description="UnixSocketAPI Unified Test Runner",
+        description="Janus Unified Test Runner",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
@@ -1184,7 +1184,7 @@ Examples:
     if args.stress:
         categories.add(TestCategory.STRESS)
     
-    print("UnixSocketAPI Unified Test Suite")
+    print("Janus Unified Test Suite")
     print("=" * 50)
     print(f"Configuration: {args.config}")
     print(f"Categories: {[c.value for c in sorted(categories, key=lambda x: x.value)]}")

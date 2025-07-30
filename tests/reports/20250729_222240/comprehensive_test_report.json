@@ -14,12 +14,12 @@
       "available": true,
       "build_successful": true,
       "language": "rust",
-      "directory": "RustUnixSockAPI"
+      "directory": "RustJanus"
     }
   },
   "results_by_category": {
     "build": [
-      "TestResult(name='build_rust', category=<TestCategory.BUILD: 'build'>, status=<TestStatus.PASS: 'PASS'>, duration=0.2254621982574463, implementation='rust', target_implementation=None, message='Build successful', stdout='', stderr='warning: fields `config` and `validator` are never read\\n  --> src/protocol/unix_sock_api_datagram_client.rs:56:5\\n   |\\n52 | pub struct UnixSockApiDatagramClient {\\n   |            ------------------------- fields in this struct\\n...\\n56 |     config: UnixSockApiClientConfig,\\n   |     ^^^^^^\\n57 |     datagram_client: UnixDatagramClient,\\n58 |     validator: SecurityValidator,\\n   |     ^^^^^^^^^\\n   |\\n   = note: `#[warn(dead_code)]` on by default\\n\\nwarning: `RustUnixSockAPI` (lib) generated 1 warning\\nwarning: unused import: `std::path::Path`\\n --> src/bin/unixsock-dgram.rs:4:5\\n  |\\n4 | use std::path::Path;\\n  |     ^^^^^^^^^^^^^^^\\n  |\\n  = note: `#[warn(unused_imports)]` on by default\\n\\nwarning: `RustUnixSockAPI` (bin \"unixsock-dgram\") generated 1 warning (run `cargo fix --bin \"unixsock-dgram\"` to apply 1 suggestion)\\n    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.16s\\n', details={}, timestamp='2025-07-29T22:22:41.195439')"
+      "TestResult(name='build_rust', category=<TestCategory.BUILD: 'build'>, status=<TestStatus.PASS: 'PASS'>, duration=0.2254621982574463, implementation='rust', target_implementation=None, message='Build successful', stdout='', stderr='warning: fields `config` and `validator` are never read\\n  --> src/protocol/janus_datagram_client.rs:56:5\\n   |\\n52 | pub struct JanusDatagramClient {\\n   |            ------------------------- fields in this struct\\n...\\n56 |     config: JanusClientConfig,\\n   |     ^^^^^^\\n57 |     datagram_client: UnixDatagramClient,\\n58 |     validator: SecurityValidator,\\n   |     ^^^^^^^^^\\n   |\\n   = note: `#[warn(dead_code)]` on by default\\n\\nwarning: `RustJanus` (lib) generated 1 warning\\nwarning: unused import: `std::path::Path`\\n --> src/bin/janus.rs:4:5\\n  |\\n4 | use std::path::Path;\\n  |     ^^^^^^^^^^^^^^^\\n  |\\n  = note: `#[warn(unused_imports)]` on by default\\n\\nwarning: `RustJanus` (bin \"janus\") generated 1 warning (run `cargo fix --bin \"janus\"` to apply 1 suggestion)\\n    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.16s\\n', details={}, timestamp='2025-07-29T22:22:41.195439')"
     ]
   },
   "detailed_results": [
@@ -32,7 +32,7 @@
       "target_implementation": null,
       "message": "Build successful",
       "stdout": "",
-      "stderr": "warning: fields `config` and `validator` are never read\n  --> src/protocol/unix_sock_api_datagram_client.rs:56:5\n   |\n52 | pub struct UnixSockApiDatagramClient {\n   |            ------------------------- fields in this struct\n...\n56 |     config: UnixSockApiClientConfig,\n   |     ^^^^^^\n57 |     datagram_client: UnixDatagramClient,\n58 |     validator: SecurityValidator,\n   |     ^^^^^^^^^\n   |\n   = note: `#[warn(dead_code)]` on by default\n\nwarning: `RustUnixSockAPI` (lib) generated 1 warning\nwarning: unused import: `std::path::Path`\n --> src/bin/unixsock-dgram.rs:4:5\n  |\n4 | use std::path::Path;\n  |     ^^^^^^^^^^^^^^^\n  |\n  = note: `#[warn(unused_imports)]` on by default\n\nwarning: `RustUnixSockAPI` (bin \"unixsock-dgram\") generated 1 warning (run `cargo fix --bin \"unixsock-dgram\"` to apply 1 suggestion)\n    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.16s\n",
+      "stderr": "warning: fields `config` and `validator` are never read\n  --> src/protocol/janus_datagram_client.rs:56:5\n   |\n52 | pub struct JanusDatagramClient {\n   |            ------------------------- fields in this struct\n...\n56 |     config: JanusClientConfig,\n   |     ^^^^^^\n57 |     datagram_client: UnixDatagramClient,\n58 |     validator: SecurityValidator,\n   |     ^^^^^^^^^\n   |\n   = note: `#[warn(dead_code)]` on by default\n\nwarning: `RustJanus` (lib) generated 1 warning\nwarning: unused import: `std::path::Path`\n --> src/bin/janus.rs:4:5\n  |\n4 | use std::path::Path;\n  |     ^^^^^^^^^^^^^^^\n  |\n  = note: `#[warn(unused_imports)]` on by default\n\nwarning: `RustJanus` (bin \"janus\") generated 1 warning (run `cargo fix --bin \"janus\"` to apply 1 suggestion)\n    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.16s\n",
       "details": {},
       "timestamp": "2025-07-29T22:22:41.195439"
     }

@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://unixsocketapi.org/schemas/api-specification.json",
+  "$id": "https://janus.org/schemas/api-specification.json",
   "title": "Unix Socket API Specification",
   "description": "Schema for Unix Socket API specification files",
   "type": "object",

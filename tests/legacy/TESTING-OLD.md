@@ -1,6 +1,6 @@
-# UnixSocketAPI Comprehensive Testing Guide
+# Janus Comprehensive Testing Guide
 
-This document describes the comprehensive cross-platform testing infrastructure for the UnixSocketAPI project, which validates SOCK_DGRAM Unix domain socket implementations across Go, Rust, Swift, and TypeScript.
+This document describes the comprehensive cross-platform testing infrastructure for the Janus project, which validates SOCK_DGRAM Unix domain socket implementations across Go, Rust, Swift, and TypeScript.
 
 ## Overview
 
@@ -26,7 +26,7 @@ All tests are driven by a central API specification (`test-spec.json`) that defi
 ### Test Components
 
 ```
-UnixSocketAPI/
+Janus/
 ├── test-spec.json                    # Central test specification
 ├── test_orchestrator.py             # Main test orchestrator
 ├── api_spec_validator.py            # API compliance validator
@@ -90,7 +90,7 @@ python3 test_orchestrator.py --categories integration --verbose
 **API Specification Compliance:**
 ```bash
 python3 api_spec_validator.py \
-  --implementation GoUnixSockAPI \
+  --implementation GoJanus \
   --server-cmd go run cmd/server/main.go \
   --socket-path /tmp/test.sock
 ```
@@ -159,11 +159,11 @@ The central `test-spec.json` defines the complete test configuration:
 {
   "implementations": {
     "go": {
-      "directory": "GoUnixSockAPI",
+      "directory": "GoJanus",
       "build_command": ["go", "build", "./..."],
       "test_command": ["go", "test", "./..."],
       "server_command": ["go", "run", "cmd/server/main.go"],
-      "socket_path": "/tmp/go-unixsock-api.sock"
+      "socket_path": "/tmp/go-janus-api.sock"
     }
   },
   "test_commands": {
@@ -273,7 +273,7 @@ test_reports/YYYYMMDD_HHMMSS/
 cat test_logs/latest/build_*.log
 
 # Test individual implementation
-cd GoUnixSockAPI && go build ./...
+cd GoJanus && go build ./...
 ```
 
 **Integration Test Failures:**

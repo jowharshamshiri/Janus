@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-UnixSocketAPI Cross-Platform Test Orchestrator
+Janus Cross-Platform Test Orchestrator
 Comprehensive test suite for validating SOCK_DGRAM implementations across Go, Rust, Swift, and TypeScript
 """
 
@@ -44,7 +44,7 @@ class TestOrchestrator:
         self.verbose = verbose
         self.config = self._load_config()
         self.results: List[TestResult] = []
-        self.temp_dir = Path(tempfile.mkdtemp(prefix="unixsock_test_"))
+        self.temp_dir = Path(tempfile.mkdtemp(prefix="janus_test_"))
         self.log_dir = Path(self.config["environment"]["log_directory"])
         self.log_dir.mkdir(exist_ok=True)
         self.setup_logging()
@@ -520,7 +520,7 @@ class TestOrchestrator:
         
         report = []
         report.append("=" * 80)
-        report.append("UNIXSOCKETAPI CROSS-PLATFORM TEST REPORT")
+        report.append("JANUS CROSS-PLATFORM TEST REPORT")
         report.append("=" * 80)
         report.append(f"Generated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
         report.append(f"Total Duration: {total_duration:.1f}s")
@@ -633,7 +633,7 @@ class TestOrchestrator:
         return all_success
 
 def main():
-    parser = argparse.ArgumentParser(description="UnixSocketAPI Cross-Platform Test Orchestrator")
+    parser = argparse.ArgumentParser(description="Janus Cross-Platform Test Orchestrator")
     parser.add_argument("--config", default="test-spec.json", help="Test configuration file")
     parser.add_argument("--verbose", "-v", action="store_true", help="Verbose output")
     parser.add_argument("--categories", nargs="+", 

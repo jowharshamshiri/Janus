@@ -7,7 +7,7 @@ echo ""
 
 # Test Go implementation
 echo "1. Testing Go implementation..."
-cd GoUnixSockAPI
+cd GoJanus
 
 # Create a simple test program in examples directory
 mkdir -p examples
@@ -19,7 +19,7 @@ import (
     "fmt"
     "log"
     "time"
-    api "github.com/user/GoUnixSockAPI"
+    api "github.com/user/GoJanus"
 )
 
 func main() {
@@ -44,7 +44,7 @@ func main() {
     }
     
     // Create client
-    client, err := api.NewUnixSockAPIClient(socketPath, "test", spec)
+    client, err := api.NewJanusClient(socketPath, "test", spec)
     if err != nil {
         log.Fatalf("Failed to create client: %v", err)
     }
@@ -92,11 +92,11 @@ echo ""
 
 # Test Rust implementation
 echo "2. Testing Rust implementation..."
-cd RustUnixSockAPI
+cd RustJanus
 
 # Create a simple test program
 cat > examples/test_socket_creation.rs << 'EOF'
-use rust_unix_sock_api::prelude::*;
+use rust_janus::prelude::*;
 use std::sync::Arc;
 use std::path::Path;
 use tokio::time::{sleep, Duration};
@@ -116,11 +116,11 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     spec.add_channel("test".to_string(), channel);
     
     // Create client
-    let client = UnixSockApiClient::new(
+    let client = JanusClient::new(
         socket_path.to_string(),
         "test".to_string(),
         spec,
-        UnixSockApiClientConfig::default(),
+        JanusClientConfig::default(),
     ).await?;
     
     // Register handler - this should trigger server mode

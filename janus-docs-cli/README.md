@@ -15,26 +15,26 @@ A powerful CLI tool for generating and serving professional documentation from U
 
 ```bash
 # Install globally
-npm install -g unixsocket-docs-cli
+npm install -g janus-docs-cli
 
 # Or use with npx (no installation needed)
-npx unixsocket-docs-cli --help
+npx janus-docs-cli --help
 ```
 
 ## Quick Start
 
 ```bash
 # Generate static documentation
-unixsocket-docs generate api-spec.json
+janus-docs generate api-spec.json
 
 # Serve with live reload
-unixsocket-docs serve api-spec.json --port 8080
+janus-docs serve api-spec.json --port 8080
 
 # Initialize new API specification
-unixsocket-docs init "My API"
+janus-docs init "My API"
 
 # Validate specification
-unixsocket-docs validate api-spec.json
+janus-docs validate api-spec.json
 ```
 
 ## Commands
@@ -44,7 +44,7 @@ unixsocket-docs validate api-spec.json
 Generate static documentation from an API specification.
 
 ```bash
-unixsocket-docs generate <spec-file> [options]
+janus-docs generate <spec-file> [options]
 
 Options:
   -o, --output <dir>        Output directory (default: "./docs")
@@ -59,7 +59,7 @@ Options:
 
 **Example:**
 ```bash
-unixsocket-docs generate api-spec.json \\
+janus-docs generate api-spec.json \\
   --output ./docs \\
   --title "My API" \\
   --description "Comprehensive API documentation" \\
@@ -71,7 +71,7 @@ unixsocket-docs generate api-spec.json \\
 Serve documentation with live reload during development.
 
 ```bash
-unixsocket-docs serve <spec-file> [options]
+janus-docs serve <spec-file> [options]
 
 Options:
   -p, --port <port>         Server port (default: 8080)
@@ -84,7 +84,7 @@ Options:
 
 **Example:**
 ```bash
-unixsocket-docs serve api-spec.json \\
+janus-docs serve api-spec.json \\
   --port 3000 \\
   --watch \\
   --open
@@ -95,7 +95,7 @@ unixsocket-docs serve api-spec.json \\
 Validate an API specification file for correctness.
 
 ```bash
-unixsocket-docs validate <spec-file>
+janus-docs validate <spec-file>
 ```
 
 ### `init`
@@ -103,7 +103,7 @@ unixsocket-docs validate <spec-file>
 Initialize a new API specification file with example content.
 
 ```bash
-unixsocket-docs init [name] [options]
+janus-docs init [name] [options]
 
 Options:
   -o, --output <file>       Output file (default: "api-spec.json")
@@ -181,7 +181,7 @@ Create a custom CSS file and use it with the `--styles` option:
 ```
 
 ```bash
-unixsocket-docs generate api-spec.json --styles custom-styles.css
+janus-docs generate api-spec.json --styles custom-styles.css
 ```
 
 ### Custom Logo
@@ -189,7 +189,7 @@ unixsocket-docs generate api-spec.json --styles custom-styles.css
 Add your logo with the `--logo` option:
 
 ```bash
-unixsocket-docs generate api-spec.json --logo "https://example.com/logo.png"
+janus-docs generate api-spec.json --logo "https://example.com/logo.png"
 ```
 
 ## Generated Documentation Features
@@ -223,22 +223,22 @@ unixsocket-docs generate api-spec.json --logo "https://example.com/logo.png"
 
 1. **Create API Specification**:
    ```bash
-   unixsocket-docs init "My API"
+   janus-docs init "My API"
    ```
 
 2. **Develop with Live Reload**:
    ```bash
-   unixsocket-docs serve api-spec.json --watch --open
+   janus-docs serve api-spec.json --watch --open
    ```
 
 3. **Validate Specification**:
    ```bash
-   unixsocket-docs validate api-spec.json
+   janus-docs validate api-spec.json
    ```
 
 4. **Generate Production Docs**:
    ```bash
-   unixsocket-docs generate api-spec.json --output ./public/docs
+   janus-docs generate api-spec.json --output ./public/docs
    ```
 
 ## Integration Examples
@@ -265,7 +265,7 @@ jobs:
       
       - name: Generate Documentation
         run: |
-          npx unixsocket-docs-cli generate api-spec.json --output ./docs
+          npx janus-docs-cli generate api-spec.json --output ./docs
       
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
@@ -279,9 +279,9 @@ jobs:
 ```json
 {
   "scripts": {
-    "docs:generate": "unixsocket-docs generate api-spec.json",
-    "docs:serve": "unixsocket-docs serve api-spec.json --watch",
-    "docs:validate": "unixsocket-docs validate api-spec.json",
+    "docs:generate": "janus-docs generate api-spec.json",
+    "docs:serve": "janus-docs serve api-spec.json --watch",
+    "docs:validate": "janus-docs validate api-spec.json",
     "docs:build": "npm run docs:validate && npm run docs:generate"
   }
 }
@@ -295,7 +295,7 @@ FROM node:18-alpine
 WORKDIR /app
 COPY api-spec.json .
 
-RUN npx unixsocket-docs-cli generate api-spec.json --output ./docs
+RUN npx janus-docs-cli generate api-spec.json --output ./docs
 
 FROM nginx:alpine
 COPY --from=0 /app/docs /usr/share/nginx/html

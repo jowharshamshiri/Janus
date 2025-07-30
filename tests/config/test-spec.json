@@ -1,5 +1,5 @@
 {
-  "name": "UnixSocketAPI Cross-Platform Test Suite",
+  "name": "Janus Cross-Platform Test Suite",
   "version": "1.0.0",
   "description": "Comprehensive test specification for SOCK_DGRAM Unix Socket API implementations",
   "protocol": {
@@ -32,46 +32,46 @@
   },
   "implementations": {
     "go": {
-      "name": "GoUnixSockAPI",
+      "name": "GoJanus",
       "language": "go",
-      "directory": "GoUnixSockAPI",
-      "build_command": ["go", "build", "-o", "unixsock-dgram", "./cmd/unixsock-dgram"],
+      "directory": "GoJanus",
+      "build_command": ["go", "build", "-o", "janus", "./cmd/janus"],
       "test_command": ["go", "test", "./..."],
-      "unified_binary": "./unixsock-dgram",
-      "socket_path": "/tmp/go-unixsock-api.sock",
-      "build_artifacts": ["unixsock-dgram"],
+      "unified_binary": "./janus",
+      "socket_path": "/tmp/go-janus-api.sock",
+      "build_artifacts": ["janus"],
       "test_timeout": 30
     },
     "rust": {
-      "name": "RustUnixSockAPI", 
+      "name": "RustJanus", 
       "language": "rust",
-      "directory": "RustUnixSockAPI",
+      "directory": "RustJanus",
       "build_command": ["cargo", "build"],
       "test_command": ["cargo", "test"],
-      "unified_binary": "cargo run --bin unixsock-dgram --",
-      "socket_path": "/tmp/rust-unixsock-api.sock",
-      "build_artifacts": ["target/debug/unixsock-dgram"],
+      "unified_binary": "cargo run --bin janus --",
+      "socket_path": "/tmp/rust-janus-api.sock",
+      "build_artifacts": ["target/debug/janus"],
       "test_timeout": 30
     },
     "swift": {
-      "name": "SwiftUnixSockAPI",
+      "name": "SwiftJanus",
       "language": "swift", 
-      "directory": "SwiftUnixSockAPI",
+      "directory": "SwiftJanus",
       "build_command": ["swift", "build"],
       "test_command": ["swift", "test"],
-      "unified_binary": "swift run SwiftUnixSockDgram",
-      "socket_path": "/tmp/swift-unixsock-api.sock",
-      "build_artifacts": [".build/debug/SwiftUnixSockDgram"],
+      "unified_binary": "swift run SwiftJanusDgram",
+      "socket_path": "/tmp/swift-janus-api.sock",
+      "build_artifacts": [".build/debug/SwiftJanusDgram"],
       "test_timeout": 30
     },
     "typescript": {
-      "name": "TypeScriptUnixSockAPI",
+      "name": "TypeScriptJanus",
       "language": "typescript",
-      "directory": "TypeScriptUnixSockAPI", 
+      "directory": "TypeScriptJanus", 
       "build_command": ["npm", "run", "build"],
       "test_command": ["npm", "test"],
-      "unified_binary": "node dist/bin/unixsock-dgram.js",
-      "socket_path": "/tmp/typescript-unixsock-api.sock", 
+      "unified_binary": "node dist/bin/janus.js",
+      "socket_path": "/tmp/typescript-janus-api.sock", 
       "build_artifacts": ["dist/"],
       "test_timeout": 30
     }
@@ -209,7 +209,7 @@
   "environment": {
     "required_platforms": ["linux", "macos"],
     "optional_platforms": ["windows"],
-    "temp_directory": "/tmp/unixsock-api-tests",
+    "temp_directory": "/tmp/janus-api-tests",
     "log_directory": "test_logs",
     "max_parallel_tests": 4,
     "cleanup_on_exit": true
