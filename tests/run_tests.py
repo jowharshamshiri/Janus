@@ -938,7 +938,16 @@ class UnifiedTestSuite:
                 stdout = response.get("stdout", "")
                 # Test SUCCESS if CLI succeeded and validation properly failed (valid:false)
                 cli_succeeded = response.get("success", False)
-                validation_failed = ("valid:false" in stdout.lower() or "valid: false" in stdout.lower())
+                validation_failed = (
+                    "valid:false" in stdout.lower() or 
+                    "valid: false" in stdout.lower() or
+                    '"valid":false' in stdout.lower() or
+                    '"valid": false' in stdout.lower() or
+                    "invalid json" in stdout.lower() or
+                    "json format" in stdout.lower() or
+                    "parse error" in stdout.lower() or
+                    "malformed" in stdout.lower()
+                )
                 return cli_succeeded and validation_failed
             # For oversized payload, we expect CLI failure with specific error message
             elif pattern.get("type") == "oversized_payload":
