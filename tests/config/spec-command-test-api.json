@@ -1,0 +1,74 @@
+{
+  "version": "1.0.0",
+  "name": "Cross-Platform Test API",
+  "description": "Test API specification for spec command validation",
+  "channels": {
+    "test": {
+      "name": "Test Channel",
+      "description": "Test channel for cross-platform communication",
+      "commands": {
+        "ping": {
+          "name": "Ping",
+          "description": "Simple ping command",
+          "args": {},
+          "response": {
+            "type": "object",
+            "properties": {
+              "pong": {
+                "name": "Pong",
+                "type": "boolean",
+                "description": "Always true"
+              },
+              "timestamp": {
+                "name": "Timestamp",
+                "type": "string",
+                "description": "Server timestamp"
+              }
+            }
+          },
+          "errorCodes": ["INTERNAL_ERROR"]
+        },
+        "echo": {
+          "name": "Echo",
+          "description": "Echo back the input",
+          "args": {
+            "message": {
+              "name": "Message",
+              "type": "string",
+              "description": "Message to echo",
+              "required": true
+            }
+          },
+          "response": {
+            "type": "object",
+            "properties": {
+              "message": {
+                "name": "Echo Message",
+                "type": "string",
+                "description": "Echoed message"
+              }
+            }
+          },
+          "errorCodes": ["INVALID_ARGUMENT", "INTERNAL_ERROR"]
+        },
+        "spec": {
+          "name": "Get API Specification",
+          "description": "Returns the complete API specification",
+          "args": {},
+          "response": {
+            "type": "object",
+            "properties": {
+              "specification": {
+                "name": "API Specification",
+                "type": "object",
+                "description": "Complete API specification object"
+              }
+            }
+          },
+          "errorCodes": ["INTERNAL_ERROR"]
+        }
+      }
+    }
+  },
+  "models": {}
+}
