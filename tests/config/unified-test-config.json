@@ -94,7 +94,7 @@
       "unified_binary": "node dist/bin/janus.js",
       "socket_path": "/tmp/typescript-janus-api.sock",
       "build_artifacts": ["dist/"],
-      "listen_args": ["--listen", "--socket"],
+      "listen_args": ["--listen", "--socket", "/tmp/typescript-janus-api.sock"],
       "send_args": ["--send-to", "{target_socket}", "--command", "{command}", "--message", "{message}"],
       "test_timeout": 30
     }

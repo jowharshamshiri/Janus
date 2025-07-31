@@ -63,6 +63,6 @@ build_typescript:
 > typescript-unix-sock-api@1.0.0 build
 > tsc
 
-src/api/api-client.ts(6,30): error TS6133: 'UnixDatagramClientError' is declared but its value is never read.
+src/api/api-client.ts(6,30): error TS6133: 'JanusClientError' is declared but its value is never read.
 src/api/api-client.ts(57,25): error TS2339:...
   stderr: 

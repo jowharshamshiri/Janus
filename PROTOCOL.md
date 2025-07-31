@@ -179,7 +179,7 @@ Client                          Server
 #### Implementation Pattern
 ```typescript
 // Pseudo-code for connectionless correlation system
-class DatagramClient {
+class JanusClient {
   async sendCommand(command: SocketCommand): Promise<SocketResponse> {
     // Create temporary response socket
     const responseSocket = `/tmp/client_response_${Date.now()}_${Math.random()}.sock`;
