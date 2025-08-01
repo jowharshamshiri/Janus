@@ -61,7 +61,14 @@ class PerformanceBenchmark:
             pass
         
         try:
-            cmd = impl["server_command"] + [socket_path]
+            # Build server command using unified_binary and listen_args
+            if impl_name == "rust":
+                cmd = ["cargo", "run", "--bin", "janus", "--"] + impl["listen_args"]
+            elif impl_name == "swift": 
+                cmd = ["swift", "run", "SwiftJanusDgram"] + impl["listen_args"]
+            else:
+                cmd = [impl["unified_binary"]] + impl["listen_args"]
+                
             proc = subprocess.Popen(
                 cmd,
                 cwd=impl["directory"],

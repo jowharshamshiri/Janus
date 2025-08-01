@@ -1,0 +1,32 @@
+[
+  {
+    "name": "server_start",
+    "implementation": "go",
+    "metric": "error",
+    "value": 0,
+    "unit": "none",
+    "details": {
+      "error": "Server failed to start"
+    }
+  },
+  {
+    "name": "server_start",
+    "implementation": "rust",
+    "metric": "error",
+    "value": 0,
+    "unit": "none",
+    "details": {
+      "error": "Server failed to start"
+    }
+  },
+  {
+    "name": "server_start",
+    "implementation": "swift",
+    "metric": "error",
+    "value": 0,
+    "unit": "none",
+    "details": {
+      "error": "Server failed to start"
+    }
+  }
+]

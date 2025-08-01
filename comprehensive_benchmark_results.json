@@ -1,0 +1,143 @@
+[
+  {
+    "implementation": "go",
+    "test_type": "latency",
+    "metric": "avg_latency_ms",
+    "value": 0.17048936453647912,
+    "unit": "milliseconds",
+    "details": {
+      "p95_ms": 0.44270202924963087,
+      "p99_ms": 1.6013537399703637,
+      "min_ms": 0.08941700798459351,
+      "max_ms": 1.8889999773819,
+      "median_ms": 0.1220625126734376,
+      "stddev_ms": 0.19934719022488187,
+      "success_rate": 1.0,
+      "failures": 0
+    }
+  },
+  {
+    "implementation": "go",
+    "test_type": "throughput",
+    "metric": "requests_per_second",
+    "value": 538.2581203116833,
+    "unit": "req/s",
+    "details": {
+      "total_requests": 8074,
+      "successful_requests": 8074,
+      "duration": 15.000238167005591,
+      "success_rate": 1.0
+    }
+  },
+  {
+    "implementation": "go",
+    "test_type": "concurrency",
+    "metric": "success_rate",
+    "value": 0.658,
+    "unit": "percent",
+    "details": {
+      "total_requests": 500,
+      "successful_requests": 329,
+      "failed_requests": 171,
+      "concurrent_clients": 20,
+      "requests_per_client": 25,
+      "duration": 0.05697420798242092,
+      "avg_latency_ms": 2.4012246888872566,
+      "throughput_rps": 5774.542756285636
+    }
+  },
+  {
+    "implementation": "rust",
+    "test_type": "latency",
+    "metric": "avg_latency_ms",
+    "value": 0.25728705935762264,
+    "unit": "milliseconds",
+    "details": {
+      "p95_ms": 0.36008160386700183,
+      "p99_ms": 1.2059082463383675,
+      "min_ms": 0.1646250020712614,
+      "max_ms": 2.6526250003371388,
+      "median_ms": 0.21572849072981626,
+      "stddev_ms": 0.2080137362318292,
+      "success_rate": 1.0,
+      "failures": 0
+    }
+  },
+  {
+    "implementation": "rust",
+    "test_type": "throughput",
+    "metric": "requests_per_second",
+    "value": 463.5084313442611,
+    "unit": "req/s",
+    "details": {
+      "total_requests": 6954,
+      "successful_requests": 6954,
+      "duration": 15.002963333012303,
+      "success_rate": 1.0
+    }
+  },
+  {
+    "implementation": "rust",
+    "test_type": "concurrency",
+    "metric": "success_rate",
+    "value": 0.508,
+    "unit": "percent",
+    "details": {
+      "total_requests": 500,
+      "successful_requests": 254,
+      "failed_requests": 246,
+      "concurrent_clients": 20,
+      "requests_per_client": 25,
+      "duration": 0.12745962498593144,
+      "avg_latency_ms": 6.804077582517236,
+      "throughput_rps": 1992.7879124706012
+    }
+  },
+  {
+    "implementation": "swift",
+    "test_type": "latency",
+    "metric": "avg_latency_ms",
+    "value": 0.1893139437015634,
+    "unit": "milliseconds",
+    "details": {
+      "p95_ms": 0.27727019478334114,
+      "p99_ms": 0.3807835347834043,
+      "min_ms": 0.11649998486973345,
+      "max_ms": 3.397708002012223,
+      "median_ms": 0.15866650210227817,
+      "stddev_ms": 0.2336676857095531,
+      "success_rate": 1.0,
+      "failures": 0
+    }
+  },
+  {
+    "implementation": "swift",
+    "test_type": "throughput",
+    "metric": "requests_per_second",
+    "value": 521.9315471786352,
+    "unit": "req/s",
+    "details": {
+      "total_requests": 7829,
+      "successful_requests": 7829,
+      "duration": 15.000051333016017,
+      "success_rate": 1.0
+    }
+  },
+  {
+    "implementation": "swift",
+    "test_type": "concurrency",
+    "metric": "success_rate",
+    "value": 1.0,
+    "unit": "percent",
+    "details": {
+      "total_requests": 500,
+      "successful_requests": 500,
+      "failed_requests": 0,
+      "concurrent_clients": 20,
+      "requests_per_client": 25,
+      "duration": 0.07005054200999439,
+      "avg_latency_ms": 1.7967721377499402,
+      "throughput_rps": 7137.7035159651305
+    }
+  }
+]
