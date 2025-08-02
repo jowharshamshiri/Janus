@@ -7,7 +7,7 @@ This document describes the comprehensive cross-platform testing infrastructure 
 The testing infrastructure provides:
 
 - **Cross-platform validation** - Tests all 16 combinations of client/server pairs
-- **API specification compliance** - Validates implementations against central API spec
+- **Manifest compliance** - Validates implementations against central Manifest
 - **Performance benchmarking** - Measures latency, throughput, and memory usage
 - **Security validation** - Ensures SOCK_DGRAM-only usage and proper security
 - **Automated CI/CD** - GitHub Actions workflows for continuous testing
@@ -15,9 +15,9 @@ The testing infrastructure provides:
 
 ## Test Architecture
 
-### Central API Specification
+### Central Manifest
 
-All tests are driven by a central API specification (`test-spec.json`) that defines:
+All tests are driven by a central Manifest (`test-spec.json`) that defines:
 
 - Protocol requirements (SOCK_DGRAM only)
 - Test commands and expected responses
@@ -31,7 +31,7 @@ All tests are driven by a central API specification (`test-spec.json`) that defi
 Janus/
 ├── test-spec.json                    # Central test specification
 ├── test_orchestrator.py             # Main test orchestrator
-├── api_spec_validator.py            # API compliance validator
+├── manifest_validator.py            # API compliance validator
 ├── performance_benchmark.py         # Performance benchmarking suite
 ├── run_comprehensive_tests.sh       # Comprehensive test runner
 ├── .github/workflows/                # CI/CD workflows
@@ -93,10 +93,10 @@ swift (5.9+)
 python3 test_orchestrator.py --categories integration --verbose
 ```
 
-**API Specification Compliance:**
+**Manifest Compliance:**
 
 ```bash
-python3 api_spec_validator.py \
+python3 manifest_validator.py \
   --implementation GoJanus \
   --server-cmd go run cmd/server/main.go \
   --socket-path /tmp/test.sock
@@ -137,7 +137,7 @@ Cross-platform communication validation:
 - **Total combinations**: 16 client/server pairs
 - **Test commands**: ping, echo, get_info, stress_test
 
-### 4. API Specification Compliance
+### 4. Manifest Compliance
 
 Validates adherence to SOCK_DGRAM protocol:
 

@@ -21,14 +21,14 @@ A comprehensive Janus library providing consistent, secure, and high-performance
 # Install the documentation CLI globally
 npm install -g janus-docs-cli
 
-# Create a new API specification
+# Create a new Manifest
 janus-docs init "My API"
 
 # Generate professional documentation
-janus-docs generate api-spec.json
+janus-docs generate manifest.json
 
 # Serve with live reload during development
-janus-docs serve api-spec.json --watch --open
+janus-docs serve manifest.json --watch --open
 ```
 
 ### Language-Specific Usage
@@ -128,10 +128,10 @@ Professional API documentation is automatically generated:
 npm install -g janus-docs-cli
 
 # Generate docs for your API
-janus-docs generate your-api-spec.json
+janus-docs generate your-manifest.json
 
 # Serve with live reload
-janus-docs serve your-api-spec.json --watch
+janus-docs serve your-manifest.json --watch
 ```
 
 ### Reference Documentation
@@ -242,7 +242,7 @@ cd GoJanus && go test ./...
 
 **See [tests/README.md](tests/README.md) for complete testing documentation.**
 
-## 📊 API Specification Format
+## 📊 Manifest Format
 
 APIs are defined using JSON specifications:
 
@@ -283,10 +283,10 @@ APIs are defined using JSON specifications:
 
 Professional documentation generation tool:
 
-- **Generate**: Static documentation from API specs
+- **Generate**: Static documentation from Manifests
 - **Serve**: Live reload development server
-- **Validate**: API specification validation
-- **Init**: Bootstrap new API specifications
+- **Validate**: Manifest validation
+- **Init**: Bootstrap new Manifests
 
 ```bash
 npm install -g janus-docs-cli

@@ -1,7 +1,7 @@
 {
   "version": "1.0.0",
   "name": "Cross-Platform Test API",
-  "description": "Test API specification for spec command validation",
+  "description": "Test Manifest for spec command validation",
   "channels": {
     "test": {
       "name": "Test Channel",
@@ -52,16 +52,16 @@
           "errorCodes": ["INVALID_ARGUMENT", "INTERNAL_ERROR"]
         },
         "spec": {
-          "name": "Get API Specification",
-          "description": "Returns the complete API specification",
+          "name": "Get Manifest",
+          "description": "Returns the complete Manifest",
           "args": {},
           "response": {
             "type": "object",
             "properties": {
               "specification": {
-                "name": "API Specification",
+                "name": "Manifest",
                 "type": "object",
-                "description": "Complete API specification object"
+                "description": "Complete Manifest object"
               }
             }
           },

@@ -27,7 +27,7 @@ build_go:
   Duration: 0.2s
   Message: Build failed with code 1
   stdout: 
-  stderr: # github.com/user/GoJanus/pkg/core
+  stderr: # github.com/jowharshamshiri/GoJanus/pkg/core
 pkg/core/connection_pool.go:18:23: undefined: JanusClient
 pkg/core/connection_pool.go:66:30: undefined: JanusClient
 pkg/core/connection_pool.go:75:67...

@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://janus.org/schemas/api-specification.json",
+  "$id": "https://janus.org/schemas/manifest.json",
   "title": "Janus Specification",
   "description": "Schema for Janus specification files",
   "type": "object",
@@ -9,7 +9,7 @@
     "version": {
       "type": "string",
       "pattern": "^\\d+\\.\\d+\\.\\d+$",
-      "description": "Semantic version of the API specification"
+      "description": "Semantic version of the Manifest"
     },
     "name": {
       "type": "string",

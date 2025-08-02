@@ -29,7 +29,7 @@ python tests/run_rigorous_tests.py --implementations go,rust,swift
 - **Purpose**: Test all API features, edge cases, and protocol compliance
 - **Scope**: 12 feature categories across 6 channels with 25+ commands
 
-#### 3. **Complex API Specification**
+#### 3. **Complex Manifest**
 - **Channels**: 6 specialized channels (test, data, secure, performance, edge_cases)
 - **Commands**: 25+ commands with complex args and response validation
 - **Features**: Authentication, data processing, math operations, file operations, etc.
@@ -141,7 +141,7 @@ def test_echo_with_transformation():
     assert response["stats"]["original_length"] == 11
 ```
 
-## 🏗️ Complex API Specification
+## 🏗️ Complex Manifest
 
 ### **6 Specialized Channels:**
 

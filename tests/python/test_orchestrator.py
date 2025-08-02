@@ -484,7 +484,7 @@ class TestOrchestrator:
         return results
     
     def run_conformance_tests(self) -> List[TestResult]:
-        """Run API specification conformance tests"""
+        """Run Manifest conformance tests"""
         self.logger.info("Running conformance tests...")
         results = []
         

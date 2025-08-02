@@ -15,12 +15,12 @@ tests/
 ├── config/                      # Test configurations
 │   ├── unified-test-config.json # 🔧 MAIN TEST CONFIG
 │   ├── test-spec.json           # Legacy test spec (deprecated)
-│   ├── test-api-spec.json       # API specification for tests
-│   └── api-specification-schema.json # API schema validation
+│   ├── test-manifest.json       # Manifest for tests
+│   └── manifest-schema.json # API schema validation
 ├── python/                      # Python test modules
 │   ├── comprehensive_test_suite.py # Complete test suite implementation
 │   ├── test_orchestrator.py     # Test orchestration (legacy)
-│   ├── api_spec_validator.py    # API compliance validation
+│   ├── manifest_validator.py    # API compliance validation
 │   └── performance_benchmark.py # Performance testing
 ├── legacy/                      # Deprecated/reference files
 │   └── test_validation.txt      # Old test report
@@ -127,7 +127,7 @@ tests/
 ├── python/                            # Python test modules
 │   ├── comprehensive_test_suite.py    # Main test suite
 │   ├── test_orchestrator.py           # Original orchestrator (legacy)
-│   ├── api_spec_validator.py          # API specification validation
+│   ├── manifest_validator.py          # Manifest validation
 │   └── performance_benchmark.py       # Performance testing
 ├── logs/                              # Test execution logs
 │   └── YYYYMMDD_HHMMSS/              # Timestamped log directories

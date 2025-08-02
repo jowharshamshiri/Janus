@@ -40,8 +40,8 @@ class ComprehensiveFeatureTests:
         self.temp_dir = Path(tempfile.mkdtemp(prefix="comprehensive_feature_test_"))
         self.results: List[FeatureTestResult] = []
         
-        # Create test API specification
-        self.test_api_spec = self._create_comprehensive_test_api_spec()
+        # Create test Manifest
+        self.test_manifest = self._create_comprehensive_test_manifest()
         
         self.setup_logging()
         
@@ -56,12 +56,12 @@ class ComprehensiveFeatureTests:
         with open(self.config_path, 'r') as f:
             return json.load(f)
     
-    def _create_comprehensive_test_api_spec(self) -> Dict:
-        """Create comprehensive API specification for testing all features"""
+    def _create_comprehensive_test_manifest(self) -> Dict:
+        """Create comprehensive Manifest for testing all features"""
         return {
             "version": "2.0.0",
             "name": "Comprehensive Feature Test API",
-            "description": "Complex API specification designed to test all aspects of SOCK_DGRAM implementations",
+            "description": "Complex Manifest designed to test all aspects of SOCK_DGRAM implementations",
             "channels": {
                 "test": {
                     "name": "test",
@@ -533,7 +533,7 @@ class ComprehensiveFeatureTests:
         """Test basic command functionality"""
         results = []
         
-        # Test each command defined in the API spec
+        # Test each command defined in the Manifest
         commands_to_test = [
             ("ping", {}, {"status": "pong", "echo": "hello"}),
             ("echo", {"message": "test_echo"}, {"status": "success", "data": "test_echo"}),
@@ -848,12 +848,12 @@ class ComprehensiveFeatureTests:
             )
     
     def _start_test_listener(self, impl_name: str, impl_config: Dict) -> Optional[subprocess.Popen]:
-        """Start test listener with comprehensive API spec"""
+        """Start test listener with comprehensive Manifest"""
         try:
-            # Save API spec to temp file
+            # Save Manifest to temp file
             spec_path = self.temp_dir / f"{impl_name}_test_spec.json"
             with open(spec_path, 'w') as f:
-                json.dump(self.test_api_spec, f, indent=2)
+                json.dump(self.test_manifest, f, indent=2)
             
             # Remove existing socket
             socket_path = impl_config["socket_path"]

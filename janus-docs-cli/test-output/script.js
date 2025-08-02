@@ -174,7 +174,7 @@ document.addEventListener('DOMContentLoaded', function() {
       // Development Hub JavaScript
       class JanusDevHub {
         constructor() {
-          this.apiSpec = null;
+          this.manifest = null;
           this.socketClient = null;
           this.monitorConnection = null;
           this.messageEditors = new Map();
@@ -182,12 +182,12 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         async init() {
-          // Load API specification
+          // Load Manifest
           try {
-            const response = await fetch('./api-spec.json');
-            this.apiSpec = await response.json();
+            const response = await fetch('./manifest.json');
+            this.manifest = await response.json();
           } catch (error) {
-            console.error('Failed to load API specification:', error);
+            console.error('Failed to load Manifest:', error);
           }
 
           this.setupEventListeners();
@@ -391,8 +391,8 @@ document.addEventListener('DOMContentLoaded', function() {
           const commandSelect = document.getElementById('select-command');
           commandSelect.innerHTML = '<option value="">Select a command...</option>';
 
-          if (channelId && this.apiSpec?.channels[channelId]) {
-            const commands = this.apiSpec.channels[channelId].commands;
+          if (channelId && this.manifest?.channels[channelId]) {
+            const commands = this.manifest.channels[channelId].commands;
             Object.keys(commands).forEach(commandName => {
               const option = document.createElement('option');
               option.value = commandName;
@@ -409,8 +409,8 @@ document.addEventListener('DOMContentLoaded', function() {
           const channelId = document.getElementById('select-channel').value;
           const commandName = document.getElementById('select-command').value;
 
-          if (channelId && commandName && this.apiSpec) {
-            const command = this.apiSpec.channels[channelId]?.commands[commandName];
+          if (channelId && commandName && this.manifest) {
+            const command = this.manifest.channels[channelId]?.commands[commandName];
             if (command) {
               const template = this.generateMessageTemplate(command);
               const editor = this.messageEditors.get('message');

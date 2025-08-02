@@ -989,11 +989,11 @@ class ComprehensiveTestSuite:
         self.logger.info("Running security tests...")
         results = []
         
-        # Import API spec validator
+        # Import Manifest validator
         try:
-            from . import api_spec_validator
-            validator = api_spec_validator.APISpecValidator(
-                api_spec_path=str(self.config_path),
+            from . import manifest_validator
+            validator = manifest_validator.ManifestValidator(
+                manifest_path=str(self.config_path),
                 verbose=self.verbose
             )
             
@@ -1015,7 +1015,7 @@ class ComprehensiveTestSuite:
                     results.append(result)
             
         except ImportError:
-            self.logger.warning("API spec validator module not available")
+            self.logger.warning("Manifest validator module not available")
         except Exception as e:
             self.logger.error(f"Security test error: {e}")
         

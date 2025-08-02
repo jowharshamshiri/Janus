@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-API Specification Validator for Janus
-Validates implementations against the central API specification
+Manifest Validator for Janus
+Validates implementations against the central Manifest
 """
 
 import json
@@ -14,24 +14,24 @@ from typing import Dict, List, Optional, Any, Tuple
 from pathlib import Path
 import logging
 
-class APISpecValidator:
-    """Validates implementations against API specification"""
+class ManifestValidator:
+    """Validates implementations against Manifest"""
     
-    def __init__(self, api_spec_path: str, verbose: bool = False):
-        self.api_spec_path = api_spec_path
+    def __init__(self, manifest_path: str, verbose: bool = False):
+        self.manifest_path = manifest_path
         self.verbose = verbose
-        self.api_spec = self._load_api_spec()
+        self.manifest = self._load_manifest()
         self.setup_logging()
         
     def setup_logging(self):
         """Setup logging"""
         level = logging.DEBUG if self.verbose else logging.INFO
         logging.basicConfig(level=level, format='%(asctime)s - %(levelname)s - %(message)s')
-        self.logger = logging.getLogger("APISpecValidator")
+        self.logger = logging.getLogger("ManifestValidator")
     
-    def _load_api_spec(self) -> Dict:
-        """Load API specification"""
-        with open(self.api_spec_path, 'r') as f:
+    def _load_manifest(self) -> Dict:
+        """Load Manifest"""
+        with open(self.manifest_path, 'r') as f:
             return json.load(f)
     
     def validate_sock_dgram_usage(self, implementation_dir: str) -> Tuple[bool, List[str]]:
@@ -142,9 +142,9 @@ class APISpecValidator:
             violations.append(f"Server did not create socket within {max_wait}s")
             return False, violations
         
-        # Test each required command from API spec
-        if 'channels' in self.api_spec:
-            for channel_id, channel in self.api_spec['channels'].items():
+        # Test each required command from Manifest
+        if 'channels' in self.manifest:
+            for channel_id, channel in self.manifest['channels'].items():
                 for command_name, command_spec in channel.get('commands', {}).items():
                     success, error = self._test_command(socket_path, channel_id, command_name, command_spec)
                     if not success:
@@ -390,8 +390,8 @@ class APISpecValidator:
 def main():
     import argparse
     
-    parser = argparse.ArgumentParser(description="Validate API specification compliance")
-    parser.add_argument("--api-spec", default="example-api-spec.json", help="API specification file")
+    parser = argparse.ArgumentParser(description="Validate Manifest compliance")
+    parser.add_argument("--manifest", default="example-manifest.json", help="Manifest file")
     parser.add_argument("--implementation", required=True, help="Implementation directory")
     parser.add_argument("--server-cmd", nargs="+", required=True, help="Server startup command")
     parser.add_argument("--socket-path", required=True, help="Socket path for testing")
@@ -400,7 +400,7 @@ def main():
     
     args = parser.parse_args()
     
-    validator = APISpecValidator(args.api_spec, args.verbose)
+    validator = ManifestValidator(args.manifest, args.verbose)
     results = validator.validate_implementation(
         args.implementation,
         args.server_cmd,

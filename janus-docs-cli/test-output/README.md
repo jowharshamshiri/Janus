@@ -8,7 +8,7 @@ This directory contains automatically generated documentation for the Janus with
 - `styles.css` - Modern styling with gradient themes
 - `script.js` - Interactive functionality and development tools
 - `openapi.json` - OpenAPI/Swagger specification
-- `api-spec.json` - Raw API specification for runtime access
+- `manifest.json` - Raw Manifest for runtime access
 
 ## Development Hub Features
 
@@ -19,7 +19,7 @@ This directory contains automatically generated documentation for the Janus with
 - Timeline view for message flow analysis
 
 ### 📤 Message Sender
-- Send messages using API specification
+- Send messages using Manifest
 - Auto-generated forms based on command definitions
 - Message validation before sending
 - Response display with formatted output
@@ -41,7 +41,7 @@ This directory contains automatically generated documentation for the Janus with
 1. **View Documentation**: Open `index.html` in a web browser
 2. **Development**: Use the development hub tools for socket debugging
 3. **API Integration**: Use `openapi.json` with API tools
-4. **Runtime Access**: Load `api-spec.json` for dynamic API handling
+4. **Runtime Access**: Load `manifest.json` for dynamic API handling
 
 ## Features
 
@@ -58,7 +58,7 @@ This directory contains automatically generated documentation for the Janus with
 
 The development hub integrates directly with the TypeScript Janus library, providing:
 
-- **Type-safe message construction** based on API specification
+- **Type-safe message construction** based on Manifest
 - **Real-time socket monitoring** without affecting existing connections
 - **API-aware message parsing** using defined models
 - **Professional debugging interface** for development workflows

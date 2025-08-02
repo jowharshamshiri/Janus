@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Test script for the spec command across all Janus implementations.
-Validates that all implementations properly return their loaded API specifications.
+Validates that all implementations properly return their loaded Manifests.
 """
 
 import json

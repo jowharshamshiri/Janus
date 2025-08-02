@@ -6,7 +6,7 @@
 import * as fs from 'fs/promises';
 import * as path from 'path';
 import { APIDocumentationGenerator, DocumentationOptions as BaseDocumentationOptions } from 'typescript-unix-sock-api/dist/docs/api-doc-generator';
-import { APISpecification } from 'typescript-unix-sock-api/dist/types/protocol';
+import { Manifest } from 'typescript-unix-sock-api/dist/types/protocol';
 
 export interface DocumentationOptions extends BaseDocumentationOptions {
   // Enhanced options for development hub
@@ -17,16 +17,16 @@ export interface DocumentationOptions extends BaseDocumentationOptions {
 }
 
 export class DocumentationGenerator {
-  private apiSpec: APISpecification;
+  private manifest: Manifest;
   private options: Required<DocumentationOptions>;
   private docGenerator: APIDocumentationGenerator;
 
-  constructor(apiSpec: APISpecification, options: DocumentationOptions = {}) {
-    this.apiSpec = apiSpec;
+  constructor(manifest: Manifest, options: DocumentationOptions = {}) {
+    this.manifest = manifest;
     this.options = {
-      title: options.title ?? apiSpec.name,
-      description: options.description ?? apiSpec.description ?? 'Janus Documentation',
-      version: options.version ?? apiSpec.version,
+      title: options.title ?? manifest.name,
+      description: options.description ?? manifest.description ?? 'Janus Documentation',
+      version: options.version ?? manifest.version,
       includeExamples: options.includeExamples ?? true,
       includeTypes: options.includeTypes ?? true,
       customStyles: options.customStyles ?? '',
@@ -39,16 +39,16 @@ export class DocumentationGenerator {
     };
     
     // Create the underlying documentation generator
-    this.docGenerator = new APIDocumentationGenerator(this.apiSpec, this.options);
+    this.docGenerator = new APIDocumentationGenerator(this.manifest, this.options);
   }
 
   /**
-   * Create generator from API spec file
+   * Create generator from Manifest file
    */
   static async fromSpecFile(specFilePath: string, options: DocumentationOptions = {}): Promise<DocumentationGenerator> {
     const specContent = await fs.readFile(specFilePath, 'utf8');
-    const apiSpec = JSON.parse(specContent) as APISpecification;
-    return new DocumentationGenerator(apiSpec, options);
+    const manifest = JSON.parse(specContent) as Manifest;
+    return new DocumentationGenerator(manifest, options);
   }
 
   /**
@@ -70,10 +70,10 @@ export class DocumentationGenerator {
     await fs.writeFile(path.join(outputDir, 'index.html'), enhancedHtml);
     await fs.writeFile(path.join(outputDir, 'styles.css'), enhancedCss);
     await fs.writeFile(path.join(outputDir, 'script.js'), enhancedJavaScript);
-    await fs.writeFile(path.join(outputDir, 'openapi.json'), JSON.stringify(baseDocumentation.openApiSpec, null, 2));
+    await fs.writeFile(path.join(outputDir, 'openapi.json'), JSON.stringify(baseDocumentation.openManifest, null, 2));
     
-    // Write API spec for runtime access
-    await fs.writeFile(path.join(outputDir, 'api-spec.json'), JSON.stringify(this.apiSpec, null, 2));
+    // Write Manifest for runtime access
+    await fs.writeFile(path.join(outputDir, 'manifest.json'), JSON.stringify(this.manifest, null, 2));
     
     // Create README
     const readme = this.generateReadme(outputDir);
@@ -92,7 +92,7 @@ export class DocumentationGenerator {
    * Generate unified professional HTML structure
    */
   private generateUnifiedHTML(): string {
-    const channels = Object.entries(this.apiSpec.channels);
+    const channels = Object.entries(this.manifest.channels);
     const totalCommands = channels.reduce((total, [, channel]: [string, any]) => 
       total + Object.keys(channel.commands).length, 0);
 
@@ -308,7 +308,7 @@ export class DocumentationGenerator {
                                 <i class="fas fa-check-circle"></i>
                                 <div class="tool-info">
                                     <div class="tool-name">Schema Validator</div>
-                                    <div class="tool-desc">Validate against API specification</div>
+                                    <div class="tool-desc">Validate against Manifest</div>
                                 </div>
                             </div>
                             <div class="tool-item" data-tool="generator">
@@ -421,7 +421,7 @@ export class DocumentationGenerator {
    * Generate documentation content panel
    */
   private generateDocumentationContent(): string {
-    const channels = Object.entries(this.apiSpec.channels);
+    const channels = Object.entries(this.manifest.channels);
     
     return `
       <div class="doc-container">
@@ -700,7 +700,7 @@ export class DocumentationGenerator {
               <label>Channel</label>
               <select class="form-select" id="filter-channel">
                 <option value="">All Channels</option>
-                ${Object.entries(this.apiSpec.channels).map(([channelId, channel]: [string, any]) => 
+                ${Object.entries(this.manifest.channels).map(([channelId, channel]: [string, any]) => 
                   `<option value="${channelId}">${channel.name}</option>`
                 ).join('')}
               </select>
@@ -916,11 +916,11 @@ export class DocumentationGenerator {
           <h4>API Overview</h4>
           <div class="api-overview">
             <div class="overview-stat">
-              <span class="stat-number">${Object.keys(this.apiSpec.channels).length}</span>
+              <span class="stat-number">${Object.keys(this.manifest.channels).length}</span>
               <span class="stat-label">Channels</span>
             </div>
             <div class="overview-stat">
-              <span class="stat-number">${Object.values(this.apiSpec.channels).reduce((total, channel: any) => 
+              <span class="stat-number">${Object.values(this.manifest.channels).reduce((total, channel: any) => 
                 total + Object.keys(channel.commands).length, 0)}</span>
               <span class="stat-label">Commands</span>
             </div>
@@ -1921,7 +1921,7 @@ body {
 // Professional Janus Development Environment
 class JanusDevelopmentEnvironment {
   constructor() {
-    this.apiSpec = null;
+    this.manifest = null;
     this.connections = new Map();
     this.editors = new Map();
     this.currentPanel = 'documentation';
@@ -1930,10 +1930,10 @@ class JanusDevelopmentEnvironment {
 
   async init() {
     try {
-      const response = await fetch('./api-spec.json');
-      this.apiSpec = await response.json();
+      const response = await fetch('./manifest.json');
+      this.manifest = await response.json();
     } catch (error) {
-      console.error('Failed to load API specification:', error);
+      console.error('Failed to load Manifest:', error);
     }
 
     this.setupEventListeners();
@@ -2170,15 +2170,15 @@ class JanusDevelopmentEnvironment {
 
   exportOpenAPI() {
     // OpenAPI export logic
-    this.showToast('OpenAPI spec exported');
+    this.showToast('OpenManifest exported');
   }
 
   populateCommands() {
-    // Populate command dropdowns based on API spec
+    // Populate command dropdowns based on Manifest
     const commandSelect = document.getElementById('command-select');
-    if (commandSelect && this.apiSpec && this.apiSpec.channels) {
+    if (commandSelect && this.manifest && this.manifest.channels) {
       commandSelect.innerHTML = '';
-      Object.entries(this.apiSpec.channels).forEach(function(entry) {
+      Object.entries(this.manifest.channels).forEach(function(entry) {
         const channelId = entry[0];
         const channel = entry[1];
         Object.keys(channel.commands || {}).forEach(function(commandName) {
@@ -2192,7 +2192,7 @@ class JanusDevelopmentEnvironment {
   }
 
   updateRequestEditor(channelId, commandName) {
-    const command = this.apiSpec && this.apiSpec.channels && this.apiSpec.channels[channelId] && this.apiSpec.channels[channelId].commands && this.apiSpec.channels[channelId].commands[commandName];
+    const command = this.manifest && this.manifest.channels && this.manifest.channels[channelId] && this.manifest.channels[channelId].commands && this.manifest.channels[channelId].commands[commandName];
     if (command && this.editors.has('request')) {
       const editor = this.editors.get('request');
       const exampleRequest = this.generateCommandExample(channelId, commandName, command);
@@ -2220,7 +2220,7 @@ class JanusDevelopmentEnvironment {
   }
 
   copyExample(channelId, commandName) {
-    const command = this.apiSpec && this.apiSpec.channels && this.apiSpec.channels[channelId] && this.apiSpec.channels[channelId].commands && this.apiSpec.channels[channelId].commands[commandName];
+    const command = this.manifest && this.manifest.channels && this.manifest.channels[channelId] && this.manifest.channels[channelId].commands && this.manifest.channels[channelId].commands[commandName];
     if (command) {
       const example = this.generateCommandExample(channelId, commandName, command);
       navigator.clipboard.writeText(example);
@@ -2399,9 +2399,9 @@ class JanusDevelopmentEnvironment {
   
   validateSpecification() {
     var self = this;
-    this.showToast('Validating API specification...');
+    this.showToast('Validating Manifest...');
     setTimeout(function() {
-      self.showToast('API specification is valid ✓', 'success');
+      self.showToast('Manifest is valid ✓', 'success');
     }, 1000);
   }
 }

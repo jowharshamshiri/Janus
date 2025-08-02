@@ -290,8 +290,8 @@ run_cross_platform_tests() {
 create_test_examples() {
     log "Creating test example files..."
     
-    # Create example API specification
-    cat > "${TEST_DIR}/test-api-spec.json" << 'EOF'
+    # Create example Manifest
+    cat > "${TEST_DIR}/test-manifest.json" << 'EOF'
 {
     "version": "1.0.0",
     "name": "Cross-Platform Test API",
@@ -344,11 +344,11 @@ create_test_examples() {
 EOF
     
     # Copy spec to each implementation directory for consistent paths
-    cp "${TEST_DIR}/test-api-spec.json" "${TEST_DIR}/RustJanus/test-api-spec.json" 2>/dev/null || true
-    cp "${TEST_DIR}/test-api-spec.json" "${TEST_DIR}/GoJanus/test-api-spec.json" 2>/dev/null || true
-    cp "${TEST_DIR}/test-api-spec.json" "${TEST_DIR}/SwiftJanus/test-api-spec.json" 2>/dev/null || true
+    cp "${TEST_DIR}/test-manifest.json" "${TEST_DIR}/RustJanus/test-manifest.json" 2>/dev/null || true
+    cp "${TEST_DIR}/test-manifest.json" "${TEST_DIR}/GoJanus/test-manifest.json" 2>/dev/null || true
+    cp "${TEST_DIR}/test-manifest.json" "${TEST_DIR}/SwiftJanus/test-manifest.json" 2>/dev/null || true
     
-    log_success "Test API specification created: test-api-spec.json"
+    log_success "Test Manifest created: test-manifest.json"
 }
 
 # Command line argument handling
@@ -367,7 +367,7 @@ case "${1:-test}" in
         log "Cleaning up test artifacts..."
         cleanup
         rm -rf "${LOG_DIR}"
-        rm -f "${TEST_DIR}/test-api-spec.json"
+        rm -f "${TEST_DIR}/test-manifest.json"
         log_success "Cleanup complete"
         ;;
     "help"|"-h"|"--help")

@@ -2,7 +2,7 @@
 // Professional Janus Development Environment
 class JanusDevelopmentEnvironment {
   constructor() {
-    this.apiSpec = null;
+    this.manifest = null;
     this.connections = new Map();
     this.editors = new Map();
     this.currentPanel = 'documentation';
@@ -11,10 +11,10 @@ class JanusDevelopmentEnvironment {
 
   async init() {
     try {
-      const response = await fetch('./api-spec.json');
-      this.apiSpec = await response.json();
+      const response = await fetch('./manifest.json');
+      this.manifest = await response.json();
     } catch (error) {
-      console.error('Failed to load API specification:', error);
+      console.error('Failed to load Manifest:', error);
     }
 
     this.setupEventListeners();
@@ -179,15 +179,15 @@ class JanusDevelopmentEnvironment {
 
   exportOpenAPI() {
     // OpenAPI export logic
-    this.showToast('OpenAPI spec exported');
+    this.showToast('OpenManifest exported');
   }
 
   populateCommands() {
-    // Populate command dropdowns based on API spec
+    // Populate command dropdowns based on Manifest
     const commandSelect = document.getElementById('command-select');
-    if (commandSelect && this.apiSpec && this.apiSpec.channels) {
+    if (commandSelect && this.manifest && this.manifest.channels) {
       commandSelect.innerHTML = '';
-      Object.entries(this.apiSpec.channels).forEach(function(entry) {
+      Object.entries(this.manifest.channels).forEach(function(entry) {
         const channelId = entry[0];
         const channel = entry[1];
         Object.keys(channel.commands || {}).forEach(function(commandName) {
@@ -201,7 +201,7 @@ class JanusDevelopmentEnvironment {
   }
 
   updateRequestEditor(channelId, commandName) {
-    const command = this.apiSpec && this.apiSpec.channels && this.apiSpec.channels[channelId] && this.apiSpec.channels[channelId].commands && this.apiSpec.channels[channelId].commands[commandName];
+    const command = this.manifest && this.manifest.channels && this.manifest.channels[channelId] && this.manifest.channels[channelId].commands && this.manifest.channels[channelId].commands[commandName];
     if (command && this.editors.has('request')) {
       const editor = this.editors.get('request');
       const exampleRequest = this.generateCommandExample(channelId, commandName, command);
@@ -229,7 +229,7 @@ class JanusDevelopmentEnvironment {
   }
 
   copyExample(channelId, commandName) {
-    const command = this.apiSpec && this.apiSpec.channels && this.apiSpec.channels[channelId] && this.apiSpec.channels[channelId].commands && this.apiSpec.channels[channelId].commands[commandName];
+    const command = this.manifest && this.manifest.channels && this.manifest.channels[channelId] && this.manifest.channels[channelId].commands && this.manifest.channels[channelId].commands[commandName];
     if (command) {
       const example = this.generateCommandExample(channelId, commandName, command);
       navigator.clipboard.writeText(example);

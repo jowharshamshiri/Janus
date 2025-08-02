@@ -2,7 +2,7 @@
 // Professional Janus Development Environment
 class JanusDevelopmentEnvironment {
   constructor() {
-    this.apiSpec = null;
+    this.manifest = null;
     this.connections = new Map();
     this.editors = new Map();
     this.currentPanel = 'documentation';
@@ -11,10 +11,10 @@ class JanusDevelopmentEnvironment {
 
   async init() {
     try {
-      const response = await fetch('./api-spec.json');
-      this.apiSpec = await response.json();
+      const response = await fetch('./manifest.json');
+      this.manifest = await response.json();
     } catch (error) {
-      console.error('Failed to load API specification:', error);
+      console.error('Failed to load Manifest:', error);
     }
 
     this.setupEventListeners();
@@ -90,7 +90,7 @@ class JanusDevelopmentEnvironment {
   }
 
   copyExample(channelId, commandName) {
-    const command = this.apiSpec?.channels[channelId]?.commands[commandName];
+    const command = this.manifest?.channels[channelId]?.commands[commandName];
     if (command) {
       const example = this.generateCommandExample(channelId, commandName, command);
       navigator.clipboard.writeText(example);

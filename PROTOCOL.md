@@ -16,7 +16,7 @@ The Janus Protocol provides a standardized approach to inter-process communicati
 2. [Communication Patterns](#communication-patterns)
 3. [Security Framework](#security-framework)
 4. [Connection Management](#connection-management)
-5. [API Specification Format](#api-specification-format)
+5. [Manifest Format](#manifest-format)
 6. [Error Handling](#error-handling)
 7. [Timeout Management](#timeout-management)
 8. [Cross-Language Compatibility](#cross-language-compatibility)
@@ -315,7 +315,7 @@ interface DatagramConfig {
 }
 ```
 
-## API Specification Format
+## Manifest Format
 
 ### JSON Schema Structure
 
@@ -652,7 +652,7 @@ Each implementation must successfully communicate with every other implementatio
 6. **Timeout Manager**: Bilateral timeout enforcement
 7. **Error Handler**: Comprehensive error categorization
 
-#### API Specification Engine
+#### Manifest Engine
 1. **Specification Parser**: JSON schema validation
 2. **Type Validator**: Runtime type checking
 3. **Model Registry**: Reusable type definitions
@@ -690,7 +690,7 @@ Each implementation must successfully communicate with every other implementatio
 
 #### Integration Tests
 - Cross-language client-server communication
-- API specification parsing and validation  
+- Manifest parsing and validation  
 - Performance benchmarking
 - Resource limit enforcement
 - Security vulnerability testing

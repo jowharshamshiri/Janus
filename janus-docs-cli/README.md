@@ -25,23 +25,23 @@ npx janus-docs-cli --help
 
 ```bash
 # Generate static documentation
-janus-docs generate api-spec.json
+janus-docs generate manifest.json
 
 # Serve with live reload
-janus-docs serve api-spec.json --port 8080
+janus-docs serve manifest.json --port 8080
 
-# Initialize new API specification
+# Initialize new Manifest
 janus-docs init "My API"
 
 # Validate specification
-janus-docs validate api-spec.json
+janus-docs validate manifest.json
 ```
 
 ## Commands
 
 ### `generate`
 
-Generate static documentation from an API specification.
+Generate static documentation from an Manifest.
 
 ```bash
 janus-docs generate <spec-file> [options]
@@ -59,7 +59,7 @@ Options:
 
 **Example:**
 ```bash
-janus-docs generate api-spec.json \\
+janus-docs generate manifest.json \\
   --output ./docs \\
   --title "My API" \\
   --description "Comprehensive API documentation" \\
@@ -84,7 +84,7 @@ Options:
 
 **Example:**
 ```bash
-janus-docs serve api-spec.json \\
+janus-docs serve manifest.json \\
   --port 3000 \\
   --watch \\
   --open
@@ -92,7 +92,7 @@ janus-docs serve api-spec.json \\
 
 ### `validate`
 
-Validate an API specification file for correctness.
+Validate an Manifest file for correctness.
 
 ```bash
 janus-docs validate <spec-file>
@@ -100,16 +100,16 @@ janus-docs validate <spec-file>
 
 ### `init`
 
-Initialize a new API specification file with example content.
+Initialize a new Manifest file with example content.
 
 ```bash
 janus-docs init [name] [options]
 
 Options:
-  -o, --output <file>       Output file (default: "api-spec.json")
+  -o, --output <file>       Output file (default: "manifest.json")
 ```
 
-## API Specification Format
+## Manifest Format
 
 The CLI expects JSON files following the Janus specification format:
 
@@ -181,7 +181,7 @@ Create a custom CSS file and use it with the `--styles` option:
 ```
 
 ```bash
-janus-docs generate api-spec.json --styles custom-styles.css
+janus-docs generate manifest.json --styles custom-styles.css
 ```
 
 ### Custom Logo
@@ -189,7 +189,7 @@ janus-docs generate api-spec.json --styles custom-styles.css
 Add your logo with the `--logo` option:
 
 ```bash
-janus-docs generate api-spec.json --logo "https://example.com/logo.png"
+janus-docs generate manifest.json --logo "https://example.com/logo.png"
 ```
 
 ## Generated Documentation Features
@@ -221,24 +221,24 @@ janus-docs generate api-spec.json --logo "https://example.com/logo.png"
 
 ## Development Workflow
 
-1. **Create API Specification**:
+1. **Create Manifest**:
    ```bash
    janus-docs init "My API"
    ```
 
 2. **Develop with Live Reload**:
    ```bash
-   janus-docs serve api-spec.json --watch --open
+   janus-docs serve manifest.json --watch --open
    ```
 
 3. **Validate Specification**:
    ```bash
-   janus-docs validate api-spec.json
+   janus-docs validate manifest.json
    ```
 
 4. **Generate Production Docs**:
    ```bash
-   janus-docs generate api-spec.json --output ./public/docs
+   janus-docs generate manifest.json --output ./public/docs
    ```
 
 ## Integration Examples
@@ -252,7 +252,7 @@ name: Generate API Documentation
 on:
   push:
     paths:
-      - 'api-spec.json'
+      - 'manifest.json'
 
 jobs:
   docs:
@@ -265,7 +265,7 @@ jobs:
       
       - name: Generate Documentation
         run: |
-          npx janus-docs-cli generate api-spec.json --output ./docs
+          npx janus-docs-cli generate manifest.json --output ./docs
       
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
@@ -279,9 +279,9 @@ jobs:
 ```json
 {
   "scripts": {
-    "docs:generate": "janus-docs generate api-spec.json",
-    "docs:serve": "janus-docs serve api-spec.json --watch",
-    "docs:validate": "janus-docs validate api-spec.json",
+    "docs:generate": "janus-docs generate manifest.json",
+    "docs:serve": "janus-docs serve manifest.json --watch",
+    "docs:validate": "janus-docs validate manifest.json",
     "docs:build": "npm run docs:validate && npm run docs:generate"
   }
 }
@@ -293,9 +293,9 @@ jobs:
 FROM node:18-alpine
 
 WORKDIR /app
-COPY api-spec.json .
+COPY manifest.json .
 
-RUN npx janus-docs-cli generate api-spec.json --output ./docs
+RUN npx janus-docs-cli generate manifest.json --output ./docs
 
 FROM nginx:alpine
 COPY --from=0 /app/docs /usr/share/nginx/html
@@ -312,7 +312,7 @@ docs/
 ├── index.html          # Main documentation page
 ├── styles.css          # Compiled styles
 ├── script.js           # Interactive functionality
-├── openapi.json        # OpenAPI specification
+├── openapi.json        # OpenManifest
 └── README.md           # Documentation guide
 ```
 

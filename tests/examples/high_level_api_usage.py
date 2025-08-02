@@ -174,8 +174,8 @@ import (
     "time"
     "strconv"
     
-    "github.com/user/GoJanus/pkg/server"
-    "github.com/user/GoJanus/pkg/models"
+    "github.com/jowharshamshiri/GoJanus/pkg/server"
+    "github.com/jowharshamshiri/GoJanus/pkg/models"
 )
 
 func main() {{
@@ -302,9 +302,9 @@ module test_server
 
 go 1.21
 
-replace github.com/user/GoJanus => {self.base_dir}/GoJanus
+replace github.com/jowharshamshiri/GoJanus => {self.base_dir}/GoJanus
 
-require github.com/user/GoJanus v0.0.0-00010101000000-000000000000
+require github.com/jowharshamshiri/GoJanus v0.0.0-00010101000000-000000000000
 '''
         
         mod_file = Path(self.temp_dir) / "go.mod"
@@ -394,7 +394,7 @@ import (
     "fmt"
     "time"
     
-    "github.com/user/GoJanus/pkg/client"
+    "github.com/jowharshamshiri/GoJanus/pkg/client"
 )
 
 func main() {{

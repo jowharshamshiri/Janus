@@ -1,6 +1,6 @@
 /**
  * File Watcher
- * Watches for changes in API specification files
+ * Watches for changes in Manifest files
  */
 
 import * as chokidar from 'chokidar';

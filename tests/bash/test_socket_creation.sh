@@ -19,14 +19,14 @@ import (
     "fmt"
     "log"
     "time"
-    api "github.com/user/GoJanus"
+    api "github.com/jowharshamshiri/GoJanus"
 )
 
 func main() {
     socketPath := "/tmp/go_socket_test.sock"
     
-    // Create simple API spec
-    spec := &api.APISpecification{
+    // Create simple Manifest
+    spec := &api.Manifest{
         Version: "1.0.0",
         Name: "Test API",
         Channels: map[string]*api.ChannelSpec{
@@ -108,8 +108,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Remove existing socket
     let _ = std::fs::remove_file(socket_path);
     
-    // Create simple API spec
-    let mut spec = ApiSpecification::new("1.0.0".to_string());
+    // Create simple Manifest
+    let mut spec = Manifest::new("1.0.0".to_string());
     let mut channel = ChannelSpec::new("Test channel".to_string());
     channel.commands.insert("ping".to_string(), 
         CommandSpec::new("Ping".to_string(), ResponseSpec::new("object".to_string())));

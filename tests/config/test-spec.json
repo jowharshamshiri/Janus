@@ -25,7 +25,7 @@
       "parallel": false
     },
     "conformance_tests": {
-      "description": "API specification compliance tests",
+      "description": "Manifest compliance tests",
       "timeout": 45,
       "parallel": true
     }

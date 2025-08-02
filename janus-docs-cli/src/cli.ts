@@ -39,8 +39,8 @@ program
 
 program
   .command('generate')
-  .description('Generate static documentation from API specification')
-  .argument('<spec-file>', 'Path to API specification JSON file')
+  .description('Generate static documentation from Manifest')
+  .argument('<spec-file>', 'Path to Manifest JSON file')
   .option('-o, --output <dir>', 'Output directory', './docs')
   .option('-t, --title <title>', 'Documentation title')
   .option('-d, --description <desc>', 'Documentation description')
@@ -56,9 +56,9 @@ program
       // Validate spec file
       const specPath = path.resolve(specFile);
       const specContent = await fs.readFile(specPath, 'utf8');
-      const apiSpec = JSON.parse(specContent);
+      const manifest = JSON.parse(specContent);
       
-      console.log(`📋 Loaded API specification: ${apiSpec.name} v${apiSpec.version}`);
+      console.log(`📋 Loaded Manifest: ${manifest.name} v${manifest.version}`);
       
       // Load custom styles if provided
       let customStyles = '';
@@ -71,7 +71,7 @@ program
       }
       
       // Create generator
-      const generator = new DocumentationGenerator(apiSpec, {
+      const generator = new DocumentationGenerator(manifest, {
         title: options.title,
         description: options.description,
         version: options.version,
@@ -93,7 +93,7 @@ program
       console.log('   • index.html     - Main documentation page');
       console.log('   • styles.css     - Styling');
       console.log('   • script.js      - Interactive functionality');
-      console.log('   • openapi.json   - OpenAPI specification');
+      console.log('   • openapi.json   - OpenManifest');
       console.log('   • README.md      - Documentation guide');
       console.log('');
       console.log(`🌐 Open ${path.join(outputDir, 'index.html')} in your browser`);
@@ -107,7 +107,7 @@ program
 program
   .command('serve')
   .description('Serve documentation with live reload')
-  .argument('<spec-file>', 'Path to API specification JSON file')
+  .argument('<spec-file>', 'Path to Manifest JSON file')
   .option('-p, --port <port>', 'Server port', '8080')
   .option('-h, --host <host>', 'Server host', 'localhost')
   .option('-o, --output <dir>', 'Output directory', './docs')
@@ -201,31 +201,31 @@ program
 
 program
   .command('validate')
-  .description('Validate API specification file')
-  .argument('<spec-file>', 'Path to API specification JSON file')
+  .description('Validate Manifest file')
+  .argument('<spec-file>', 'Path to Manifest JSON file')
   .action(async (specFile: string) => {
     try {
-      console.log('🔍 Validating API specification...');
+      console.log('🔍 Validating Manifest...');
       
       const specPath = path.resolve(specFile);
       const specContent = await fs.readFile(specPath, 'utf8');
-      const apiSpec = JSON.parse(specContent);
+      const manifest = JSON.parse(specContent);
       
       // Basic validation
-      if (!apiSpec.version) {
+      if (!manifest.version) {
         throw new Error('Missing required field: version');
       }
       
-      if (!apiSpec.name) {
+      if (!manifest.name) {
         throw new Error('Missing required field: name');
       }
       
-      if (!apiSpec.channels || Object.keys(apiSpec.channels).length === 0) {
+      if (!manifest.channels || Object.keys(manifest.channels).length === 0) {
         throw new Error('Missing or empty channels');
       }
       
       // Validate channels
-      for (const [channelId, channel] of Object.entries(apiSpec.channels)) {
+      for (const [channelId, channel] of Object.entries(manifest.channels)) {
         if (!channel || typeof channel !== 'object') {
           throw new Error(`Invalid channel: ${channelId}`);
         }
@@ -248,18 +248,18 @@ program
         }
       }
       
-      console.log('✅ API specification is valid');
-      console.log(`📋 API: ${apiSpec.name} v${apiSpec.version}`);
-      console.log(`📁 Channels: ${Object.keys(apiSpec.channels).length}`);
+      console.log('✅ Manifest is valid');
+      console.log(`📋 API: ${manifest.name} v${manifest.version}`);
+      console.log(`📁 Channels: ${Object.keys(manifest.channels).length}`);
       
-      const totalCommands = Object.values(apiSpec.channels).reduce((total: number, channel: any) => {
+      const totalCommands = Object.values(manifest.channels).reduce((total: number, channel: any) => {
         return total + Object.keys(channel.commands).length;
       }, 0);
       
       console.log(`⚡ Commands: ${totalCommands}`);
       
-      if (apiSpec.models) {
-        console.log(`🏗️  Models: ${Object.keys(apiSpec.models).length}`);
+      if (manifest.models) {
+        console.log(`🏗️  Models: ${Object.keys(manifest.models).length}`);
       }
       
     } catch (error) {
@@ -270,12 +270,12 @@ program
 
 program
   .command('init')
-  .description('Initialize a new API specification file')
+  .description('Initialize a new Manifest file')
   .argument('[name]', 'API name', 'My API')
-  .option('-o, --output <file>', 'Output file', 'api-spec.json')
+  .option('-o, --output <file>', 'Output file', 'manifest.json')
   .action(async (name: string, options: { output: string }) => {
     try {
-      console.log('🎉 Initializing new API specification...');
+      console.log('🎉 Initializing new Manifest...');
       
       const template = {
         version: '1.0.0',
@@ -317,7 +317,7 @@ program
       const outputPath = path.resolve(options.output);
       await fs.writeFile(outputPath, JSON.stringify(template, null, 2));
       
-      console.log('✅ API specification created');
+      console.log('✅ Manifest created');
       console.log(`📄 File: ${outputPath}`);
       console.log('');
       console.log('🚀 Next steps:');
@@ -347,7 +347,7 @@ async function generateDocumentation(
   }
 ): Promise<void> {
   const specContent = await fs.readFile(specPath, 'utf8');
-  const apiSpec = JSON.parse(specContent);
+  const manifest = JSON.parse(specContent);
   
   let customStyles = '';
   if (options.styles) {
@@ -358,7 +358,7 @@ async function generateDocumentation(
     }
   }
   
-  const generator = new DocumentationGenerator(apiSpec, {
+  const generator = new DocumentationGenerator(manifest, {
     title: options.title,
     description: options.description,
     version: options.version,
