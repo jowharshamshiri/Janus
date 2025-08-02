@@ -129,14 +129,14 @@ func main() {
     srv := &server.JanusServer{}
     
     // Register command handlers
-    srv.RegisterHandler("ping", func(cmd *models.SocketCommand) (interface{}, *models.SocketError) {
+    srv.RegisterHandler("ping", func(cmd *models.JanusCommand) (interface{}, *models.SocketError) {
         return map[string]interface{}{
             "message":   "pong",
             "timestamp": time.Now().Unix(),
         }, nil
     })
     
-    srv.RegisterHandler("echo", func(cmd *models.SocketCommand) (interface{}, *models.SocketError) {
+    srv.RegisterHandler("echo", func(cmd *models.JanusCommand) (interface{}, *models.SocketError) {
         if cmd.Args == nil {
             return nil, &models.SocketError{
                 Code:    "NO_ARGUMENTS",
@@ -353,7 +353,7 @@ All implementations are fully compatible. You can mix and match:
 **Go Server:**
 ```go
 server := &server.JanusServer{}
-server.RegisterHandler("process", func(cmd *models.SocketCommand) (interface{}, *models.SocketError) {
+server.RegisterHandler("process", func(cmd *models.JanusCommand) (interface{}, *models.SocketError) {
     // Process data from any language
     return map[string]interface{}{"processed": true, "language": "go"}, nil
 })
@@ -454,7 +454,7 @@ server.register_handler("validate", |cmd| {
 
 ```go
 // Go
-server.RegisterHandler("validate", func(cmd *models.SocketCommand) (interface{}, *models.SocketError) {
+server.RegisterHandler("validate", func(cmd *models.JanusCommand) (interface{}, *models.SocketError) {
     if validateInput(cmd.Args) {
         return map[string]interface{}{"valid": true}, nil
     } else {

@@ -40,7 +40,7 @@ All messages use **direct JSON payload** without length prefixes (connectionless
 
 ### Core Message Types
 
-#### SocketCommand (Client → Server)
+#### JanusCommand (Client → Server)
 
 ```json
 {
@@ -66,7 +66,7 @@ All messages use **direct JSON payload** without length prefixes (connectionless
 - `timeout` (optional): Timeout in seconds (0.1-300.0, default: 30.0)
 - `timestamp` (required): Unix timestamp (seconds since epoch) as f64 with microsecond precision
 
-#### SocketResponse (Server → Client)
+#### JanusResponse (Server → Client)
 
 ```json
 {
@@ -180,7 +180,7 @@ Client                          Server
 ```typescript
 // Pseudo-code for connectionless correlation system
 class JanusClient {
-  async sendCommand(command: SocketCommand): Promise<SocketResponse> {
+  async sendCommand(command: JanusCommand): Promise<JanusResponse> {
     // Create temporary response socket
     const responseSocket = `/tmp/client_response_${Date.now()}_${Math.random()}.sock`;
     const socket = dgram.createSocket('unix_dgram');
@@ -202,7 +202,7 @@ class JanusClient {
     return response;
   }
   
-  handleResponse(socket: Socket): Promise<SocketResponse> {
+  handleResponse(socket: Socket): Promise<JanusResponse> {
     return new Promise((resolve, reject) => {
       const timeout = setTimeout(() => {
         reject(new Error('Response timeout'));
