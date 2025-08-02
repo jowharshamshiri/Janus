@@ -1,12 +1,13 @@
-[submodule "SwiftJanus"]
-	path = SwiftJanus
-	url = ./SwiftJanus
+[submodule "GoJanus"]
+        path = GoJanus
+        url = https://github.com/jowharshamshiri/GoJanus.git
+
 [submodule "RustJanus"]
 	path = RustJanus
-	url = ./RustJanus
-[submodule "GoJanus"]
-	path = GoJanus
-	url = ./GoJanus
+	url = https://github.com/jowharshamshiri/RustJanus.git
 [submodule "TypeScriptJanus"]
 	path = TypeScriptJanus
-	url = ./TypeScriptJanus
+	url = https://github.com/jowharshamshiri/TypeScriptJanus.git
+[submodule "SwiftJanus"]
+	path = SwiftJanus
+	url = https://github.com/jowharshamshiri/SwiftJanus.git
