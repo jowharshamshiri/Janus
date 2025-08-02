@@ -465,35 +465,99 @@ interface DatagramConfig {
 
 ## Error Handling
 
-### Error Categories and Codes
+### JSON-RPC 2.0 Compliant Error System
 
-#### Validation Errors
-- `VALIDATION_FAILED`: General validation failure
-- `MISSING_REQUIRED_ARGUMENT`: Required parameter missing
-- `INVALID_ARGUMENT`: Type or format validation failure
-- `ARGUMENT_OUT_OF_RANGE`: Numeric value outside bounds
-- `INVALID_ENUM_VALUE`: Value not in allowed enumeration
+All implementations must use JSON-RPC 2.0 compliant error codes for consistent cross-platform error handling. The error system consists of **standard JSON-RPC error codes** and **Janus-specific protocol error codes**.
 
-#### Security Errors  
-- `SECURITY_VIOLATION`: Security validation failure
-- `PATH_TRAVERSAL_ATTEMPT`: Directory traversal detected
-- `RESOURCE_LIMIT_EXCEEDED`: Resource usage over limits
-- `CHANNEL_ISOLATION_VIOLATION`: Cross-channel access attempt
-- `AUTHENTICATION_FAILED`: Channel authentication failure
+#### Standard JSON-RPC 2.0 Error Codes
 
-#### Communication Errors
-- `CONNECTION_ERROR`: Socket communication failure
-- `ENCODING_FAILED`: JSON serialization error
-- `DECODING_FAILED`: JSON deserialization error
-- `MESSAGE_TOO_LARGE`: Size limit exceeded
-- `PROTOCOL_VIOLATION`: Protocol format violation
+| Code | Name | Description | Usage |
+|------|------|-------------|-------|
+| `-32700` | ParseError | Invalid JSON was received by the server | JSON parsing failures, malformed messages |
+| `-32600` | InvalidRequest | The JSON sent is not a valid Request object | Missing required fields, invalid request structure |
+| `-32601` | MethodNotFound | The method does not exist / is not available | Unknown command names, unregistered handlers |
+| `-32602` | InvalidParams | Invalid method parameter(s) | Type validation failures, constraint violations |
+| `-32603` | InternalError | Internal JSON-RPC error | Unexpected server errors, system failures |
 
-#### Runtime Errors
-- `COMMAND_TIMEOUT`: Command execution timeout
-- `HANDLER_TIMEOUT`: Handler processing timeout
-- `HANDLER_NOT_FOUND`: No handler for command
-- `INTERNAL_ERROR`: Unexpected system error
-- `SERVICE_UNAVAILABLE`: Service temporarily unavailable
+#### Janus Protocol-Specific Error Codes
+
+| Code | Name | Description | Usage |
+|------|------|-------------|-------|
+| `-32011` | MessageFramingError | Message framing/encoding issues | Length prefix errors, encoding problems |
+| `-32012` | ResponseTrackingError | Response correlation/tracking issues | UUID correlation failures, response routing |
+| `-32013` | ManifestValidationError | Manifest parsing/validation issues | Specification validation, schema errors |
+
+#### Extended Server Error Codes (-32000 to -32099)
+
+| Code | Name | Description | Usage |
+|------|------|-------------|-------|
+| `-32000` | ServerError | Generic server error | General server-side failures |
+| `-32001` | ServiceUnavailable | Service unavailable | Server overload, maintenance mode |
+| `-32002` | AuthenticationFailed | Authentication failure | Invalid credentials, unauthorized access |
+| `-32003` | RateLimitExceeded | Rate limiting exceeded | Too many requests, throttling active |
+| `-32004` | ResourceNotFound | Resource not found | Channel or handler not found |
+| `-32005` | ValidationFailed | Validation failure | Security validation, input validation |
+
+### JSONRPCError Structure
+
+All error responses must use the standardized JSONRPCError structure:
+
+```json
+{
+  "code": -32602,
+  "message": "Invalid params",
+  "data": {
+    "field": "username",
+    "value": "invalid-value",
+    "details": "Username must contain only alphanumeric characters and underscores",
+    "constraints": {
+      "pattern": "^[a-zA-Z0-9_]+$",
+      "minLength": 3,
+      "maxLength": 50
+    }
+  }
+}
+```
+
+**JSONRPCError Fields**:
+- `code` (required): Numeric error code from tables above
+- `message` (required): Human-readable error message
+- `data` (optional): Additional error context and details
+
+**JSONRPCErrorData Structure** (when present):
+- `field`: Field name that caused the error (for validation errors)
+- `value`: Actual value that failed validation
+- `details`: Detailed explanation of the error
+- `constraints`: Validation rules that were violated
+- `errorType`: Classification of error for programmatic handling
+
+### Error Categories and Mappings
+
+#### Validation Errors → InvalidParams (-32602)
+- Missing required arguments
+- Type validation failures  
+- Format validation failures
+- Range/constraint violations
+- Enum value violations
+
+#### Security Errors → ValidationFailed (-32005)
+- Path traversal attempts
+- Resource limit exceeded
+- Channel isolation violations
+- Authentication failures
+- Input sanitization failures
+
+#### Communication Errors → ServerError (-32000) or Protocol-Specific
+- Socket communication failures → ServerError (-32000)
+- Message encoding/decoding → MessageFramingError (-32011)
+- Message size limits → ValidationFailed (-32005)
+- Protocol violations → InvalidRequest (-32600)
+
+#### Runtime Errors → InternalError (-32603) or Extended Codes
+- Command/handler timeouts → ServerError (-32000)
+- Handler not found → MethodNotFound (-32601)
+- Unexpected system errors → InternalError (-32603)
+- Service unavailable → ServiceUnavailable (-32001)
 
 ### Error Response Format
 
