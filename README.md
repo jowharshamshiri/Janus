@@ -1,19 +1,19 @@
 # Janus - Cross-Platform Unix Socket Communication
 
-A comprehensive Janus library providing consistent, secure, and high-performance inter-process communication across **Go**, **Rust**, **Swift**, and **TypeScript**.
+A Janus library providing inter-process communication across **Go**, **Rust**, **Swift**, and **TypeScript**.
 
-## 🚀 Features
+## Features
 
-- **🌍 Cross-Platform**: Full implementations in Go, Rust, Swift, and TypeScript
-- **📡 Connectionless**: SOCK_DGRAM datagram sockets for true stateless communication
-- **⚡ Fast & Simple**: No connection overhead, direct datagram exchange
-- **🔒 Security First**: 25+ security validation mechanisms built-in
-- **📖 Auto Documentation**: Professional API docs with live reload CLI tool
-- **🧪 Comprehensive Testing**: Unified test infrastructure with N×N matrix validation
-- **📋 Type Safety**: Full type definitions and validation across all languages
-- **🎯 Sub-millisecond**: High-performance connectionless socket communication
+- **Cross-Platform**: Implementations in Go, Rust, Swift, and TypeScript
+- **Connectionless**: SOCK_DGRAM datagram sockets for stateless communication
+- **Simple**: No connection overhead, direct datagram exchange
+- **Security**: 25+ security validation mechanisms built-in
+- **Documentation**: API docs with live reload CLI tool
+- **Testing**: Test infrastructure with N×N matrix validation
+- **Type Safety**: Type definitions and validation across languages
+- **Performance**: Sub-millisecond connectionless socket communication
 
-## 📦 Quick Start
+## Quick Start
 
 ### Using the Documentation CLI
 
@@ -82,7 +82,7 @@ go build -o bin/client ./cmd/client
 ./bin/client
 ```
 
-## 🧪 Cross-Platform Testing
+## Cross-Platform Testing
 
 Test all implementations communicating with each other:
 
@@ -97,31 +97,31 @@ Test all implementations communicating with each other:
 - Rust ↔ TypeScript, Go, Swift
 - Swift ↔ TypeScript, Go, Rust
 
-## 📋 Protocol Specification
+## Protocol Specification
 
-The library implements a comprehensive Unix socket protocol with:
+The library implements a Unix socket protocol with:
 
 - **4-byte big-endian length prefixes** for message framing
 - **JSON-based messaging** with UUID correlation
 - **Async request/response** patterns
-- **Comprehensive security validation**
+- **Security validation**
 - **Standardized error handling**
 
 See [PROTOCOL.md](PROTOCOL.md) for the complete specification.
 
-## 🔒 Security Features
+## Security Features
 
 - **Path Validation**: Directory whitelist, traversal prevention
 - **Input Sanitization**: Null byte detection, UTF-8 validation
 - **Resource Limits**: Configurable size and connection limits
 - **Timeout Management**: Bilateral timeout system
-- **Audit Logging**: Comprehensive security event logging
+- **Audit Logging**: Security event logging
 
-## 📖 Documentation
+## Documentation
 
 ### Generated Documentation
 
-Professional API documentation is automatically generated:
+API documentation is automatically generated:
 
 ```bash
 # Install CLI tool
@@ -137,14 +137,14 @@ janus-docs serve your-manifest.json --watch
 ### Reference Documentation
 
 - **[PROTOCOL.md](PROTOCOL.md)** - Complete protocol specification
-- **[tests/README.md](tests/README.md)** - Comprehensive testing guide  
+- **[tests/README.md](tests/README.md)** - Testing guide  
 - **Language READMEs** - Implementation-specific documentation in each directory
 
-## 🏗️ Implementation Details
+## Implementation Details
 
 ### TypeScript Implementation
 - **Location**: `TypeScriptJanus/`
-- **Features**: Full type safety, async/await, Jest testing
+- **Features**: Type safety, async/await, Jest testing
 - **Package**: Ready for NPM publication
 - **Documentation**: Automatic API doc generation
 
@@ -152,21 +152,21 @@ janus-docs serve your-manifest.json --watch
 - **Location**: `SwiftJanus/`
 - **Features**: Native async/await, Combine integration, SwiftPM package
 - **Platform**: macOS and iOS ready
-- **Testing**: 129 comprehensive tests
+- **Testing**: 129 tests
 
 ### Rust Implementation
 - **Location**: `RustJanus/`
 - **Features**: Memory safety, zero-cost abstractions, Tokio async
-- **Performance**: Optimized for high throughput
+- **Performance**: Optimized for throughput
 - **Testing**: 122 tests (library + integration)
 
 ### Go Implementation
 - **Location**: `GoJanus/`
-- **Features**: Goroutines, channels, comprehensive error handling  
-- **Performance**: High-performance server implementation
-- **Testing**: 63 tests with full coverage
+- **Features**: Goroutines, channels, error handling  
+- **Performance**: Server implementation
+- **Testing**: 63 tests with coverage
 
-## 🚀 Performance
+## Performance
 
 All implementations target:
 - **< 1ms response times** for local Unix socket communication
@@ -176,7 +176,7 @@ All implementations target:
 
 Performance benchmarks available in each implementation directory.
 
-## 🛠️ Development
+## Development
 
 ### Project Structure
 
@@ -187,11 +187,11 @@ Janus/
 ├── RustJanus/          # Rust implementation
 ├── GoJanus/            # Go implementation
 ├── janus-docs-cli/      # Documentation CLI tool
-├── tests/                    # Comprehensive test infrastructure
-│   ├── run_all_tests.sh      # Master test runner
+├── tests/                    # Test infrastructure
+│   ├── run_all_tests.sh      # Test runner
 │   ├── config/               # Test configurations
 │   ├── python/               # Python test suite
-│   └── README.md            # Complete testing guide
+│   └── README.md            # Testing guide
 ├── PROTOCOL.md               # Protocol specification
 └── CLAUDE.md                 # Project instructions
 ```
@@ -277,11 +277,11 @@ APIs are defined using JSON specifications:
 }
 ```
 
-## 🔧 Tools
+## Tools
 
 ### Documentation CLI (`janus-docs-cli`)
 
-Professional documentation generation tool:
+Documentation generation tool:
 
 - **Generate**: Static documentation from Manifests
 - **Serve**: Live reload development server
@@ -293,21 +293,21 @@ npm install -g janus-docs-cli
 janus-docs --help
 ```
 
-## 📄 License
+## License
 
 MIT License - see individual implementation directories for details.
 
-## 🤝 Support
+## Support
 
 - **Documentation**: See implementation READMEs and PROTOCOL.md
 - **Issues**: Report bugs and feature requests via GitHub issues
-- **Examples**: Complete examples in each implementation directory
+- **Examples**: Examples in each implementation directory
 
-## 🎯 Use Cases
+## Use Cases
 
-Perfect for:
-- **Microservices Communication**: High-performance IPC
-- **Plugin Architectures**: Secure subprocess communication  
+Suitable for:
+- **Microservices Communication**: IPC
+- **Plugin Architectures**: Subprocess communication  
 - **Development Tools**: CLI tools with daemon processes
 - **System Services**: OS-level service communication
 - **Mobile Apps**: iOS app-to-service communication
