@@ -1,6 +1,6 @@
 # Janus - Cross-Platform Unix Socket Communication
 
-A Janus library providing inter-process communication across **Go**, **Rust**, **Swift**, and **TypeScript**.
+Janus provides inter-process communication across **Go**, **Rust**, **Swift**, and **TypeScript**.
 
 ## Features
 
@@ -34,6 +34,7 @@ janus-docs serve manifest.json --watch --open
 ### Language-Specific Usage
 
 #### TypeScript/Node.js
+
 ```bash
 cd TypeScriptJanus
 npm install && npm run build
@@ -46,6 +47,7 @@ npm run client
 ```
 
 #### Swift (macOS/iOS)
+
 ```bash
 cd SwiftJanus
 swift build
@@ -58,6 +60,7 @@ swift run SwiftJanus-Client
 ```
 
 #### Rust
+
 ```bash
 cd RustJanus
 cargo build --release
@@ -70,6 +73,7 @@ cargo run --bin client
 ```
 
 #### Go
+
 ```bash
 cd GoJanus
 go build -o bin/server ./cmd/server
@@ -92,6 +96,7 @@ Test all implementations communicating with each other:
 ```
 
 **Test Matrix**:
+
 - TypeScript ↔ Go, Rust, Swift
 - Go ↔ TypeScript, Rust, Swift  
 - Rust ↔ TypeScript, Go, Swift
@@ -143,24 +148,28 @@ janus-docs serve your-manifest.json --watch
 ## Implementation Details
 
 ### TypeScript Implementation
+
 - **Location**: `TypeScriptJanus/`
 - **Features**: Type safety, async/await, Jest testing
 - **Package**: Ready for NPM publication
 - **Documentation**: Automatic API doc generation
 
 ### Swift Implementation  
+
 - **Location**: `SwiftJanus/`
 - **Features**: Native async/await, Combine integration, SwiftPM package
 - **Platform**: macOS and iOS ready
 - **Testing**: 129 tests
 
 ### Rust Implementation
+
 - **Location**: `RustJanus/`
 - **Features**: Memory safety, zero-cost abstractions, Tokio async
 - **Performance**: Optimized for throughput
 - **Testing**: 122 tests (library + integration)
 
 ### Go Implementation
+
 - **Location**: `GoJanus/`
 - **Features**: Goroutines, channels, error handling  
 - **Performance**: Server implementation
@@ -169,6 +178,7 @@ janus-docs serve your-manifest.json --watch
 ## Performance
 
 All implementations target:
+
 - **< 1ms response times** for local Unix socket communication
 - **1000+ messages/second** per connection
 - **100+ concurrent connections**
@@ -208,6 +218,7 @@ Janus/
 ### Running Tests
 
 **Master Test Runner (Recommended)**:
+
 ```bash
 # Run all basic tests (builds, unit, cross-platform, security)
 ./tests/run_all_tests.sh
@@ -226,6 +237,7 @@ Janus/
 ```
 
 **Individual Implementation Tests**:
+
 ```bash
 # TypeScript
 cd TypeScriptJanus && npm test
@@ -306,6 +318,7 @@ MIT License - see individual implementation directories for details.
 ## Use Cases
 
 Suitable for:
+
 - **Microservices Communication**: IPC
 - **Plugin Architectures**: Subprocess communication  
 - **Development Tools**: CLI tools with daemon processes
