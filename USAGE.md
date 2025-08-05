@@ -1,14 +1,78 @@
 # Janus - Usage Guide
 
-This guide shows how to use the high-level APIs in each implementation to create servers and clients with minimal code.
+This guide shows how to use the high-level APIs in each implementation to create servers and clients with API specifications (Manifests).
 
 ## Overview
 
 Each implementation provides two simple classes:
-- **Server**: `JanusServer` - One-line listening with command handlers
-- **Client**: `JanusClient` - One-line command sending with automatic response handling
+- **Server**: `JanusServer` - API specification-driven server with command handlers
+- **Client**: `JanusClient` - Automatic specification fetching with validation
 
-All implementations have identical APIs (adapted for language conventions) and are fully cross-compatible.
+All implementations use the **Dynamic Specification Architecture** where:
+1. Server loads a Manifest (API specification) file defining available commands
+2. Client automatically fetches the specification from the server for validation
+3. All custom commands are validated against the specification
+
+## API Specification (Manifest)
+
+Before creating servers or clients, you need a Manifest file defining your API. Here's an example:
+
+**my-api-spec.json:**
+```json
+{
+  "name": "My Application API",
+  "version": "1.0.0",
+  "description": "Example API for demonstration",
+  "channels": {
+    "default": {
+      "commands": {
+        "get_user": {
+          "description": "Retrieve user information",
+          "arguments": {
+            "user_id": {
+              "type": "string",
+              "required": true,
+              "description": "User identifier"
+            }
+          },
+          "response": {
+            "type": "object",
+            "properties": {
+              "id": {"type": "string"},
+              "name": {"type": "string"},
+              "email": {"type": "string"}
+            }
+          }
+        },
+        "update_profile": {
+          "description": "Update user profile",
+          "arguments": {
+            "user_id": {"type": "string", "required": true},
+            "name": {"type": "string", "required": false},
+            "email": {"type": "string", "required": false}
+          },
+          "response": {
+            "type": "object",
+            "properties": {
+              "success": {"type": "boolean"},
+              "updated_fields": {"type": "array"}
+            }
+          }
+        },
+        "log_event": {
+          "description": "Log application event (fire-and-forget)",
+          "arguments": {
+            "level": {"type": "string", "required": true},
+            "message": {"type": "string", "required": true}
+          }
+        }
+      }
+    }
+  }
+}
+```
+
+**Note**: Built-in commands (`ping`, `echo`, `get_info`, `validate`, `slow_process`, `spec`) are always available and cannot be overridden in Manifests.
 
 ---
 
@@ -17,38 +81,64 @@ All implementations have identical APIs (adapted for language conventions) and a
 ### Server Usage
 
 ```rust
-use RustJanus::{JanusServer, SocketError};
+use RustJanus::{JanusServer, JSONRPCError, JSONRPCErrorCode};
 use serde_json::json;
 use std::collections::HashMap;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    // Create server
-    let mut server = JanusServer::new();
+    // Load API specification from Manifest file
+    let mut server = JanusServer::from_manifest_file("my-api-spec.json").await?;
     
-    // Register command handlers
-    server.register_handler("ping", |_cmd| {
-        Ok(json!({"message": "pong", "timestamp": chrono::Utc::now().timestamp()}))
+    // Register handlers for commands defined in the Manifest
+    server.register_handler("get_user", |cmd| {
+        // Extract user_id argument (validated by Manifest)
+        let user_id = cmd.args.as_ref()
+            .and_then(|args| args.get("user_id"))
+            .and_then(|v| v.as_str())
+            .ok_or_else(|| JSONRPCError::new(
+                JSONRPCErrorCode::InvalidParams, 
+                "Missing user_id"
+            ))?;
+        
+        // Simulate user lookup
+        Ok(json!({
+            "id": user_id,
+            "name": "John Doe",
+            "email": "john@example.com"
+        }))
     }).await;
     
-    server.register_handler("echo", |cmd| {
-        if let Some(args) = &cmd.args {
-            if let Some(message) = args.get("message") {
-                Ok(json!({"echo": message, "received_at": chrono::Utc::now().timestamp()}))
-            } else {
-                Err(SocketError {
-                    code: "MISSING_ARGUMENT".to_string(),
-                    message: "Missing 'message' argument".to_string(),
-                    details: None,
-                })
-            }
-        } else {
-            Err(SocketError {
-                code: "NO_ARGUMENTS".to_string(),
-                message: "No arguments provided".to_string(),
-                details: None,
-            })
-        }
+    server.register_handler("update_profile", |cmd| {
+        let args = cmd.args.as_ref().ok_or_else(|| 
+            JSONRPCError::new(JSONRPCErrorCode::InvalidParams, "No arguments")
+        )?;
+        
+        let user_id = args.get("user_id")
+            .and_then(|v| v.as_str())
+            .ok_or_else(|| JSONRPCError::new(
+                JSONRPCErrorCode::InvalidParams, 
+                "Missing user_id"
+            ))?;
+        
+        let mut updated_fields = Vec::new();
+        if args.contains_key("name") { updated_fields.push("name"); }
+        if args.contains_key("email") { updated_fields.push("email"); }
+        
+        Ok(json!({
+            "success": true,
+            "updated_fields": updated_fields
+        }))
+    }).await;
+    
+    server.register_handler("log_event", |cmd| {
+        // Fire-and-forget logging - no response needed
+        let args = cmd.args.as_ref().unwrap();
+        let level = args["level"].as_str().unwrap();
+        let message = args["message"].as_str().unwrap();
+        
+        println!("[{}] {}", level, message);
+        Ok(json!(null)) // No response for fire-and-forget
     }).await;
     
     // Start listening (blocks until stopped)
@@ -68,37 +158,49 @@ use serde_json::json;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    // Create client
-    let client = JanusClient::new(Some("my-app"), Some(Duration::from_secs(30)));
+    // Create client - specification is fetched automatically from server
+    let client = JanusClient::new("/tmp/my-server.sock", "default").await?;
     
-    // Simple ping
-    let response = client.send_command("/tmp/my-server.sock", "ping", None).await?;
+    // Built-in commands (always available)
+    let response = client.send_command("ping", None).await?;
     if response.success {
-        println!("Ping successful: {:?}", response.result);
+        println!("Server ping: {:?}", response.result);
     }
     
-    // Command with arguments
-    let mut args = HashMap::new();
-    args.insert("message".to_string(), json!("Hello, Server!"));
+    // Custom command defined in Manifest (arguments validated automatically)
+    let mut user_args = HashMap::new();
+    user_args.insert("user_id".to_string(), json!("user123"));
     
-    let response = client.send_command("/tmp/my-server.sock", "echo", Some(args)).await?;
+    let response = client.send_command("get_user", Some(user_args)).await?;
     if response.success {
-        println!("Echo response: {:?}", response.result);
+        println!("User data: {:?}", response.result);
     } else {
         println!("Error: {:?}", response.error);
     }
     
-    // Fire-and-forget command
+    // Update profile command with multiple arguments
+    let mut update_args = HashMap::new();
+    update_args.insert("user_id".to_string(), json!("user123"));
+    update_args.insert("name".to_string(), json!("Jane Doe"));
+    update_args.insert("email".to_string(), json!("jane@example.com"));
+    
+    let response = client.send_command("update_profile", Some(update_args)).await?;
+    if response.success {
+        println!("Profile updated: {:?}", response.result);
+    } else {
+        println!("Update failed: {:?}", response.error);
+    }
+    
+    // Fire-and-forget command (no response expected)
     let mut log_args = HashMap::new();
     log_args.insert("level".to_string(), json!("info"));
-    log_args.insert("message".to_string(), json!("Background task completed"));
+    log_args.insert("message".to_string(), json!("User profile updated"));
     
-    client.send_command_no_response("/tmp/my-server.sock", "log", Some(log_args)).await?;
+    client.send_command_no_response("log_event", Some(log_args)).await?;
     
-    // Test connectivity
-    if client.ping("/tmp/my-server.sock").await {
-        println!("Server is responsive");
-    }
+    // Get server API specification
+    let spec_response = client.send_command("spec", None).await?;
+    println!("Server API spec: {:?}", spec_response.result);
     
     Ok(())
 }
@@ -115,50 +217,99 @@ package main
 
 import (
     "fmt"
-    "time"
     "os"
     "os/signal"
     "syscall"
     
-    "your-project/pkg/server"
-    "your-project/pkg/models"
+    "github.com/jowharshamshiri/GoJanus/pkg/server"
+    "github.com/jowharshamshiri/GoJanus/pkg/models"
+    "github.com/jowharshamshiri/GoJanus/pkg/specification"
 )
 
 func main() {
-    // Create server
-    srv := &server.JanusServer{}
+    // Load API specification from Manifest file
+    manifest, err := specification.ParseManifestFromFile("my-api-spec.json")
+    if err != nil {
+        fmt.Printf("Failed to load manifest: %v\n", err)
+        return
+    }
     
-    // Register command handlers
-    srv.RegisterHandler("ping", func(cmd *models.JanusCommand) (interface{}, *models.SocketError) {
-        return map[string]interface{}{
-            "message":   "pong",
-            "timestamp": time.Now().Unix(),
-        }, nil
-    })
+    // Create server with configuration
+    config := &server.ServerConfig{
+        SocketPath:        "/tmp/my-server.sock",
+        CleanupOnStart:    true,
+        CleanupOnShutdown: true,
+    }
+    srv := server.NewJanusServer(config)
     
-    srv.RegisterHandler("echo", func(cmd *models.JanusCommand) (interface{}, *models.SocketError) {
-        if cmd.Args == nil {
-            return nil, &models.SocketError{
-                Code:    "NO_ARGUMENTS",
-                Message: "No arguments provided",
-                Details: "",
-            }
-        }
-        
-        message, exists := cmd.Args["message"]
+    // Set the server's manifest for validation and spec command
+    srv.SetManifest(manifest)
+    
+    // Register handlers for commands defined in the Manifest
+    srv.RegisterHandler("get_user", server.NewObjectHandler(func(cmd *models.JanusCommand) (map[string]interface{}, error) {
+        // Extract user_id argument (validated by Manifest)
+        userID, exists := cmd.Args["user_id"]
         if !exists {
-            return nil, &models.SocketError{
-                Code:    "MISSING_ARGUMENT",
-                Message: "Missing 'message' argument",
-                Details: "",
+            return nil, &models.JSONRPCError{
+                Code:    models.InvalidParams,
+                Message: "Missing user_id argument",
             }
         }
         
+        userIDStr, ok := userID.(string)
+        if !ok {
+            return nil, &models.JSONRPCError{
+                Code:    models.InvalidParams,
+                Message: "user_id must be a string",
+            }
+        }
+        
+        // Simulate user lookup
         return map[string]interface{}{
-            "echo":        message,
-            "received_at": time.Now().Unix(),
+            "id":    userIDStr,
+            "name":  "John Doe",
+            "email": "john@example.com",
         }, nil
-    })
+    }))
+    
+    srv.RegisterHandler("update_profile", server.NewObjectHandler(func(cmd *models.JanusCommand) (map[string]interface{}, error) {
+        if cmd.Args == nil {
+            return nil, &models.JSONRPCError{
+                Code:    models.InvalidParams,
+                Message: "No arguments provided",
+            }
+        }
+        
+        userID, exists := cmd.Args["user_id"]
+        if !exists {
+            return nil, &models.JSONRPCError{
+                Code:    models.InvalidParams,
+                Message: "Missing user_id argument",
+            }
+        }
+        
+        updatedFields := []string{}
+        if _, exists := cmd.Args["name"]; exists {
+            updatedFields = append(updatedFields, "name")
+        }
+        if _, exists := cmd.Args["email"]; exists {
+            updatedFields = append(updatedFields, "email")
+        }
+        
+        return map[string]interface{}{
+            "success":        true,
+            "updated_fields": updatedFields,
+        }, nil
+    }))
+    
+    srv.RegisterHandler("log_event", server.NewBoolHandler(func(cmd *models.JanusCommand) (bool, error) {
+        // Fire-and-forget logging
+        level := cmd.Args["level"].(string)
+        message := cmd.Args["message"].(string)
+        
+        fmt.Printf("[%s] %s\n", level, message)
+        return true, nil
+    }))
     
     // Handle graceful shutdown
     c := make(chan os.Signal, 1)
@@ -186,55 +337,85 @@ import (
     "fmt"
     "time"
     
-    "your-project/pkg/client"
+    "github.com/jowharshamshiri/GoJanus/pkg/protocol"
 )
 
 func main() {
-    // Create client
-    client := &client.JanusClient{}
-    client.SetChannelID("my-app")
+    // Create client - specification is fetched automatically from server
+    client, err := protocol.NewJanusClient("/tmp/my-server.sock", "default")
+    if err != nil {
+        fmt.Printf("Failed to create client: %v\n", err)
+        return
+    }
+    
+    // Set timeout for commands
     client.SetTimeout(30 * time.Second)
     
-    // Simple ping
-    response, err := client.SendCommand("/tmp/my-server.sock", "ping", nil)
+    // Built-in commands (always available)
+    response, err := client.SendCommand("ping", nil)
     if err != nil {
-        fmt.Printf("Command failed: %v\n", err)
+        fmt.Printf("Ping failed: %v\n", err)
         return
     }
     
     if response.Success {
-        fmt.Printf("Ping successful: %v\n", response.Result)
+        fmt.Printf("Server ping: %v\n", response.Result)
     }
     
-    // Command with arguments
-    args := map[string]interface{}{
-        "message": "Hello, Server!",
+    // Custom command defined in Manifest (arguments validated automatically)
+    userArgs := map[string]interface{}{
+        "user_id": "user123",
     }
     
-    response, err = client.SendCommand("/tmp/my-server.sock", "echo", args)
+    response, err = client.SendCommand("get_user", userArgs)
     if err != nil {
-        fmt.Printf("Echo failed: %v\n", err)
+        fmt.Printf("Get user failed: %v\n", err)
         return
     }
     
     if response.Success {
-        fmt.Printf("Echo response: %v\n", response.Result)
+        fmt.Printf("User data: %v\n", response.Result)
     } else {
         fmt.Printf("Error: %v\n", response.Error)
     }
     
-    // Fire-and-forget command
-    logArgs := map[string]interface{}{
-        "level":   "info",
-        "message": "Background task completed",
+    // Update profile command with multiple arguments
+    updateArgs := map[string]interface{}{
+        "user_id": "user123",
+        "name":    "Jane Doe",
+        "email":   "jane@example.com",
     }
     
-    if err := client.SendCommandNoResponse("/tmp/my-server.sock", "log", logArgs); err != nil {
+    response, err = client.SendCommand("update_profile", updateArgs)
+    if err != nil {
+        fmt.Printf("Update profile failed: %v\n", err)
+        return
+    }
+    
+    if response.Success {
+        fmt.Printf("Profile updated: %v\n", response.Result)
+    } else {
+        fmt.Printf("Update failed: %v\n", response.Error)
+    }
+    
+    // Fire-and-forget command (no response expected)
+    logArgs := map[string]interface{}{
+        "level":   "info",
+        "message": "User profile updated",
+    }
+    
+    if err := client.SendCommandNoResponse("log_event", logArgs); err != nil {
         fmt.Printf("Fire-and-forget failed: %v\n", err)
     }
     
+    // Get server API specification
+    specResponse, err := client.SendCommand("spec", nil)
+    if err == nil && specResponse.Success {
+        fmt.Printf("Server API spec: %v\n", specResponse.Result)
+    }
+    
     // Test connectivity
-    if client.Ping("/tmp/my-server.sock") {
+    if client.Ping() {
         fmt.Println("Server is responsive")
     }
 }
@@ -486,29 +667,45 @@ server.registerHandler("validate") { cmd in
 
 ## Best Practices
 
-1. **Use meaningful command names**: `get_user_profile` instead of `cmd1`
-2. **Validate inputs**: Always check arguments in handlers
-3. **Handle errors gracefully**: Provide descriptive error messages
-4. **Use appropriate timeouts**: Set realistic timeouts for your use case
-5. **Clean up resources**: Stop servers gracefully and handle signals
-6. **Test cross-language compatibility**: Verify your server works with clients from other languages
-7. **Use structured logging**: Log important events for debugging
-8. **Implement health checks**: Use ping to monitor server availability
+1. **Define your API in a Manifest**: Always create a comprehensive API specification file before implementing servers
+2. **Use meaningful command names**: `get_user_profile` instead of `cmd1` - and define them in your Manifest
+3. **Leverage automatic validation**: Let the Dynamic Specification Architecture validate arguments for you
+4. **Handle errors with JSON-RPC codes**: Use standardized JSONRPCError codes for consistent error handling
+5. **Test with the `spec` command**: Clients can fetch server API specifications for debugging
+6. **Validate Manifest syntax**: Use `janus-docs-cli validate` to check your API specifications
+7. **Generate documentation**: Use `janus-docs-cli generate` to create professional API docs
+8. **Test cross-language compatibility**: Verify your server works with clients from other languages
+9. **Use built-in commands sparingly**: Built-ins (`ping`, `echo`, `get_info`, `validate`, `slow_process`, `spec`) are for testing, not production APIs
+10. **Version your APIs**: Include version numbers in your Manifest for API evolution
 
 ---
 
 ## Quick Start Checklist
 
-### Server Setup:
-1. ✅ Create `JanusServer` instance
-2. ✅ Register command handlers with `registerHandler`/`RegisterHandler`
-3. ✅ Call `start_listening`/`StartListening`/`startListening` with socket path
-4. ✅ Handle graceful shutdown (optional but recommended)
+### 1. Create API Specification (Manifest):
+1. ✅ Create JSON file defining your API commands, arguments, and responses
+2. ✅ Validate with `janus-docs-cli validate my-api-spec.json`
+3. ✅ Generate documentation with `janus-docs-cli generate my-api-spec.json`
 
-### Client Setup:
-1. ✅ Create `JanusClient` instance with optional channel ID and timeout
-2. ✅ Call `send_command`/`SendCommand`/`sendCommand` with socket path, command, and args
-3. ✅ Handle response success/error cases
-4. ✅ Use `ping` for connectivity testing
+### 2. Server Setup:
+1. ✅ Load Manifest file with `ParseManifestFromFile`/`from_manifest_file`/`loadManifest`
+2. ✅ Create `JanusServer` instance and set the Manifest
+3. ✅ Register command handlers for commands defined in your Manifest
+4. ✅ Call `start_listening`/`StartListening`/`startListening` with socket path
+5. ✅ Handle graceful shutdown (optional but recommended)
 
-That's it! Your cross-language Unix socket communication is ready.
+### 3. Client Setup:
+1. ✅ Create `JanusClient` instance with socket path and channel ID
+2. ✅ Client automatically fetches API specification from server
+3. ✅ Call `send_command`/`SendCommand`/`sendCommand` with command name and args
+4. ✅ Arguments are automatically validated against the Manifest
+5. ✅ Handle response success/error cases
+6. ✅ Use built-in `ping` and `spec` commands for testing
+
+### 4. Testing:
+1. ✅ Test built-in commands: `ping`, `spec`, `get_info`
+2. ✅ Test your custom commands defined in the Manifest
+3. ✅ Verify cross-language compatibility (Go ↔ Rust ↔ Swift ↔ TypeScript)
+4. ✅ Use `spec` command to debug API specification issues
+
+That's it! Your specification-driven, cross-language Unix socket API is ready.

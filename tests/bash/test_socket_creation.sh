@@ -51,7 +51,7 @@ func main() {
     defer client.Close()
     
     // Register handler - this should trigger server mode
-    err = client.RegisterCommandHandler("ping", func(cmd *api.SocketCommand) (*api.SocketResponse, error) {
+    err = client.RegisterCommandHandler("ping", func(cmd *api.JanusCommand) (*api.JanusResponse, error) {
         return api.NewSuccessResponse(cmd.ID, cmd.ChannelID, map[string]interface{}{"pong": true}), nil
     })
     if err != nil {

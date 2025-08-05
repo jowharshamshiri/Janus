@@ -182,7 +182,7 @@ func main() {{
     srv := &server.JanusServer{{}}
     
     // Register ping handler
-    srv.RegisterHandler("ping", func(cmd *models.SocketCommand) (interface{{}}, *models.SocketError) {{
+    srv.RegisterHandler("ping", func(cmd *models.JanusCommand) (interface{{}}, *models.SocketError) {{
         return map[string]interface{{}}{{
             "message":   "pong",
             "timestamp": time.Now().Unix(),
@@ -190,7 +190,7 @@ func main() {{
     }})
     
     // Register echo handler
-    srv.RegisterHandler("echo", func(cmd *models.SocketCommand) (interface{{}}, *models.SocketError) {{
+    srv.RegisterHandler("echo", func(cmd *models.JanusCommand) (interface{{}}, *models.SocketError) {{
         if cmd.Args == nil {{
             return nil, &models.SocketError{{
                 Code:    "NO_ARGUMENTS",
@@ -215,7 +215,7 @@ func main() {{
     }})
     
     // Register math handler
-    srv.RegisterHandler("math", func(cmd *models.SocketCommand) (interface{{}}, *models.SocketError) {{
+    srv.RegisterHandler("math", func(cmd *models.JanusCommand) (interface{{}}, *models.SocketError) {{
         if cmd.Args == nil {{
             return nil, &models.SocketError{{
                 Code:    "NO_ARGUMENTS",
@@ -257,7 +257,7 @@ func main() {{
     }})
     
     // Register validate handler
-    srv.RegisterHandler("validate", func(cmd *models.SocketCommand) (interface{{}}, *models.SocketError) {{
+    srv.RegisterHandler("validate", func(cmd *models.JanusCommand) (interface{{}}, *models.SocketError) {{
         valid := cmd.Args != nil
         return map[string]interface{{}}{{
             "valid": valid,
@@ -265,7 +265,7 @@ func main() {{
     }})
     
     // Register slow_process handler
-    srv.RegisterHandler("slow_process", func(cmd *models.SocketCommand) (interface{{}}, *models.SocketError) {{
+    srv.RegisterHandler("slow_process", func(cmd *models.JanusCommand) (interface{{}}, *models.SocketError) {{
         time.Sleep(2 * time.Second)
         return map[string]interface{{}}{{
             "completed": true,
