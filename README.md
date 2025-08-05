@@ -1,6 +1,6 @@
 # Janus - Cross-Platform Unix Socket Communication
 
-Janus provides inter-process communication across **Go**, **Rust**, **Swift**, and **TypeScript**.
+A cross-platform connection-less Unix socket communication library providing inter-process communication across Go, Rust, Swift, and TypeScript. It enables fast, secure, and type-safe communication between applications using datagram sockets (SOCK_DGRAM) with built-in security features.
 
 ## Features
 
