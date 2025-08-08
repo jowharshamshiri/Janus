@@ -1,4 +1,4 @@
-# Janus Protocol Specification
+# Janus Protocol Manifest
 
 **Version**: 2.0.0  
 **Status**: Production Ready  
@@ -8,7 +8,7 @@
 
 ## Overview
 
-The Janus Protocol provides a standardized approach to inter-process communication using **connectionless Unix domain datagram sockets (SOCK_DGRAM)** with JSON-based messaging, comprehensive security validation, and stateless communication patterns. This specification ensures compatibility across multiple programming language implementations while maintaining the simplicity and efficiency of connectionless communication.
+The Janus Protocol provides a standardized approach to inter-process communication using **connectionless Unix domain datagram sockets (SOCK_DGRAM)** with JSON-based messaging, comprehensive security validation, and stateless communication patterns. This manifest ensures compatibility across multiple programming language implementations while maintaining the simplicity and efficiency of connectionless communication.
 
 ## Table of Contents
 
@@ -40,13 +40,14 @@ All messages use **direct JSON payload** without length prefixes (connectionless
 
 ### Core Message Types
 
-#### JanusCommand (Client → Server)
+#### JanusRequest (Client → Server)
 
 ```json
 {
   "id": "550e8400-e29b-41d4-a716-446655440000",
+  "method": "create-user",
   "channelId": "user-service", 
-  "command": "create-user",
+  "request": "create-user",
   "reply_to": "/tmp/client_response_123456.sock",
   "args": {
     "username": "john_doe",
@@ -54,53 +55,68 @@ All messages use **direct JSON payload** without length prefixes (connectionless
     "role": "user"
   },
   "timeout": 30.0,
-  "timestamp": 1722249000.123
+  "timestamp": "2025-08-06T12:34:56.789Z"
 }
 ```
 
-**Field Specifications**:
-- `id` (required): UUID v4 string for response correlation
+**Field Manifests**:
+- `id` (required): UUID v4 string for unique request identification
+- `method` (required): Method name being invoked (1-256 chars, alphanumeric + `-_`)
 - `channelId` (required): Channel routing identifier (1-256 chars, alphanumeric + `-_`)
-- `command` (required): Command name (1-256 chars, alphanumeric + `-_`)
-- `args` (optional): Command arguments object (max 5MB)
+- `request` (required): Request name (1-256 chars, alphanumeric + `-_`)
+- `reply_to` (required): Response socket path for reply correlation
+- `args` (optional): Request arguments object (max 5MB)
 - `timeout` (optional): Timeout in seconds (0.1-300.0, default: 30.0)
-- `timestamp` (required): Unix timestamp (seconds since epoch) as f64 with microsecond precision
+- `timestamp` (required): RFC 3339 timestamp with milliseconds (YYYY-MM-DDTHH:MM:SS.sssZ)
 
-#### JanusResponse (Server → Client)
+#### JanusResponse (Server → Client) - PRIME DIRECTIVE
 
 ```json
 {
-  "commandId": "550e8400-e29b-41d4-a716-446655440000",
-  "channelId": "user-service",
-  "success": true,
   "result": {
     "userId": "12345",
-    "status": "created",
+    "status": "created", 
     "message": "User created successfully"
   },
-  "timestamp": 1722249001.234
+  "error": null,
+  "success": true,
+  "request_id": "550e8400-e29b-41d4-a716-446655440000",
+  "id": "998e7654-f21c-32a8-b827-556677889900",
+  "timestamp": "2025-08-06T12:34:56.789Z"
 }
 ```
 
-**Success Response Fields**:
-- `commandId` (required): UUID from original command
-- `channelId` (required): Channel verification
-- `success` (required): `true` for successful operations
-- `result` (optional): Response data object
-- `timestamp` (required): Response generation Unix timestamp (f64 seconds since epoch)
+**CRITICAL PROTOCOL MANIFEST:**
+- **`result`**: The actual unwrapped response data (not wrapped in additional objects)
+- **`error`**: JSONRPCError object if error occurred, `null` if success
+- **`success`**: Boolean indicator - `true` for success, `false` for error  
+- **`request_id`**: The exact ID from the original request being responded to
+- **`id`**: Unique identifier for this manifestific response message
+- **`timestamp`**: RFC 3339 timestamp with milliseconds (YYYY-MM-DDTHH:MM:SS.sssZ)
+
+**Response Fields Manifest**:
+- `result` (required): Actual response data, unwrapped
+- `error` (required): JSONRPCError object or null  
+- `success` (required): Boolean success indicator
+- `request_id` (required): UUID from original request
+- `id` (required): Unique response identifier
+- `timestamp` (required): RFC 3339 with milliseconds
 
 **Error Response Example**:
 ```json
 {
-  "commandId": "550e8400-e29b-41d4-a716-446655440000",
-  "channelId": "user-service",
-  "success": false,
+  "result": null,
   "error": {
-    "code": "VALIDATION_FAILED",
-    "message": "Username contains invalid characters",
-    "details": "Username must contain only alphanumeric characters and underscores"
+    "code": -32602,
+    "message": "Invalid parameters",
+    "data": {
+      "details": "Missing required field: email"
+    }
   },
-  "timestamp": 1722249001.234
+  "success": false,
+  "request_id": "550e8400-e29b-41d4-a716-446655440000",
+  "id": "887e6543-d10b-21a7-a716-445566778899",
+  "timestamp": "2025-08-06T12:34:56.789Z"
 }
 ```
 
@@ -110,12 +126,12 @@ For implementations requiring type discrimination:
 
 ```json
 {
-  "type": "command",
+  "type": "request",
   "payload": "eyJpZCI6IjU1MGU4NDAwLWUyOWItNDFkNC1hNzE2LTQ0NjY1NTQ0MDAwMCIsImNoYW5uZWxJZCI6InVzZXItc2VydmljZSIsImNvbW1hbmQiOiJjcmVhdGUtdXNlciIsImFyZ3MiOnsidXNlcm5hbWUiOiJqb2huX2RvZSIsImVtYWlsIjoiam9obkBleGFtcGxlLmNvbSIsInJvbGUiOiJ1c2VyIn0sInRpbWVvdXQiOjMwLjAsInRpbWVzdGFtcCI6IjIwMjUtMDctMjlUMTA6NTA6MDAuMDAwWiJ9"
 }
 ```
 
-- `type`: `"command"` or `"response"`
+- `type`: `"request"` or `"response"`
 - `payload`: Base64-encoded JSON of actual message
 
 ## Communication Patterns
@@ -125,17 +141,17 @@ For implementations requiring type discrimination:
 The protocol uses **connectionless request-response** with **UUID correlation** for stateless communication:
 
 #### Client Flow
-1. **Generate Command**: Create UUID and timestamp
-2. **Send Datagram**: Transmit single datagram with complete command
+1. **Generate Request**: Create UUID and timestamp
+2. **Send Datagram**: Transmit single datagram with complete request
 3. **Listen for Response**: Bind to response socket and wait for reply datagram
 4. **Response Correlation**: Match responses via UUID
 5. **Socket Cleanup**: Close socket after receiving response or timeout
 
 #### Server Flow  
 1. **Bind Server Socket**: Listen on server socket path for incoming datagrams
-2. **Receive Datagrams**: Process each complete command datagram independently
+2. **Receive Datagrams**: Process each complete request datagram independently
 3. **Validate Security**: Apply comprehensive security framework per message
-4. **Execute Handler**: Process command with timeout enforcement
+4. **Execute Handler**: Process request with timeout enforcement
 5. **Send Response Datagram**: Send reply to client's response socket path
 
 ### Connectionless Lifecycle
@@ -152,26 +168,26 @@ Client                          Server
   |-- Create Response Socket -----|
   |    (Bind to temp path)        |
   |                               |
-  |-- Send Command Datagram ----->|
+  |-- Send Request Datagram ----->|
   |    (UUID: abc123, reply_to)   |-- Receive & Validate
   |                               |-- Execute Handler
   |<-- Response Datagram ---------|
-  |    (commandId: abc123)        |
+  |    (requestId: abc123)        |
   |                               |
   |-- Close Response Socket ------|
   |                               |
   |-- Create New Response Socket--|
-  |-- Send Command Datagram ----->|
+  |-- Send Request Datagram ----->|
   |    (UUID: def456, reply_to)   |-- Execute Handler
   |<-- Response Datagram ---------|
-  |    (commandId: def456)        |
+  |    (requestId: def456)        |
   |-- Close Response Socket ------|
 ```
 
 ### Message Correlation System
 
 #### UUID-Based Tracking
-- **Command Generation**: UUID v4 for each command
+- **Request Generation**: UUID v4 for each request
 - **Response Socket**: Temporary socket path for receiving replies
 - **Reply-To Mechanism**: Server sends response to client's reply_to socket
 - **Timeout Cleanup**: Client socket timeout for unresponsive servers
@@ -180,20 +196,20 @@ Client                          Server
 ```typescript
 // Pseudo-code for connectionless correlation system
 class JanusClient {
-  async sendCommand(command: JanusCommand): Promise<JanusResponse> {
+  async sendRequest(request: JanusRequest): Promise<JanusResponse> {
     // Create temporary response socket
     const responseSocket = `/tmp/client_response_${Date.now()}_${Math.random()}.sock`;
     const socket = dgram.createSocket('unix_dgram');
     socket.bind(responseSocket);
     
     // Add reply_to field
-    command.reply_to = responseSocket;
+    request.reply_to = responseSocket;
     
-    // Send command datagram
-    await this.sendDatagram(JSON.stringify(command), serverSocketPath);
+    // Send request datagram
+    await this.sendDatagram(JSON.stringify(request), serverSocketPath);
     
     // Wait for response with timeout
-    const response = await this.waitForResponse(socket, command.timeout);
+    const response = await this.waitForResponse(socket, request.timeout);
     
     // Cleanup
     socket.close();
@@ -232,7 +248,7 @@ interface SocketPathValidation {
 }
 ```
 
-#### Channel/Command Name Security
+#### Channel/Request Name Security
 ```typescript
 interface NameValidation {
   maxLength: 256;              // Configurable
@@ -257,8 +273,8 @@ interface MessageSecurity {
 ```typescript
 interface ResourceLimits {
   maxConnections: 100;         // Concurrent connections
-  maxHandlers: 500;           // Command handlers
-  maxPendingCommands: 1000;   // Awaiting responses
+  maxHandlers: 500;           // Request handlers
+  maxPendingRequests: 1000;   // Awaiting responses
   minTimeout: 0.1;            // Seconds
   maxTimeout: 300.0;          // 5 minutes
 }
@@ -298,7 +314,7 @@ interface ConnectionPool {
 1. **UNBOUND**: No socket created
 2. **BINDING**: Creating and binding response socket
 3. **BOUND**: Socket ready to receive datagrams
-4. **SENDING**: Transmitting command datagram
+4. **SENDING**: Transmitting request datagram
 5. **WAITING**: Listening for response datagram
 6. **CLEANUP**: Closing socket and removing file
 7. **CLOSED**: Socket resources deallocated
@@ -328,7 +344,7 @@ interface DatagramConfig {
     "user-service": {
       "name": "User Service",
       "description": "Core user management operations",
-      "commands": {
+      "requests": {
         "create-user": {
           "name": "Create User",
           "description": "Create a new user account",
@@ -454,11 +470,11 @@ interface DatagramConfig {
 }
 ```
 
-### Specification Validation Rules
+### Manifest Validation Rules
 
 - **Version**: Semantic versioning (major.minor.patch)
 - **Channels**: Must have at least one channel
-- **Commands**: Must have unique names within channel
+- **Requests**: Must have unique names within channel
 - **Arguments**: Type validation with comprehensive constraints
 - **Models**: Reusable type definitions with inheritance support
 - **Error Codes**: Predefined set of error conditions
@@ -467,7 +483,7 @@ interface DatagramConfig {
 
 ### JSON-RPC 2.0 Compliant Error System
 
-All implementations must use JSON-RPC 2.0 compliant error codes for consistent cross-platform error handling. The error system consists of **standard JSON-RPC error codes** and **Janus-specific protocol error codes**.
+All implementations must use JSON-RPC 2.0 compliant error codes for consistent cross-platform error handling. The error system consists of **standard JSON-RPC error codes** and **Janus-manifestific protocol error codes**.
 
 #### Standard JSON-RPC 2.0 Error Codes
 
@@ -475,17 +491,17 @@ All implementations must use JSON-RPC 2.0 compliant error codes for consistent c
 |------|------|-------------|-------|
 | `-32700` | ParseError | Invalid JSON was received by the server | JSON parsing failures, malformed messages |
 | `-32600` | InvalidRequest | The JSON sent is not a valid Request object | Missing required fields, invalid request structure |
-| `-32601` | MethodNotFound | The method does not exist / is not available | Unknown command names, unregistered handlers |
+| `-32601` | MethodNotFound | The method does not exist / is not available | Unknown request names, unregistered handlers |
 | `-32602` | InvalidParams | Invalid method parameter(s) | Type validation failures, constraint violations |
 | `-32603` | InternalError | Internal JSON-RPC error | Unexpected server errors, system failures |
 
-#### Janus Protocol-Specific Error Codes
+#### Janus Protocol-Manifestific Error Codes
 
 | Code | Name | Description | Usage |
 |------|------|-------------|-------|
 | `-32011` | MessageFramingError | Message framing/encoding issues | Length prefix errors, encoding problems |
 | `-32012` | ResponseTrackingError | Response correlation/tracking issues | UUID correlation failures, response routing |
-| `-32013` | ManifestValidationError | Manifest parsing/validation issues | Specification validation, schema errors |
+| `-32013` | ManifestValidationError | Manifest parsing/validation issues | Manifest validation, schema errors |
 
 #### Extended Server Error Codes (-32000 to -32099)
 
@@ -547,14 +563,14 @@ All error responses must use the standardized JSONRPCError structure:
 - Authentication failures
 - Input sanitization failures
 
-#### Communication Errors → ServerError (-32000) or Protocol-Specific
+#### Communication Errors → ServerError (-32000) or Protocol-Manifestific
 - Socket communication failures → ServerError (-32000)
 - Message encoding/decoding → MessageFramingError (-32011)
 - Message size limits → ValidationFailed (-32005)
 - Protocol violations → InvalidRequest (-32600)
 
 #### Runtime Errors → InternalError (-32603) or Extended Codes
-- Command/handler timeouts → ServerError (-32000)
+- Request/handler timeouts → ServerError (-32000)
 - Handler not found → MethodNotFound (-32601)
 - Unexpected system errors → InternalError (-32603)
 - Service unavailable → ServiceUnavailable (-32001)
@@ -563,7 +579,7 @@ All error responses must use the standardized JSONRPCError structure:
 
 ```json
 {
-  "commandId": "uuid-from-request",
+  "requestId": "uuid-from-request",
   "channelId": "channel-name", 
   "success": false,
   "error": {
@@ -586,7 +602,7 @@ All error responses must use the standardized JSONRPCError structure:
 
 ### Bilateral Timeout System
 
-#### Command Timeout (Client-Side)
+#### Request Timeout (Client-Side)
 - **Purpose**: Prevent client from waiting indefinitely
 - **Default**: 30.0 seconds
 - **Range**: 0.1 - 300.0 seconds
@@ -608,17 +624,17 @@ All error responses must use the standardized JSONRPCError structure:
 ```typescript
 interface TimeoutProfiles {
   standard: {
-    command: 30.0,
+    request: 30.0,
     handler: 30.0,
     connection: 10.0
   },
   aggressive: {
-    command: 5.0,
+    request: 5.0,
     handler: 5.0, 
     connection: 3.0
   },
   relaxed: {
-    command: 120.0,
+    request: 120.0,
     handler: 120.0,
     connection: 30.0
   }
@@ -629,12 +645,12 @@ interface TimeoutProfiles {
 
 ```json
 {
-  "commandId": "uuid-from-request",
+  "requestId": "uuid-from-request",
   "channelId": "channel-name",
   "success": false,
   "error": {
-    "code": "COMMAND_TIMEOUT",
-    "message": "Command execution exceeded timeout limit",
+    "code": "REQUEST_TIMEOUT",
+    "message": "Request execution exceeded timeout limit",
     "details": "Operation timed out after 30.0 seconds",
     "timeout": 30.0,
     "elapsed": 30.1
@@ -653,9 +669,9 @@ All implementations must produce **byte-for-byte identical** wire format:
 2. **UTF-8 encoded JSON payload**
 3. **Consistent field ordering** (for deterministic serialization)
 4. **Unix timestamps (f64)** with millisecond precision
-5. **UUID v4 format** for command correlation
+5. **UUID v4 format** for request correlation
 
-### Language-Specific Considerations
+### Language-Manifestific Considerations
 
 #### Go Implementation
 - Use `encoding/json` with consistent field tags
@@ -717,10 +733,10 @@ Each implementation must successfully communicate with every other implementatio
 7. **Error Handler**: Comprehensive error categorization
 
 #### Manifest Engine
-1. **Specification Parser**: JSON schema validation
+1. **Manifest Parser**: JSON schema validation
 2. **Type Validator**: Runtime type checking
 3. **Model Registry**: Reusable type definitions
-4. **Command Registry**: Dynamic command discovery
+4. **Request Registry**: Dynamic request discovery
 5. **Documentation Generator**: API documentation export
 
 ### Performance Requirements
@@ -769,14 +785,14 @@ Each implementation must successfully communicate with every other implementatio
 ### Documentation Requirements
 
 #### API Documentation
-- Complete command reference
+- Complete request reference
 - Type definitions and constraints
 - Error codes and handling
 - Examples and usage patterns
 - Performance characteristics
 
 #### Implementation Guide
-- Language-specific setup instructions
+- Language-manifestific setup instructions
 - Configuration options
 - Best practices and patterns
 - Troubleshooting guide
@@ -794,8 +810,8 @@ Each implementation must successfully communicate with every other implementatio
 
 ### Protocol Version History
 
-- **v1.0.0** (2025-07-29): Initial specification with async communication patterns
+- **v1.0.0** (2025-07-29): Initial manifest with async communication patterns
 
 ### Contributing
 
-This specification is maintained as part of the Janus project. Changes must maintain backward compatibility and cross-language consistency.
+This manifest is maintained as part of the Janus project. Changes must maintain backward compatibility and cross-language consistency.

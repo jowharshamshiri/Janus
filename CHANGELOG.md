@@ -3,7 +3,7 @@
 All notable changes to the Janus Cross-Platform Unix Domain Socket Communication Library will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
-and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+and this project adheres to [Semantic Versioning](https://semver.org/manifest/v2.0.0.html).
 
 ## [0.31.47279] - 2025-08-05 - First Release
 
@@ -24,7 +24,7 @@ First release of Janus cross-platform Unix domain socket communication library w
 - **SOCK_DGRAM Architecture**: Unix domain datagram socket implementation across all languages
 - **Connectionless Communication**: Stateless request-response pattern with reply-to mechanism
 - **Cross-Platform Compatibility**: API and protocol compatibility between Go, Rust, Swift, and TypeScript
-- **Dynamic Specification Architecture**: Server-provided API specifications with client validation
+- **Dynamic Manifest Architecture**: Server-provided API manifests with client validation
 
 #### Performance
 - **Sub-millisecond Latency**: Implementations achieve <1ms response times in testing
@@ -61,7 +61,7 @@ First release of Janus cross-platform Unix domain socket communication library w
 ### Key Features
 
 #### Security Framework (27 Security Mechanisms)
-- **Input Validation**: Validation for socket paths, commands, and message content
+- **Input Validation**: Validation for socket paths, requests, and message content
 - **Path Security**: Unix socket path validation with whitelist enforcement
 - **Injection Prevention**: Protection against null byte, path traversal, and script injection attacks
 - **Resource Protection**: Configurable limits and monitoring systems
@@ -69,19 +69,19 @@ First release of Janus cross-platform Unix domain socket communication library w
 
 #### JSON-RPC 2.0 Compliance
 - **Standardized Error Codes**: JSON-RPC error handling with numeric codes (-32700 to -32013)
-- **Protocol Compliance**: JSON-RPC 2.0 specification adherence
+- **Protocol Compliance**: JSON-RPC 2.0 manifest adherence
 - **Cross-Platform Consistency**: Identical error codes and messages across implementations
-- **Legacy Error Elimination**: Removal of implementation-specific error types
+- **Legacy Error Elimination**: Removal of implementation-manifestific error types
 
-#### Dynamic Specification Architecture
-- **Automatic Specification Fetching**: Clients automatically fetch API specs from servers
-- **Manifest-Driven Development**: Server-side API specification files define available commands
-- **Argument Validation**: Automatic validation of command arguments against specifications
-- **Built-in Commands**: Six reserved commands (ping, echo, get_info, validate, slow_process, spec)
+#### Dynamic Manifest Architecture
+- **Automatic Manifest Fetching**: Clients automatically fetch API manifests from servers
+- **Manifest-Driven Development**: Server-side API manifest files define available requests
+- **Argument Validation**: Automatic validation of request arguments against manifests
+- **Built-in Requests**: Six reserved requests (ping, echo, get_info, validate, slow_process, manifest)
 
 #### Advanced Handler System
 - **Direct Value Responses**: Return any JSON-compatible type without dictionary wrapping
-- **Native Async Support**: Language-specific async patterns (goroutines, Tokio, Task, Promise)
+- **Native Async Support**: Language-manifestific async patterns (goroutines, Tokio, Task, Promise)
 - **Type Safety**: Compile-time type checking for handler responses
 - **Flexible Error Handling**: Custom error types with automatic JSON-RPC mapping
 
@@ -106,12 +106,12 @@ First release of Janus cross-platform Unix domain socket communication library w
 - **Performance Benchmarking**: Automated latency and throughput measurement
 
 #### Development Tools
-- **Manifest Validation**: JSON schema validation for API specifications
+- **Manifest Validation**: JSON schema validation for API manifests
 - **Documentation Generation**: Automatic HTML and OpenAPI documentation
 - **Cross-Platform Benchmarking**: Performance comparison across implementations
 - **Test Report Generation**: Structured test results with JSON export
 
-### 🛠️ Technical Specifications
+### 🛠️ Technical Manifests
 
 #### Protocol Features
 - **Message Framing**: OS-level datagram boundaries (no custom framing needed)
@@ -169,9 +169,9 @@ First release of Janus cross-platform Unix domain socket communication library w
 
 #### Quick Start
 1. **Choose Implementation**: Go, Rust, Swift, or TypeScript
-2. **Create Manifest**: Define your API specification in JSON
-3. **Implement Server**: Load Manifest and register command handlers
-4. **Create Client**: Connect with automatic specification fetching
+2. **Create Manifest**: Define your API manifest in JSON
+3. **Implement Server**: Load Manifest and register request handlers
+4. **Create Client**: Connect with automatic manifest fetching
 5. **Test Cross-Platform**: Verify compatibility with other language implementations
 
 #### Example Manifest
@@ -181,7 +181,7 @@ First release of Janus cross-platform Unix domain socket communication library w
   "version": "1.0.0",
   "channels": {
     "default": {
-      "commands": {
+      "requests": {
         "get_user": {
           "arguments": {"user_id": {"type": "string", "required": true}},
           "response": {"type": "object"}
@@ -194,7 +194,7 @@ First release of Janus cross-platform Unix domain socket communication library w
 
 #### Documentation
 - **USAGE.md**: Comprehensive usage guide with examples
-- **PROTOCOL.md**: Detailed protocol specification
+- **PROTOCOL.md**: Detailed protocol manifest
 - **README.md**: Project overview and quick start
 - **API Documentation**: Generated with `npx janus-docs-cli`
 

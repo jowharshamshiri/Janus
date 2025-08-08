@@ -101,13 +101,13 @@ class ManifestValidator:
         """Validate that implementation uses correct JSON message format"""
         violations = []
         
-        # Required message fields according to spec
-        required_fields = ['channel', 'command', 'reply_to']
+        # Required message fields according to manifest
+        required_fields = ['channel', 'request', 'reply_to']
         
         # Search for message creation/parsing code
         try:
             result = subprocess.run(
-                ['grep', '-r', '-i', 'channel.*command', implementation_dir],
+                ['grep', '-r', '-i', 'channel.*request', implementation_dir],
                 capture_output=True, text=True
             )
             
@@ -125,8 +125,8 @@ class ManifestValidator:
         
         return len(violations) == 0, violations
     
-    def validate_api_commands(self, socket_path: str, server_process: subprocess.Popen) -> Tuple[bool, List[str]]:
-        """Validate that server implements required API commands"""
+    def validate_api_requests(self, socket_path: str, server_process: subprocess.Popen) -> Tuple[bool, List[str]]:
+        """Validate that server implements required API requests"""
         violations = []
         
         # Wait for server to be ready
@@ -142,18 +142,18 @@ class ManifestValidator:
             violations.append(f"Server did not create socket within {max_wait}s")
             return False, violations
         
-        # Test each required command from Manifest
+        # Test each required request from Manifest
         if 'channels' in self.manifest:
             for channel_id, channel in self.manifest['channels'].items():
-                for command_name, command_spec in channel.get('commands', {}).items():
-                    success, error = self._test_command(socket_path, channel_id, command_name, command_spec)
+                for request_name, request_manifest in channel.get('requests', {}).items():
+                    success, error = self._test_request(socket_path, channel_id, request_name, request_manifest)
                     if not success:
-                        violations.append(f"Command {channel_id}.{command_name} failed: {error}")
+                        violations.append(f"Request {channel_id}.{request_name} failed: {error}")
         
         return len(violations) == 0, violations
     
-    def _test_command(self, socket_path: str, channel: str, command: str, spec: Dict) -> Tuple[bool, str]:
-        """Test a specific API command"""
+    def _test_request(self, socket_path: str, channel: str, request: str, manifest: Dict) -> Tuple[bool, str]:
+        """Test a manifestific API request"""
         try:
             # Create client socket
             client_sock = socket.socket(socket.AF_UNIX, socket.SOCK_DGRAM)
@@ -165,20 +165,20 @@ class ManifestValidator:
                 
                 # Prepare test message
                 test_params = {}
-                if 'parameters' in spec:
-                    for param_name, param_spec in spec['parameters'].items():
-                        if 'example' in param_spec:
-                            test_params[param_name] = param_spec['example']
-                        elif param_spec.get('type') == 'string':
+                if 'parameters' in manifest:
+                    for param_name, param_manifest in manifest['parameters'].items():
+                        if 'example' in param_manifest:
+                            test_params[param_name] = param_manifest['example']
+                        elif param_manifest.get('type') == 'string':
                             test_params[param_name] = "test"
-                        elif param_spec.get('type') == 'integer':
+                        elif param_manifest.get('type') == 'integer':
                             test_params[param_name] = 42
-                        elif param_spec.get('type') == 'boolean':
+                        elif param_manifest.get('type') == 'boolean':
                             test_params[param_name] = True
                 
                 message = {
                     'channel': channel,
-                    'command': command,
+                    'request': request,
                     'parameters': test_params,
                     'reply_to': reply_path
                 }
@@ -225,7 +225,7 @@ class ManifestValidator:
             
             message = {
                 'channel': 'system',
-                'command': 'ping',
+                'request': 'ping',
                 'parameters': {'message': 'timeout_test'},
                 'reply_to': invalid_reply_path
             }
@@ -318,7 +318,7 @@ class ManifestValidator:
             results['overall_success'] = False
             self.logger.warning(f"Security validation issues: {violations}")
         
-        # 4. Start server and validate API commands
+        # 4. Start server and validate API requests
         server_process = None
         try:
             # Clean up any existing socket
@@ -336,15 +336,15 @@ class ManifestValidator:
                 stderr=subprocess.PIPE
             )
             
-            # Validate API commands
-            success, violations = self.validate_api_commands(socket_path, server_process)
-            results['tests']['api_commands'] = {
+            # Validate API requests
+            success, violations = self.validate_api_requests(socket_path, server_process)
+            results['tests']['api_requests'] = {
                 'success': success,
                 'violations': violations
             }
             if not success:
                 results['overall_success'] = False
-                self.logger.error(f"API commands validation failed: {violations}")
+                self.logger.error(f"API requests validation failed: {violations}")
             
             # Validate timeout handling
             success, violations = self.validate_timeout_handling(socket_path)
@@ -393,7 +393,7 @@ def main():
     parser = argparse.ArgumentParser(description="Validate Manifest compliance")
     parser.add_argument("--manifest", default="example-manifest.json", help="Manifest file")
     parser.add_argument("--implementation", required=True, help="Implementation directory")
-    parser.add_argument("--server-cmd", nargs="+", required=True, help="Server startup command")
+    parser.add_argument("--server-cmd", nargs="+", required=True, help="Server startup request")
     parser.add_argument("--socket-path", required=True, help="Socket path for testing")
     parser.add_argument("--verbose", "-v", action="store_true", help="Verbose output")
     parser.add_argument("--output", default="validation_results.json", help="Output file")

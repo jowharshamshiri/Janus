@@ -39,8 +39,8 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }, observerOptions);
 
-    // Observe all sections and commands
-    document.querySelectorAll('.section, .command').forEach(section => {
+    // Observe all sections and requests
+    document.querySelectorAll('.section, .request').forEach(section => {
         if (section.id) {
             observer.observe(section);
         }
@@ -133,7 +133,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         const searchInput = document.createElement('input');
         searchInput.type = 'text';
-        searchInput.placeholder = 'Search commands...';
+        searchInput.placeholder = 'Search requests...';
         searchInput.style.cssText = `
             width: 100%;
             padding: 0.5rem;
@@ -228,13 +228,13 @@ document.addEventListener('DOMContentLoaded', function() {
             this.sendMessage();
           });
 
-          // Channel/command selection
+          // Channel/request selection
           document.getElementById('select-channel')?.addEventListener('change', (e) => {
-            this.populateCommands(e.target.value);
+            this.populateRequests(e.target.value);
             this.updateMessageEditor();
           });
 
-          document.getElementById('select-command')?.addEventListener('change', () => {
+          document.getElementById('select-request')?.addEventListener('change', () => {
             this.updateMessageEditor();
           });
 
@@ -335,15 +335,15 @@ document.addEventListener('DOMContentLoaded', function() {
           // Simulate incoming messages for demonstration
           const messages = [
             { 
-              type: 'command',
+              type: 'request',
               channelId: 'user-service',
-              commandName: 'create-user',
+              requestName: 'create-user',
               timestamp: new Date().toISOString(),
               data: { username: 'john_doe', email: 'john@example.com' }
             },
             {
               type: 'response',
-              commandId: 'cmd-123',
+              requestId: 'cmd-123',
               timestamp: new Date().toISOString(),
               success: true,
               data: { userId: '12345', message: 'User created successfully' }
@@ -387,32 +387,32 @@ document.addEventListener('DOMContentLoaded', function() {
           textElement.textContent = text;
         }
 
-        populateCommands(channelId) {
-          const commandSelect = document.getElementById('select-command');
-          commandSelect.innerHTML = '<option value="">Select a command...</option>';
+        populateRequests(channelId) {
+          const requestSelect = document.getElementById('select-request');
+          requestSelect.innerHTML = '<option value="">Select a request...</option>';
 
           if (channelId && this.manifest?.channels[channelId]) {
-            const commands = this.manifest.channels[channelId].commands;
-            Object.keys(commands).forEach(commandName => {
+            const requests = this.manifest.channels[channelId].requests;
+            Object.keys(requests).forEach(requestName => {
               const option = document.createElement('option');
-              option.value = commandName;
-              option.textContent = commandName;
-              commandSelect.appendChild(option);
+              option.value = requestName;
+              option.textContent = requestName;
+              requestSelect.appendChild(option);
             });
-            commandSelect.disabled = false;
+            requestSelect.disabled = false;
           } else {
-            commandSelect.disabled = true;
+            requestSelect.disabled = true;
           }
         }
 
         updateMessageEditor() {
           const channelId = document.getElementById('select-channel').value;
-          const commandName = document.getElementById('select-command').value;
+          const requestName = document.getElementById('select-request').value;
 
-          if (channelId && commandName && this.manifest) {
-            const command = this.manifest.channels[channelId]?.commands[commandName];
-            if (command) {
-              const template = this.generateMessageTemplate(command);
+          if (channelId && requestName && this.manifest) {
+            const request = this.manifest.channels[channelId]?.requests[requestName];
+            if (request) {
+              const template = this.generateMessageTemplate(request);
               const editor = this.messageEditors.get('message');
               if (editor) {
                 editor.setValue(JSON.stringify(template, null, 2));
@@ -421,11 +421,11 @@ document.addEventListener('DOMContentLoaded', function() {
           }
         }
 
-        generateMessageTemplate(command) {
+        generateMessageTemplate(request) {
           const template = {};
           
-          if (command.arguments) {
-            command.arguments.forEach(arg => {
+          if (request.arguments) {
+            request.arguments.forEach(arg => {
               switch (arg.type) {
                 case 'string':
                   template[arg.name] = '';
@@ -492,11 +492,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
         async sendMessage() {
           const channelId = document.getElementById('select-channel').value;
-          const commandName = document.getElementById('select-command').value;
+          const requestName = document.getElementById('select-request').value;
           const editor = this.messageEditors.get('message');
 
-          if (!channelId || !commandName || !editor) {
-            alert('Please select a channel, command, and enter message data');
+          if (!channelId || !requestName || !editor) {
+            alert('Please select a channel, request, and enter message data');
             return;
           }
 
@@ -504,7 +504,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const messageData = JSON.parse(editor.getValue());
             
             // Send message using TypeScript library
-            const response = await this.sendSocketMessage(channelId, commandName, messageData);
+            const response = await this.sendSocketMessage(channelId, requestName, messageData);
             
             this.displayResponse(response);
           } catch (error) {
@@ -513,13 +513,13 @@ document.addEventListener('DOMContentLoaded', function() {
           }
         }
 
-        async sendSocketMessage(channelId, commandName, data) {
+        async sendSocketMessage(channelId, requestName, data) {
           // Implementation would use TypeScript library
           return new Promise((resolve) => {
             setTimeout(() => {
               resolve({
                 success: true,
-                data: { message: 'Message sent successfully', commandId: 'cmd-' + Date.now() },
+                data: { message: 'Message sent successfully', requestId: 'cmd-' + Date.now() },
                 timestamp: new Date().toISOString()
               });
             }, 500);

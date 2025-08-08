@@ -26,17 +26,17 @@ func main() {
     socketPath := "/tmp/go_socket_test.sock"
     
     // Create simple Manifest
-    spec := &api.Manifest{
+    manifest := &api.Manifest{
         Version: "1.0.0",
         Name: "Test API",
-        Channels: map[string]*api.ChannelSpec{
+        Channels: map[string]*api.ChannelManifest{
             "test": {
                 Name: "test",
                 Description: "Test channel",
-                Commands: map[string]*api.CommandSpec{
+                Requests: map[string]*api.RequestManifest{
                     "ping": {
-                        Description: "Ping command",
-                        Response: &api.ResponseSpec{Type: "object"},
+                        Description: "Ping request",
+                        Response: &api.ResponseManifest{Type: "object"},
                     },
                 },
             },
@@ -44,14 +44,14 @@ func main() {
     }
     
     // Create client
-    client, err := api.NewJanusClient(socketPath, "test", spec)
+    client, err := api.NewJanusClient(socketPath, "test", manifest)
     if err != nil {
         log.Fatalf("Failed to create client: %v", err)
     }
     defer client.Close()
     
     // Register handler - this should trigger server mode
-    err = client.RegisterCommandHandler("ping", func(cmd *api.JanusCommand) (*api.JanusResponse, error) {
+    err = client.RegisterRequestHandler("ping", func(cmd *api.JanusRequest) (*api.JanusResponse, error) {
         return api.NewSuccessResponse(cmd.ID, cmd.ChannelID, map[string]interface{}{"pong": true}), nil
     })
     if err != nil {
@@ -109,29 +109,29 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let _ = std::fs::remove_file(socket_path);
     
     // Create simple Manifest
-    let mut spec = Manifest::new("1.0.0".to_string());
-    let mut channel = ChannelSpec::new("Test channel".to_string());
-    channel.commands.insert("ping".to_string(), 
-        CommandSpec::new("Ping".to_string(), ResponseSpec::new("object".to_string())));
-    spec.add_channel("test".to_string(), channel);
+    let mut manifest = Manifest::new("1.0.0".to_string());
+    let mut channel = ChannelManifest::new("Test channel".to_string());
+    channel.requests.insert("ping".to_string(), 
+        RequestManifest::new("Ping".to_string(), ResponseManifest::new("object".to_string())));
+    manifest.add_channel("test".to_string(), channel);
     
     // Create client
     let client = JanusClient::new(
         socket_path.to_string(),
         "test".to_string(),
-        spec,
+        manifest,
         JanusClientConfig::default(),
     ).await?;
     
     // Register handler - this should trigger server mode
-    let handler: CommandHandler = Arc::new(|_cmd, _args| {
+    let handler: RequestHandler = Arc::new(|_cmd, _args| {
         Box::pin(async move {
             let mut response = std::collections::HashMap::new();
             response.insert("pong".to_string(), serde_json::Value::Bool(true));
             Ok(Some(response))
         })
     });
-    client.register_command_handler("ping", handler).await?;
+    client.register_request_handler("ping", handler).await?;
     
     println!("Registered handler. Starting listening (should create socket)...");
     

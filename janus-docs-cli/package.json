@@ -25,7 +25,7 @@
   "license": "MIT",
   "dependencies": {
     "chokidar": "^3.5.3",
-    "commander": "^11.0.0",
+    "requester": "^11.0.0",
     "express": "^4.18.2",
     "ws": "^8.13.0",
     "open": "^9.1.0",

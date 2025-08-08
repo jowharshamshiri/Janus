@@ -61,12 +61,12 @@ class ComprehensiveFeatureTests:
         return {
             "version": "2.0.0",
             "name": "Comprehensive Feature Test API",
-            "description": "Complex Manifest designed to test all aspects of SOCK_DGRAM implementations",
+            "description": "Complex Manifest designed to test all amanifestts of SOCK_DGRAM implementations",
             "channels": {
                 "test": {
                     "name": "test",
                     "description": "Primary test channel for basic functionality validation",
-                    "commands": {
+                    "requests": {
                         "ping": {
                             "name": "ping",
                             "description": "Basic connectivity test with optional echo transformation",
@@ -240,7 +240,7 @@ class ComprehensiveFeatureTests:
                 "data": {
                     "name": "data",
                     "description": "Data manipulation and transformation channel",
-                    "commands": {
+                    "requests": {
                         "crud_create": {
                             "name": "crud_create",
                             "description": "Create data entity with validation",
@@ -307,7 +307,7 @@ class ComprehensiveFeatureTests:
                 "secure": {
                     "name": "secure",
                     "description": "Security and authentication testing channel",
-                    "commands": {
+                    "requests": {
                         "auth_login": {
                             "name": "auth_login",
                             "description": "User authentication with multiple methods",
@@ -374,7 +374,7 @@ class ComprehensiveFeatureTests:
                 "performance": {
                     "name": "performance",
                     "description": "Performance testing and benchmarking channel",
-                    "commands": {
+                    "requests": {
                         "benchmark_cpu": {
                             "name": "benchmark_cpu",
                             "description": "CPU intensive benchmark operations",
@@ -421,7 +421,7 @@ class ComprehensiveFeatureTests:
                 "edge_cases": {
                     "name": "edge_cases",
                     "description": "Edge case and boundary condition testing",
-                    "commands": {
+                    "requests": {
                         "boundary_test": {
                             "name": "boundary_test",
                             "description": "Test boundary conditions and edge cases",
@@ -475,7 +475,7 @@ class ComprehensiveFeatureTests:
         }
     
     def run_comprehensive_feature_tests(self, implementations: List[str]) -> List[FeatureTestResult]:
-        """Run comprehensive feature tests for specified implementations"""
+        """Run comprehensive feature tests for manifestified implementations"""
         self.logger.info(f"Running comprehensive feature tests for: {implementations}")
         all_results = []
         
@@ -497,7 +497,7 @@ class ComprehensiveFeatureTests:
         
         # Feature categories to test
         feature_categories = [
-            ("basic_commands", self._test_basic_commands),
+            ("basic_requests", self._test_basic_requests),
             ("message_validation", self._test_message_validation),
             ("protocol_compliance", self._test_protocol_compliance),
             ("error_handling", self._test_error_handling),
@@ -529,21 +529,21 @@ class ComprehensiveFeatureTests:
         
         return results
     
-    def _test_basic_commands(self, impl_name: str, impl_config: Dict) -> List[FeatureTestResult]:
-        """Test basic command functionality"""
+    def _test_basic_requests(self, impl_name: str, impl_config: Dict) -> List[FeatureTestResult]:
+        """Test basic request functionality"""
         results = []
         
-        # Test each command defined in the Manifest
-        commands_to_test = [
+        # Test each request defined in the Manifest
+        requests_to_test = [
             ("ping", {}, {"status": "pong", "echo": "hello"}),
             ("echo", {"message": "test_echo"}, {"status": "success", "data": "test_echo"}),
             ("math", {"operation": "add", "a": 5, "b": 3}, {"result": 8, "operation": "add"}),
         ]
         
-        for command, args, expected_fields in commands_to_test:
-            result = self._run_command_test(
-                impl_name, impl_config, command, args, expected_fields,
-                f"basic_command_{command}", "basic_commands"
+        for request, args, expected_fields in requests_to_test:
+            result = self._run_request_test(
+                impl_name, impl_config, request, args, expected_fields,
+                f"basic_request_{request}", "basic_requests"
             )
             results.append(result)
         
@@ -556,10 +556,10 @@ class ComprehensiveFeatureTests:
         validation_tests = [
             ("valid_uuid", {"id": str(uuid.uuid4())}, True),
             ("invalid_uuid", {"id": "not-a-uuid"}, False),
-            ("missing_channel", {"command": "ping"}, False),  # Missing channelId
+            ("missing_channel", {"request": "ping"}, False),  # Missing channelId
             ("invalid_channel", {"channelId": "invalid@channel"}, False),
-            ("empty_command", {"channelId": "test", "command": ""}, False),
-            ("long_command", {"channelId": "test", "command": "a" * 500}, False),
+            ("empty_request", {"channelId": "test", "request": ""}, False),
+            ("long_request", {"channelId": "test", "request": "a" * 500}, False),
             ("valid_timestamp", {"timestamp": time.time()}, True),
             ("invalid_timestamp", {"timestamp": "not-a-number"}, False),
         ]
@@ -612,9 +612,9 @@ class ComprehensiveFeatureTests:
         results = []
         
         error_tests = [
-            ("nonexistent_command", {"command": "nonexistent"}, "COMMAND_NOT_FOUND"),
-            ("invalid_args", {"command": "math", "args": {"a": "not-a-number"}}, "VALIDATION_ERROR"),
-            ("missing_required_args", {"command": "echo", "args": {}}, "MISSING_ARGS"),
+            ("nonexistent_request", {"request": "nonexistent"}, "REQUEST_NOT_FOUND"),
+            ("invalid_args", {"request": "math", "args": {"a": "not-a-number"}}, "VALIDATION_ERROR"),
+            ("missing_required_args", {"request": "echo", "args": {}}, "MISSING_ARGS"),
             ("nonexistent_channel", {"channelId": "nonexistent"}, "CHANNEL_NOT_FOUND"),
             ("malformed_json", "not valid json", "JSON_PARSE_ERROR"),
         ]
@@ -633,7 +633,7 @@ class ComprehensiveFeatureTests:
         
         edge_cases = [
             ("empty_message", "ping", ""),
-            ("special_characters", "echo", "special_chars_!@#$%^&*()"),
+            ("manifestial_characters", "echo", "manifestial_chars_!@#$%^&*()"),
             ("unicode_message", "echo", "unicode_测试_🚀"),
             ("very_long_message", "echo", "x" * 1000),
             ("json_in_message", "echo", '{"nested": "json"}'),
@@ -643,10 +643,10 @@ class ComprehensiveFeatureTests:
             ("huge_timeout", "ping", "hello", 999999.0),
         ]
         
-        for test_name, command, message, *extra in edge_cases:
+        for test_name, request, message, *extra in edge_cases:
             timeout = extra[0] if extra else None
             result = self._test_edge_case(
-                impl_name, impl_config, test_name, command, message, timeout
+                impl_name, impl_config, test_name, request, message, timeout
             )
             results.append(result)
         
@@ -670,7 +670,7 @@ class ComprehensiveFeatureTests:
         ]
         
         for test_name, test_args in data_type_tests:
-            result = self._run_command_test(
+            result = self._run_request_test(
                 impl_name, impl_config, "validate", 
                 {"data": test_args}, {"valid": True},
                 f"data_type_{test_name}", "data_types"
@@ -727,7 +727,7 @@ class ComprehensiveFeatureTests:
         
         for test_name, size in size_tests:
             message = "x" * size
-            result = self._run_command_test(
+            result = self._run_request_test(
                 impl_name, impl_config, "echo", 
                 {"message": message}, {"status": "success"},
                 f"size_{test_name}", "message_size_limits"
@@ -741,11 +741,11 @@ class ComprehensiveFeatureTests:
         results = []
         
         json_tests = [
-            ("valid_json", '{"command": "ping", "channelId": "test"}', True),
-            ("invalid_json", '{"command": "ping", "channelId":}', False),
+            ("valid_json", '{"request": "ping", "channelId": "test"}', True),
+            ("invalid_json", '{"request": "ping", "channelId":}', False),
             ("malformed_json", 'not json at all', False),
             ("empty_json", '{}', False),  # Missing required fields
-            ("nested_json", '{"command": "ping", "channelId": "test", "args": {"nested": {"deep": "value"}}}', True),
+            ("nested_json", '{"request": "ping", "channelId": "test", "args": {"nested": {"deep": "value"}}}', True),
         ]
         
         for test_name, json_string, should_succeed in json_tests:
@@ -780,10 +780,10 @@ class ComprehensiveFeatureTests:
         results = []
         
         security_tests = [
-            ("input_sanitization", {"command": "echo", "args": {"message": "<script>alert('xss')</script>"}}),
-            ("path_traversal", {"command": "echo", "args": {"message": "../../etc/passwd"}}),
-            ("command_injection", {"command": "echo; rm -rf /", "args": {"message": "test"}}),
-            ("oversized_args", {"command": "ping", "args": {"data": "x" * 100000}}),
+            ("input_sanitization", {"request": "echo", "args": {"message": "<script>alert('xss')</script>"}}),
+            ("path_traversal", {"request": "echo", "args": {"message": "../../etc/passwd"}}),
+            ("request_injection", {"request": "echo; rm -rf /", "args": {"message": "test"}}),
+            ("oversized_args", {"request": "ping", "args": {"data": "x" * 100000}}),
         ]
         
         for test_name, malicious_input in security_tests:
@@ -796,10 +796,10 @@ class ComprehensiveFeatureTests:
 
     # Helper methods for running individual tests
     
-    def _run_command_test(self, impl_name: str, impl_config: Dict, command: str, 
+    def _run_request_test(self, impl_name: str, impl_config: Dict, request: str, 
                          args: Dict, expected_fields: Dict, test_name: str, 
                          category: str) -> FeatureTestResult:
-        """Run a single command test with validation"""
+        """Run a single request test with validation"""
         start_time = time.time()
         
         try:
@@ -817,8 +817,8 @@ class ComprehensiveFeatureTests:
             
             time.sleep(1)  # Allow listener to start
             
-            # Send command
-            response = self._send_test_command(impl_name, impl_config, command, args)
+            # Send request
+            response = self._send_test_request(impl_name, impl_config, request, args)
             
             # Cleanup listener
             listener_process.terminate()
@@ -851,8 +851,8 @@ class ComprehensiveFeatureTests:
         """Start test listener with comprehensive Manifest"""
         try:
             # Save Manifest to temp file
-            spec_path = self.temp_dir / f"{impl_name}_test_spec.json"
-            with open(spec_path, 'w') as f:
+            manifest_path = self.temp_dir / f"{impl_name}_test_manifest.json"
+            with open(manifest_path, 'w') as f:
                 json.dump(self.test_manifest, f, indent=2)
             
             # Remove existing socket
@@ -860,11 +860,11 @@ class ComprehensiveFeatureTests:
             if Path(socket_path).exists():
                 Path(socket_path).unlink()
             
-            # Build command
+            # Build request
             project_root = Path(__file__).parent.parent.parent
             impl_dir = project_root / impl_config["directory"]
             
-            cmd = self._build_listener_command(impl_name, impl_config, socket_path, str(spec_path))
+            cmd = self._build_listener_request(impl_name, impl_config, socket_path, str(manifest_path))
             
             # Start process
             process = subprocess.Popen(
@@ -889,29 +889,29 @@ class ComprehensiveFeatureTests:
             self.logger.error(f"Failed to start listener for {impl_name}: {e}")
             return None
     
-    def _build_listener_command(self, impl_name: str, impl_config: Dict, socket_path: str, spec_path: str) -> List[str]:
-        """Build listener command for implementation"""
+    def _build_listener_request(self, impl_name: str, impl_config: Dict, socket_path: str, manifest_path: str) -> List[str]:
+        """Build listener request for implementation"""
         if impl_name == "go":
-            return ["./janus", "--listen", "--socket", socket_path, "--spec", spec_path, "--channel", "test"]
+            return ["./janus", "--listen", "--socket", socket_path, "--manifest", manifest_path, "--channel", "test"]
         elif impl_name == "rust":
-            return ["cargo", "run", "--bin", "janus", "--", "--listen", "--socket", socket_path, "--spec", spec_path, "--channel", "test"]
+            return ["cargo", "run", "--bin", "janus", "--", "--listen", "--socket", socket_path, "--manifest", manifest_path, "--channel", "test"]
         elif impl_name == "swift":
-            return ["swift", "run", "SwiftJanusDgram", "--listen", "--socket", socket_path, "--spec", spec_path, "--channel", "test"]
+            return ["swift", "run", "SwiftJanusDgram", "--listen", "--socket", socket_path, "--manifest", manifest_path, "--channel", "test"]
         elif impl_name == "typescript":
-            return ["node", "dist/bin/janus.js", "--listen", "--socket", socket_path, "--spec", spec_path, "--channel", "test"]
+            return ["node", "dist/bin/janus.js", "--listen", "--socket", socket_path, "--manifest", manifest_path, "--channel", "test"]
         else:
             raise ValueError(f"Unknown implementation: {impl_name}")
     
-    def _send_test_command(self, impl_name: str, impl_config: Dict, command: str, args: Dict) -> Dict:
-        """Send test command and get response"""
-        # Implementation specific sending logic
+    def _send_test_request(self, impl_name: str, impl_config: Dict, request: str, args: Dict) -> Dict:
+        """Send test request and get response"""
+        # Implementation manifestific sending logic
         socket_path = impl_config["socket_path"]
         
-        # Create command message
+        # Create request message
         message = {
             "id": str(uuid.uuid4()),
             "channelId": "test",
-            "command": command,
+            "request": request,
             "args": args,
             "timeout": 30.0,
             "timestamp": time.time()
@@ -921,7 +921,7 @@ class ComprehensiveFeatureTests:
         project_root = Path(__file__).parent.parent.parent
         impl_dir = project_root / impl_config["directory"]
         
-        cmd = self._build_sender_command(impl_name, impl_config, socket_path, message)
+        cmd = self._build_sender_request(impl_name, impl_config, socket_path, message)
         
         try:
             result = subprocess.run(
@@ -938,26 +938,26 @@ class ComprehensiveFeatureTests:
                 except json.JSONDecodeError:
                     return {"error": "Invalid JSON response", "raw_output": result.stdout}
             else:
-                return {"error": f"Command failed: {result.stderr}", "exit_code": result.returncode}
+                return {"error": f"Request failed: {result.stderr}", "exit_code": result.returncode}
                 
         except subprocess.TimeoutExpired:
-            return {"error": "Command timeout"}
+            return {"error": "Request timeout"}
         except Exception as e:
             return {"error": f"Execution error: {str(e)}"}
     
-    def _build_sender_command(self, impl_name: str, impl_config: Dict, socket_path: str, message: Dict) -> List[str]:
-        """Build sender command for implementation"""
-        command = message["command"]
+    def _build_sender_request(self, impl_name: str, impl_config: Dict, socket_path: str, message: Dict) -> List[str]:
+        """Build sender request for implementation"""
+        request = message["request"]
         args_json = json.dumps(message["args"]) if message["args"] else "{}"
         
         if impl_name == "go":
-            return ["./janus", "--send-to", socket_path, "--command", command, "--message", args_json]
+            return ["./janus", "--send-to", socket_path, "--request", request, "--message", args_json]
         elif impl_name == "rust":
-            return ["cargo", "run", "--bin", "janus", "--", "--send-to", socket_path, "--command", command, "--message", args_json]
+            return ["cargo", "run", "--bin", "janus", "--", "--send-to", socket_path, "--request", request, "--message", args_json]
         elif impl_name == "swift":
-            return ["swift", "run", "SwiftJanusDgram", "--send-to", socket_path, "--command", command, "--message", args_json]
+            return ["swift", "run", "SwiftJanusDgram", "--send-to", socket_path, "--request", request, "--message", args_json]
         elif impl_name == "typescript":
-            return ["node", "dist/bin/janus.js", "--send-to", socket_path, "--command", command, "--message", args_json]
+            return ["node", "dist/bin/janus.js", "--send-to", socket_path, "--request", request, "--message", args_json]
         else:
             raise ValueError(f"Unknown implementation: {impl_name}")
     
@@ -1030,7 +1030,7 @@ class ComprehensiveFeatureTests:
         return True, {"verified": "JSON format compliance"}
     
     def _verify_datagram_boundaries(self, impl_name: str, impl_config: Dict) -> tuple:
-        return True, {"verified": "Datagram boundaries respected"}
+        return True, {"verified": "Datagram boundaries remanifestted"}
     
     def _test_error_response(self, impl_name: str, impl_config: Dict, test_name: str, error_input: Any, expected_error_code: str) -> FeatureTestResult:
         return FeatureTestResult(
@@ -1041,7 +1041,7 @@ class ComprehensiveFeatureTests:
             error_message="Not implemented yet"
         )
     
-    def _test_edge_case(self, impl_name: str, impl_config: Dict, test_name: str, command: str, message: str, timeout: Optional[float]) -> FeatureTestResult:
+    def _test_edge_case(self, impl_name: str, impl_config: Dict, test_name: str, request: str, message: str, timeout: Optional[float]) -> FeatureTestResult:
         return FeatureTestResult(
             test_name=f"edge_case_{test_name}",
             implementation=impl_name,

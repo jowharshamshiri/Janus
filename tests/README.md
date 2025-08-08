@@ -14,7 +14,7 @@ tests/
 │   └── test_socket_creation.sh  # Socket creation validation
 ├── config/                      # Test configurations
 │   ├── unified-test-config.json # 🔧 MAIN TEST CONFIG
-│   ├── test-spec.json           # Legacy test spec (deprecated)
+│   ├── test-manifest.json           # Legacy test manifest (deprecated)
 │   ├── test-manifest.json       # Manifest for tests
 │   └── manifest-schema.json # API schema validation
 ├── python/                      # Python test modules
@@ -33,10 +33,10 @@ tests/
 The test infrastructure provides comprehensive validation including:
 
 - **Build Tests**: Verify all implementations compile successfully
-- **Unit Tests**: Run language-specific test suites
+- **Unit Tests**: Run language-manifestific test suites
 - **Cross-Platform Tests**: Complete N×N communication matrix testing
 - **Self-Communication Tests**: Each implementation talks to itself
-- **Feature Tests**: Command variations, timeout handling, concurrent requests
+- **Feature Tests**: Request variations, timeout handling, concurrent requests
 - **Performance Tests**: Latency, throughput, and stress testing
 - **Security Tests**: SOCK_DGRAM compliance and protocol validation
 
@@ -53,7 +53,7 @@ The test infrastructure provides comprehensive validation including:
 # Full comprehensive testing
 ./tests/run_all_tests.sh --all
 
-# Test specific implementations
+# Test manifestific implementations
 ./tests/run_all_tests.sh --implementations go,rust
 
 # CI/CD mode
@@ -68,7 +68,7 @@ python tests/run_comprehensive_tests.py
 # Full test suite with performance and security
 python tests/run_comprehensive_tests.py --performance --security --stress
 
-# Test specific implementations
+# Test manifestific implementations
 python tests/run_comprehensive_tests.py --implementations go,rust
 
 # Verbose output
@@ -92,18 +92,18 @@ python tests/run_comprehensive_tests.py --verbose
 - Creates unified SOCK_DGRAM binaries
 
 ### Unit Tests
-- Runs language-specific test suites
+- Runs language-manifestific test suites
 - `go test ./...`, `cargo test`, `swift test`, `npm test`
 - Validates individual implementation functionality
 
 ### Cross-Platform Tests
 - **Complete N×N Matrix**: Every implementation talks to every other implementation
 - **Self-Communication**: Each implementation talks to itself
-- **Feature Validation**: Tests different commands (ping, echo) and message types
+- **Feature Validation**: Tests different requests (ping, echo) and message types
 - **Total Combinations**: 16 tests (4×4 matrix) for basic communication
 
 ### Integration Tests
-- **Command Variations**: Tests ping, echo, special characters, long messages
+- **Request Variations**: Tests ping, echo, manifestial characters, long messages
 - **Timeout Handling**: Validates graceful failure when connecting to non-existent sockets
 - **Concurrent Requests**: Tests multiple simultaneous requests to same listener
 
@@ -152,15 +152,15 @@ The test suite validates communication between all implementations:
 
 ## Test Configuration
 
-Tests are configured via `test-spec.json` in the project root:
+Tests are configured via `test-manifest.json` in the project root:
 
 ```json
 {
   "implementations": {
     "go": {
       "directory": "GoJanus",
-      "build_command": ["go", "build", "-o", "janus", "./cmd/janus"],
-      "test_command": ["go", "test", "./..."],
+      "build_request": ["go", "build", "-o", "janus", "./cmd/janus"],
+      "test_request": ["go", "test", "./..."],
       "unified_binary": "./janus",
       "socket_path": "/tmp/go-janus-api.sock"
     }
@@ -177,14 +177,14 @@ All tests validate the unified SOCK_DGRAM process model:
 - **Connectionless**: No persistent connections, each message is independent
 - **Reply-To Mechanism**: Temporary response sockets for request-response patterns
 
-### Command Examples
+### Request Examples
 
 ```bash
 # Start listener
 ./janus --listen --socket /tmp/test.sock
 
 # Send message
-./janus --send-to /tmp/test.sock --command ping --message hello
+./janus --send-to /tmp/test.sock --request ping --message hello
 ```
 
 ## Advanced Usage
@@ -206,7 +206,7 @@ python tests/run_comprehensive_tests.py --performance --security --stress --verb
 
 ### Custom Configuration
 ```bash
-python tests/run_comprehensive_tests.py --config custom-test-spec.json
+python tests/run_comprehensive_tests.py --config custom-test-manifest.json
 ```
 
 ## Test Reports
@@ -229,7 +229,7 @@ Test results are saved in timestamped directories:
 
 ### Build Failures
 ```bash
-# Check specific implementation
+# Check manifestific implementation
 python tests/run_comprehensive_tests.py --implementations go --verbose
 ```
 
@@ -250,7 +250,7 @@ rm -f /tmp/*janus*.sock
 ### Adding New Tests
 1. Add test methods to `comprehensive_test_suite.py`
 2. Update test categories as needed
-3. Add configuration to `test-spec.json`
+3. Add configuration to `test-manifest.json`
 4. Update this README
 
 ### Modifying Implementations
@@ -288,7 +288,7 @@ When contributing to the test infrastructure:
 1. **Test Changes**: Run full test suite before submitting
 2. **Documentation**: Update this README for new features
 3. **Backward Compatibility**: Ensure existing tests continue to work
-4. **Configuration**: Update test-spec.json for new implementations
+4. **Configuration**: Update test-manifest.json for new implementations
 5. **Cross-Platform**: Test on multiple platforms where possible
 
 For questions about the test infrastructure, refer to the project documentation or create an issue.

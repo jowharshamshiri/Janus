@@ -31,7 +31,7 @@ janus-docs generate manifest.json
 janus-docs serve manifest.json --watch --open
 ```
 
-### Language-Specific Usage
+### Language-Manifestific Usage
 
 #### TypeScript/Node.js
 
@@ -102,7 +102,7 @@ Test all implementations communicating with each other:
 - Rust ↔ TypeScript, Go, Swift
 - Swift ↔ TypeScript, Go, Rust
 
-## Protocol Specification
+## Protocol Manifest
 
 The library implements a Unix socket protocol with:
 
@@ -112,7 +112,7 @@ The library implements a Unix socket protocol with:
 - **Security validation**
 - **Standardized error handling**
 
-See [PROTOCOL.md](PROTOCOL.md) for the complete specification.
+See [PROTOCOL.md](PROTOCOL.md) for the complete manifest.
 
 ## Security Features
 
@@ -141,9 +141,9 @@ janus-docs serve your-manifest.json --watch
 
 ### Reference Documentation
 
-- **[PROTOCOL.md](PROTOCOL.md)** - Complete protocol specification
+- **[PROTOCOL.md](PROTOCOL.md)** - Complete protocol manifest
 - **[tests/README.md](tests/README.md)** - Testing guide  
-- **Language READMEs** - Implementation-specific documentation in each directory
+- **Language READMEs** - Implementation-manifestific documentation in each directory
 
 ## Implementation Details
 
@@ -202,7 +202,7 @@ Janus/
 │   ├── config/               # Test configurations
 │   ├── python/               # Python test suite
 │   └── README.md            # Testing guide
-├── PROTOCOL.md               # Protocol specification
+├── PROTOCOL.md               # Protocol manifest
 └── CLAUDE.md                 # Project instructions
 ```
 
@@ -229,7 +229,7 @@ Janus/
 # Full comprehensive testing
 ./tests/run_all_tests.sh --all
 
-# Test specific implementations
+# Test manifestific implementations
 ./tests/run_all_tests.sh --implementations go,rust
 
 # CI/CD mode
@@ -256,7 +256,7 @@ cd GoJanus && go test ./...
 
 ## 📊 Manifest Format
 
-APIs are defined using JSON specifications:
+APIs are defined using JSON manifests:
 
 ```json
 {
@@ -266,7 +266,7 @@ APIs are defined using JSON specifications:
   "channels": {
     "user-service": {
       "name": "User Service", 
-      "commands": {
+      "requests": {
         "create-user": {
           "name": "Create User",
           "description": "Create a new user account",

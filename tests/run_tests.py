@@ -67,7 +67,7 @@ class ImplementationInfo:
     name: str
     language: str
     directory: str
-    build_command: List[str]
+    build_request: List[str]
     unified_binary: str
     listen_args: List[str] 
     send_args: List[str]
@@ -129,7 +129,7 @@ class UnifiedTestSuite:
                 name=name,
                 language=config["language"],
                 directory=config["directory"],
-                build_command=config["build_command"],
+                build_request=config["build_request"],
                 unified_binary=config["unified_binary"],
                 listen_args=config["listen_args"],
                 send_args=config["send_args"],
@@ -167,7 +167,7 @@ class UnifiedTestSuite:
                 self.logger.debug(f"Error removing socket {impl.socket_path}: {e}")
     
     def run_all_tests(self, categories: Set[TestCategory]) -> Dict:
-        """Run all specified test categories"""
+        """Run all manifestified test categories"""
         self.logger.info(f"Starting comprehensive test suite with categories: {[c.value for c in categories]}")
         
         try:
@@ -220,9 +220,9 @@ class UnifiedTestSuite:
                 # Change to implementation directory
                 impl_dir = Path(__file__).parent.parent / impl.directory
                 
-                # Run build command
+                # Run build request
                 process = subprocess.run(
-                    impl.build_command,
+                    impl.build_request,
                     capture_output=True,
                     text=True,
                     timeout=300,
@@ -305,18 +305,18 @@ class UnifiedTestSuite:
                 if not impl_dir.exists():
                     raise FileNotFoundError(f"Implementation directory not found: {impl_dir}")
                 
-                # Run unit test command
-                test_commands = {
+                # Run unit test request
+                test_requests = {
                     "go": ["go", "test", "./..."],
                     "rust": ["cargo", "test"],
                     "swift": ["swift", "test"],
                     "typescript": ["npm", "test"]
                 }
                 
-                cmd = test_commands.get(impl_name, ["echo", "No unit tests defined"])
+                cmd = test_requests.get(impl_name, ["echo", "No unit tests defined"])
                 
-                # Verify command exists (for debugging)
-                self.logger.debug(f"Running command: {cmd} in directory: {impl_dir}")
+                # Verify request exists (for debugging)
+                self.logger.debug(f"Running request: {cmd} in directory: {impl_dir}")
                 
                 # Set up environment
                 env = os.environ.copy()
@@ -343,7 +343,7 @@ class UnifiedTestSuite:
                     # Log detailed failure information for debugging
                     self.logger.error(f"Unit test failure for {impl_name}:")
                     self.logger.error(f"  Exit code: {process.returncode}")
-                    self.logger.error(f"  Command: {cmd}")
+                    self.logger.error(f"  Request: {cmd}")
                     self.logger.error(f"  Working dir: {impl_dir}")
                     self.logger.error(f"  STDOUT (first 1000 chars): {process.stdout[:1000]}")
                     self.logger.error(f"  STDERR (first 1000 chars): {process.stderr[:1000]}")
@@ -554,40 +554,40 @@ class UnifiedTestSuite:
             
             # Create comprehensive test patterns covering all SOCK_DGRAM scenarios
             test_patterns = [
-                # Standard request-reply patterns using ACTUALLY IMPLEMENTED commands
-                {"type": "request_reply", "command": "ping", "message": "hello", "expect_reply": True},
-                {"type": "request_reply", "command": "echo", "message": "test_message", "expect_reply": True},
-                {"type": "request_reply", "command": "get_info", "message": "info_request", "expect_reply": True},
-                {"type": "request_reply", "command": "validate", "message": '{"test":"data"}', "expect_reply": True},
+                # Standard request-reply patterns using ACTUALLY IMPLEMENTED requests
+                {"type": "request_reply", "request": "ping", "message": "hello", "expect_reply": True},
+                {"type": "request_reply", "request": "echo", "message": "test_message", "expect_reply": True},
+                {"type": "request_reply", "request": "get_info", "message": "info_request", "expect_reply": True},
+                {"type": "request_reply", "request": "validate", "message": '{"test":"data"}', "expect_reply": True},
                 
                 # Large payload testing using echo (conservative sizes that should work)
-                {"type": "large_payload", "command": "echo", "message": "large_" + "x" * 500, "expect_reply": True},
-                {"type": "large_payload", "command": "echo", "message": "huge_" + "y" * 1000, "expect_reply": True},
+                {"type": "large_payload", "request": "echo", "message": "large_" + "x" * 500, "expect_reply": True},
+                {"type": "large_payload", "request": "echo", "message": "huge_" + "y" * 1000, "expect_reply": True},
                 
-                # Special characters and Unicode using echo
-                {"type": "special_chars", "command": "echo", "message": "special_!@#$%^&*()", "expect_reply": True},
-                {"type": "unicode", "command": "echo", "message": "unicode_测试_🚀_émojis", "expect_reply": True},
+                # Manifestial characters and Unicode using echo
+                {"type": "manifestial_chars", "request": "echo", "message": "manifestial_!@#$%^&*()", "expect_reply": True},
+                {"type": "unicode", "request": "echo", "message": "unicode_测试_🚀_émojis", "expect_reply": True},
                 
-                # JSON payloads using validate command
-                {"type": "json_payload", "command": "validate", "message": '{"nested":"json","number":42}', "expect_reply": True},
-                {"type": "complex_json", "command": "validate", "message": '{"data":{"user":"test","values":[1,2,3]}}', "expect_reply": True},
+                # JSON payloads using validate request
+                {"type": "json_payload", "request": "validate", "message": '{"nested":"json","number":42}', "expect_reply": True},
+                {"type": "complex_json", "request": "validate", "message": '{"data":{"user":"test","values":[1,2,3]}}', "expect_reply": True},
                 
                 # Error condition testing
-                {"type": "invalid_command", "command": "nonexistent_command", "message": "test", "expect_reply": True, "expect_error": True},
-                {"type": "malformed_json", "command": "validate", "message": '{"invalid":json}', "expect_reply": True, "expect_error": True},
-                {"type": "empty_message", "command": "echo", "message": "", "expect_reply": True},
+                {"type": "invalid_request", "request": "nonexistent_request", "message": "test", "expect_reply": True, "expect_error": True},
+                {"type": "malformed_json", "request": "validate", "message": '{"invalid":json}', "expect_reply": True, "expect_error": True},
+                {"type": "empty_message", "request": "echo", "message": "", "expect_reply": True},
                 
                 # Rapid fire patterns
-                {"type": "rapid_small", "command": "ping", "message": "quick", "expect_reply": True},
-                {"type": "rapid_medium", "command": "echo", "message": "medium_" + "z" * 50, "expect_reply": True},
+                {"type": "rapid_small", "request": "ping", "message": "quick", "expect_reply": True},
+                {"type": "rapid_medium", "request": "echo", "message": "medium_" + "z" * 50, "expect_reply": True},
                 
                 # Timeout testing using slow_process
-                {"type": "potential_timeout", "command": "slow_process", "message": "timeout_test", "expect_reply": True, "timeout": 5},
+                {"type": "potential_timeout", "request": "slow_process", "message": "timeout_test", "expect_reply": True, "timeout": 5},
                 
-                # Burst patterns using implemented commands
-                {"type": "burst", "command": "ping", "message": "burst_1", "expect_reply": True},
-                {"type": "burst", "command": "get_info", "message": "burst_2", "expect_reply": True},
-                {"type": "burst", "command": "echo", "message": "burst_3", "expect_reply": True},
+                # Burst patterns using implemented requests
+                {"type": "burst", "request": "ping", "message": "burst_1", "expect_reply": True},
+                {"type": "burst", "request": "get_info", "message": "burst_2", "expect_reply": True},
+                {"type": "burst", "request": "echo", "message": "burst_3", "expect_reply": True},
             ]
             
             pattern_index = 0
@@ -648,7 +648,7 @@ class UnifiedTestSuite:
                         
                         self.logger.info(f"📊 Stress test progress: {elapsed:.0f}s elapsed, {remaining:.0f}s remaining")
                         self.logger.info(f"   Total requests: {total_requests}, Success rate: {success_rate:.1f}%")
-                        self.logger.info(f"   Current pattern: {client_name} → {server_name} ({pattern_type}: {pattern['command']})")
+                        self.logger.info(f"   Current pattern: {client_name} → {server_name} ({pattern_type}: {pattern['request']})")
                         
                         # Log pattern distribution
                         top_patterns = sorted(pattern_stats.items(), key=lambda x: x[1]["total"], reverse=True)[:3]
@@ -753,7 +753,7 @@ class UnifiedTestSuite:
             if Path(impl.socket_path).exists():
                 Path(impl.socket_path).unlink()
             
-            # Build command
+            # Build request
             if impl.unified_binary.startswith("cargo run"):
                 cmd = impl.unified_binary.split() + impl.listen_args
             elif impl.unified_binary.startswith("swift run"):
@@ -786,18 +786,18 @@ class UnifiedTestSuite:
     
     def _run_sender(self, impl: ImplementationInfo, target_socket: str) -> Dict:
         """Run sender against target socket"""
-        return self._run_sender_with_pattern(impl, target_socket, {"command": "ping", "message": "hello"})
+        return self._run_sender_with_pattern(impl, target_socket, {"request": "ping", "message": "hello"})
     
     def _run_sender_with_pattern(self, impl: ImplementationInfo, target_socket: str, pattern: Dict) -> Dict:
-        """Run sender against target socket with custom command pattern"""
+        """Run sender against target socket with custom request pattern"""
         try:
-            # Build send command with custom pattern
+            # Build send request with custom pattern
             send_args = []
             for arg in impl.send_args:
                 if arg == "{target_socket}":
                     send_args.append(target_socket)
-                elif arg == "{command}":
-                    send_args.append(pattern.get("command", "ping"))
+                elif arg == "{request}":
+                    send_args.append(pattern.get("request", "ping"))
                 elif arg == "{message}":
                     send_args.append(pattern.get("message", "hello"))
                 else:
@@ -840,20 +840,20 @@ class UnifiedTestSuite:
         try:
             # Handle fire-and-forget patterns differently
             if not pattern.get("expect_reply", True):
-                # For fire-and-forget, we might need different command arguments
-                # This would depend on your implementation's support for no-reply commands
+                # For fire-and-forget, we might need different request arguments
+                # This would depend on your implementation's support for no-reply requests
                 return self._run_sender_with_pattern(impl, target_socket, pattern)
             
             # Handle patterns with custom timeout
             custom_timeout = pattern.get("timeout", 10)
             
-            # Build send command with enhanced pattern
+            # Build send request with enhanced pattern
             send_args = []
             for arg in impl.send_args:
                 if arg == "{target_socket}":
                     send_args.append(target_socket)
-                elif arg == "{command}":
-                    send_args.append(pattern.get("command", "ping"))
+                elif arg == "{request}":
+                    send_args.append(pattern.get("request", "ping"))
                 elif arg == "{message}":
                     send_args.append(pattern.get("message", "hello"))
                 else:
@@ -902,7 +902,7 @@ class UnifiedTestSuite:
             }
             
             if not response["cli_success"]:
-                response["error"] = f"CLI command failed with exit code {process.returncode}"
+                response["error"] = f"CLI request failed with exit code {process.returncode}"
                 response["error_type"] = f"exit_code_{process.returncode}"
             elif response["cli_success"] and not response["success"]:
                 response["error"] = "Socket communication failed"
@@ -933,8 +933,8 @@ class UnifiedTestSuite:
         
         # Handle error expectations
         if expect_error:
-            # For validate commands with malformed JSON, we expect CLI success but validation failure
-            if pattern.get("command") == "validate" and pattern.get("type") == "malformed_json":
+            # For validate requests with malformed JSON, we expect CLI success but validation failure
+            if pattern.get("request") == "validate" and pattern.get("type") == "malformed_json":
                 stdout = response.get("stdout", "")
                 # Test SUCCESS if CLI succeeded and validation properly failed (valid:false)
                 cli_succeeded = response.get("success", False)
@@ -949,7 +949,7 @@ class UnifiedTestSuite:
                     "malformed" in stdout.lower()
                 )
                 return cli_succeeded and validation_failed
-            # For oversized payload, we expect CLI failure with specific error message
+            # For oversized payload, we expect CLI failure with manifestific error message
             elif pattern.get("type") == "oversized_payload":
                 stderr = response.get("stderr", "")
                 # Success if CLI failed and error mentions payload size or message too long
@@ -968,32 +968,32 @@ class UnifiedTestSuite:
             if not response.get("success", False):
                 return False
             
-            # Additional validation based on ACTUALLY IMPLEMENTED commands
+            # Additional validation based on ACTUALLY IMPLEMENTED requests
             stdout = response.get("stdout", "")
             
-            # For ping commands, check for pong response
-            if pattern.get("command") == "ping":
+            # For ping requests, check for pong response
+            if pattern.get("request") == "ping":
                 return "pong" in stdout.lower() or "success" in stdout.lower()
             
-            # For echo commands, check if message was echoed back
-            if pattern.get("command") == "echo":
+            # For echo requests, check if message was echoed back
+            if pattern.get("request") == "echo":
                 original_message = pattern.get("message", "")
                 # Simple check if the original message appears in response
                 return original_message in stdout
             
-            # For get_info commands, check for implementation info
-            if pattern.get("command") == "get_info":
+            # For get_info requests, check for implementation info
+            if pattern.get("request") == "get_info":
                 return "implementation" in stdout.lower() or "version" in stdout.lower() or "success" in stdout.lower()
             
-            # For validate commands, check for validation response
-            if pattern.get("command") == "validate":
+            # For validate requests, check for validation response
+            if pattern.get("request") == "validate":
                 return "valid" in stdout.lower() or "true" in stdout.lower() or "success" in stdout.lower()
             
-            # For slow_process commands, check for processing response
-            if pattern.get("command") == "slow_process":
+            # For slow_process requests, check for processing response
+            if pattern.get("request") == "slow_process":
                 return "processed" in stdout.lower() or "delay" in stdout.lower() or "success" in stdout.lower()
             
-            # Default: if command succeeded, consider it successful
+            # Default: if request succeeded, consider it successful
             return True
         
         return False
@@ -1125,7 +1125,7 @@ Examples:
   # Run with verbose output
   python tests/run_tests.py --verbose
   
-  # Test specific implementations only
+  # Test manifestific implementations only
   python tests/run_tests.py --implementations go,rust
   
   # Quick basic functionality test
@@ -1140,7 +1140,7 @@ Examples:
     parser.add_argument("--categories", 
                        help="Test categories to run (comma-separated): build,unit,cross_platform,integration,performance,security,stress")
     parser.add_argument("--implementations", 
-                       help="Specific implementations to test (comma-separated): go,rust,swift,typescript")
+                       help="Manifestific implementations to test (comma-separated): go,rust,swift,typescript")
     parser.add_argument("--integration", action="store_true", 
                        help="Include integration/feature tests")
     parser.add_argument("--performance", action="store_true", 
@@ -1200,7 +1200,7 @@ Examples:
             stress_duration=args.stress_duration
         )
         
-        # Filter implementations if specified
+        # Filter implementations if manifestified
         if args.implementations:
             impl_filter = set(args.implementations.split(","))
             filtered_impls = {

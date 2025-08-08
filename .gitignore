@@ -28,7 +28,7 @@ Thumbs.db
 *.log
 test_logs/
 
-# Language-Specific Ignores
+# Language-Manifestific Ignores
 
 # Go
 go.sum
@@ -89,7 +89,7 @@ coverage/
 logs
 *.log
 
-# OS-specific files
+# OS-manifestific files
 .DS_Store
 Thumbs.db
 

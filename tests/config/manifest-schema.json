@@ -1,8 +1,8 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://janus.org/schemas/manifest.json",
-  "title": "Janus Specification",
-  "description": "Schema for Janus specification files",
+  "title": "Janus Manifest",
+  "description": "Schema for Janus manifest files",
   "type": "object",
   "required": ["version", "name", "channels"],
   "properties": {
@@ -46,7 +46,7 @@
   "definitions": {
     "Channel": {
       "type": "object",
-      "required": ["name", "commands"],
+      "required": ["name", "requests"],
       "properties": {
         "name": {
           "type": "string",
@@ -58,21 +58,21 @@
           "type": "string",
           "description": "Detailed description of the channel"
         },
-        "commands": {
+        "requests": {
           "type": "object",
           "minProperties": 1,
           "patternProperties": {
             "^[a-zA-Z0-9_-]+$": {
-              "$ref": "#/definitions/Command"
+              "$ref": "#/definitions/Request"
             }
           },
           "additionalProperties": false,
-          "description": "Map of command names to command definitions"
+          "description": "Map of request names to request definitions"
         }
       },
       "additionalProperties": false
     },
-    "Command": {
+    "Request": {
       "type": "object",
       "required": ["name", "description"],
       "properties": {
@@ -80,11 +80,11 @@
           "type": "string",
           "minLength": 1,
           "maxLength": 256,
-          "description": "Human-readable command name"
+          "description": "Human-readable request name"
         },
         "description": {
           "type": "string",
-          "description": "Detailed description of the command"
+          "description": "Detailed description of the request"
         },
         "args": {
           "type": "object",

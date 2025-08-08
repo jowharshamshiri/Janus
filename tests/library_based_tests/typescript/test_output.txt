@@ -1,0 +1,396 @@
+
+> janus-library-tests-typescript@1.0.0 test
+> jest --forceExit
+
+  console.log
+    🔍 Handler started. activeHandlers: 1
+
+      at JanusServer.executeRequestWithTimeout (../../../TypeScriptJanus/src/server/janus-server.ts:261:13)
+
+  console.log
+    🔍 Handler finished. activeHandlers: 0
+
+      at JanusServer.executeRequestWithTimeout (../../../TypeScriptJanus/src/server/janus-server.ts:314:15)
+
+  console.log
+    🔍 Handler started. activeHandlers: 1
+
+      at JanusServer.executeRequestWithTimeout (../../../TypeScriptJanus/src/server/janus-server.ts:261:13)
+
+  console.log
+    🔍 Handler finished. activeHandlers: 0
+
+      at JanusServer.executeRequestWithTimeout (../../../TypeScriptJanus/src/server/janus-server.ts:314:15)
+
+  console.log
+    ✅ TypeScript library manifest request test PASSED
+
+      at Object.<anonymous> (tests/typescript-library.test.ts:50:15)
+
+  console.log
+    Version: 1.0.0
+
+      at Object.<anonymous> (tests/typescript-library.test.ts:51:15)
+
+  console.log
+    Models: {}
+
+      at Object.<anonymous> (tests/typescript-library.test.ts:52:15)
+
+  console.log
+    TypeScript manifest response structure: {
+      request_id: '702fb6ab-4e12-461f-bd3d-8ac976c69174',
+      id: 'a2667382-3afc-4838-baae-d829ce0c2115',
+      success: true,
+      result: {
+        version: '1.0.0',
+        name: 'Janus Server',
+        description: 'TypeScript Janus Server',
+        models: {}
+      },
+      timestamp: '2025-08-08T10:51:08.682Z'
+    }
+
+      at Object.<anonymous> (tests/typescript-library.test.ts:54:15)
+
+  console.log
+    🔍 Server cleanup: Cleaning up socket file
+
+      at JanusServer.performSocketCleanup (../../../TypeScriptJanus/src/server/janus-server.ts:596:17)
+
+  console.log
+    🔍 Server cleanup: Socket file cleaned up successfully
+
+      at JanusServer.performSocketCleanup (../../../TypeScriptJanus/src/server/janus-server.ts:598:17)
+
+  console.log
+    TypeScript JanusRequest JSON: {"id":"test-id-123","method":"ping","request":"ping","args":{"message":"test"},"timestamp":"2025-08-08T10:51:09.000Z"}
+
+      at Object.<anonymous> (tests/typescript-library.test.ts:93:13)
+
+  console.log
+    TypeScript JanusResponse JSON: {"request_id":"test-id-123","id":"response-id-456","success":true,"result":{"data":"test"},"timestamp":"2025-08-08T10:51:09.000Z"}
+
+      at Object.<anonymous> (tests/typescript-library.test.ts:123:13)
+
+  console.log
+    🔍 Handler started. activeHandlers: 1
+
+      at JanusServer.executeRequestWithTimeout (../../../TypeScriptJanus/src/server/janus-server.ts:261:13)
+
+  console.log
+    🔍 Handler finished. activeHandlers: 0
+
+      at JanusServer.executeRequestWithTimeout (../../../TypeScriptJanus/src/server/janus-server.ts:314:15)
+
+  console.log
+    🔍 Handler started. activeHandlers: 1
+
+      at JanusServer.executeRequestWithTimeout (../../../TypeScriptJanus/src/server/janus-server.ts:261:13)
+
+  console.log
+    🔍 Handler finished. activeHandlers: 0
+
+      at JanusServer.executeRequestWithTimeout (../../../TypeScriptJanus/src/server/janus-server.ts:314:15)
+
+  console.log
+    ping response structure: {
+      request_id: '30f4cc77-79dd-45f8-810e-7e50e8a24262',
+      id: '2f03aad4-68f1-4aca-aa9e-932dfa4dd521',
+      success: true,
+      result: { message: 'pong', timestamp: '2025-08-08T10:51:09.798Z' },
+      timestamp: '2025-08-08T10:51:09.798Z'
+    }
+
+      at Object.<anonymous> (tests/typescript-library.test.ts:163:19)
+
+  console.log
+    🔍 Handler started. activeHandlers: 1
+
+      at JanusServer.executeRequestWithTimeout (../../../TypeScriptJanus/src/server/janus-server.ts:261:13)
+
+  console.log
+    🔍 Handler finished. activeHandlers: 0
+
+      at JanusServer.executeRequestWithTimeout (../../../TypeScriptJanus/src/server/janus-server.ts:314:15)
+
+  console.log
+    echo response structure: {
+      request_id: '2afbf2e9-4548-4c97-926e-b442acaff264',
+      id: 'c6b47fa4-a5c4-4378-8b76-d5ca715e88c1',
+      success: true,
+      result: { message: 'test', timestamp: '2025-08-08T10:51:09.799Z' },
+      timestamp: '2025-08-08T10:51:09.799Z'
+    }
+
+      at Object.<anonymous> (tests/typescript-library.test.ts:163:19)
+
+  console.log
+    🔍 Handler started. activeHandlers: 1
+
+      at JanusServer.executeRequestWithTimeout (../../../TypeScriptJanus/src/server/janus-server.ts:261:13)
+
+  console.log
+    🔍 Handler finished. activeHandlers: 0
+
+      at JanusServer.executeRequestWithTimeout (../../../TypeScriptJanus/src/server/janus-server.ts:314:15)
+
+  console.log
+    get_info response structure: {
+      request_id: '5981d454-c30a-4b07-8372-97b413a5baa4',
+      id: '6d7c0ef7-eef2-4155-aceb-7789e936ce3b',
+      success: true,
+      result: {
+        server: 'TypeScript Janus Datagram Server',
+        version: '1.0.0',
+        timestamp: '2025-08-08T10:51:09.800Z',
+        activeHandlers: 1,
+        activeClients: 4
+      },
+      timestamp: '2025-08-08T10:51:09.800Z'
+    }
+
+      at Object.<anonymous> (tests/typescript-library.test.ts:163:19)
+
+  console.log
+    🔍 Handler started. activeHandlers: 1
+
+      at JanusServer.executeRequestWithTimeout (../../../TypeScriptJanus/src/server/janus-server.ts:261:13)
+
+  console.log
+    🔍 Handler finished. activeHandlers: 0
+
+      at JanusServer.executeRequestWithTimeout (../../../TypeScriptJanus/src/server/janus-server.ts:314:15)
+
+  console.log
+    validate response structure: {
+      request_id: '92b3979e-49d0-4b47-b6b7-326ecd8edb49',
+      id: '75acc611-13f2-4c92-ab5e-a16705f015f4',
+      success: true,
+      result: {
+        valid: true,
+        received: { message: 'test' },
+        timestamp: '2025-08-08T10:51:09.801Z'
+      },
+      timestamp: '2025-08-08T10:51:09.801Z'
+    }
+
+      at Object.<anonymous> (tests/typescript-library.test.ts:163:19)
+
+  console.log
+    🔍 Handler started. activeHandlers: 1
+
+      at JanusServer.executeRequestWithTimeout (../../../TypeScriptJanus/src/server/janus-server.ts:261:13)
+
+  console.log
+    🔍 Handler finished. activeHandlers: 0
+
+      at JanusServer.executeRequestWithTimeout (../../../TypeScriptJanus/src/server/janus-server.ts:314:15)
+
+  console.log
+    slow_process response structure: {
+      request_id: '5c25d0f2-4fb6-4d1b-a5bf-da07508373fa',
+      id: '06472255-9e9a-4d9b-8303-5608aaba18a3',
+      success: true,
+      result: {
+        message: 'Slow process completed',
+        duration: 1000,
+        timestamp: '2025-08-08T10:51:10.802Z'
+      },
+      timestamp: '2025-08-08T10:51:10.803Z'
+    }
+
+      at Object.<anonymous> (tests/typescript-library.test.ts:163:19)
+
+  console.log
+    🔍 Handler started. activeHandlers: 1
+
+      at JanusServer.executeRequestWithTimeout (../../../TypeScriptJanus/src/server/janus-server.ts:261:13)
+
+  console.log
+    🔍 Handler finished. activeHandlers: 0
+
+      at JanusServer.executeRequestWithTimeout (../../../TypeScriptJanus/src/server/janus-server.ts:314:15)
+
+  console.log
+    manifest response structure: {
+      request_id: 'd0e5f18a-bc91-460c-8062-1d214d540b7e',
+      id: '568eefce-2e0c-4c8a-b727-46050b18e53b',
+      success: true,
+      result: {
+        version: '1.0.0',
+        name: 'Janus Server',
+        description: 'TypeScript Janus Server',
+        models: {}
+      },
+      timestamp: '2025-08-08T10:51:10.804Z'
+    }
+
+      at Object.<anonymous> (tests/typescript-library.test.ts:163:19)
+
+  console.log
+    🔍 Server cleanup: Cleaning up socket file
+
+      at JanusServer.performSocketCleanup (../../../TypeScriptJanus/src/server/janus-server.ts:596:17)
+
+  console.log
+    🔍 Server cleanup: Socket file cleaned up successfully
+
+      at JanusServer.performSocketCleanup (../../../TypeScriptJanus/src/server/janus-server.ts:598:17)
+
+  console.log
+    Socket file created successfully
+
+      at Object.<anonymous> (tests/typescript-library.test.ts:202:17)
+
+  console.log
+    🔍 Server cleanup: Cleaning up socket file
+
+      at JanusServer.performSocketCleanup (../../../TypeScriptJanus/src/server/janus-server.ts:596:17)
+
+  console.log
+    🔍 Server cleanup: Socket file cleaned up successfully
+
+      at JanusServer.performSocketCleanup (../../../TypeScriptJanus/src/server/janus-server.ts:598:17)
+
+  console.log
+    ✅ TypeScript client → Go server communication successful
+
+      at Object.<anonymous> (tests/typescript-library.test.ts:247:15)
+
+  console.log
+    Response: {
+      result: { models: {}, version: '1.0.0' },
+      error: null,
+      success: true,
+      request_id: '3ebb21d2-817a-4ac8-9b59-f177eaff2bc3',
+      id: 'bde724e4-bce4-45de-ab6b-0fc4bf392247',
+      timestamp: '2025-08-08T10:51:13.065Z'
+    }
+
+      at Object.<anonymous> (tests/typescript-library.test.ts:248:15)
+
+  console.log
+    🔍 Handler started. activeHandlers: 1
+
+      at JanusServer.executeRequestWithTimeout (../../../TypeScriptJanus/src/server/janus-server.ts:261:13)
+
+  console.log
+    🔍 Handler finished. activeHandlers: 0
+
+      at JanusServer.executeRequestWithTimeout (../../../TypeScriptJanus/src/server/janus-server.ts:314:15)
+
+  console.log
+    🔍 Handler started. activeHandlers: 1
+
+      at JanusServer.executeRequestWithTimeout (../../../TypeScriptJanus/src/server/janus-server.ts:261:13)
+
+  console.log
+    🔍 Handler finished. activeHandlers: 0
+
+      at JanusServer.executeRequestWithTimeout (../../../TypeScriptJanus/src/server/janus-server.ts:314:15)
+
+  console.log
+    Go client stdout: Sending SOCK_DGRAM to: /tmp/go-to-typescript-test-be328df6-da9a-45f4-8655-7040e4675ab5.sock
+    Built-in request manifest allowed
+    Response: Success=true, Result=map[description:TypeScript Janus Server models:map[] name:Janus Server version:1.0.0]
+
+      at Object.<anonymous> (tests/typescript-library.test.ts:316:15)
+
+  console.log
+    Go client stderr: 2025/08/08 12:51:13 [GO-PROTOCOL] fetchManifestFromServer ENTER - Server: /tmp/go-to-typescript-test-be328df6-da9a-45f4-8655-7040e4675ab5.sock
+    2025/08/08 12:51:13 [GO-PROTOCOL] Generated response socket path: /tmp/janus_manifest_1754650273273824000_WhAaXyti.sock
+    2025/08/08 12:51:13 [GO-PROTOCOL] Creating timeout context: 30s
+    2025/08/08 12:51:13 [GO-PROTOCOL] Calling core SendDatagram with response path: /tmp/janus_manifest_1754650273273824000_WhAaXyti.sock
+    2025/08/08 12:51:13 [GO-CLIENT] SendDatagram START - Response socket path: /tmp/janus_manifest_1754650273273824000_WhAaXyti.sock
+    2025/08/08 12:51:13 [GO-CLIENT] Server socket path: /tmp/go-to-typescript-test-be328df6-da9a-45f4-8655-7040e4675ab5.sock
+    2025/08/08 12:51:13 [GO-CLIENT] Request data size: 192 bytes
+    2025/08/08 12:51:13 [GO-CLIENT] Message validation passed
+    2025/08/08 12:51:13 [GO-CLIENT] Creating response socket at: /tmp/janus_manifest_1754650273273824000_WhAaXyti.sock
+    2025/08/08 12:51:13 [GO-CLIENT] BindResponseSocket ENTER - Path: /tmp/janus_manifest_1754650273273824000_WhAaXyti.sock
+    2025/08/08 12:51:13 [GO-CLIENT] Resolving Unix address: /tmp/janus_manifest_1754650273273824000_WhAaXyti.sock
+    2025/08/08 12:51:13 [GO-CLIENT] Address resolved successfully: /tmp/janus_manifest_1754650273273824000_WhAaXyti.sock
+    2025/08/08 12:51:13 [GO-CLIENT] Attempting to bind socket at: /tmp/janus_manifest_1754650273273824000_WhAaXyti.sock
+    2025/08/08 12:51:13 [GO-CLIENT] Socket bound successfully at: /tmp/janus_manifest_1754650273273824000_WhAaXyti.sock
+    2025/08/08 12:51:13 [GO-CLIENT] ✅ Socket file verified on filesystem: /tmp/janus_manifest_1754650273273824000_WhAaXyti.sock
+    2025/08/08 12:51:13 [GO-CLIENT] BindResponseSocket EXIT - Path: /tmp/janus_manifest_1754650273273824000_WhAaXyti.sock
+    2025/08/08 12:51:13 [GO-CLIENT] SUCCESS: Response socket bound at /tmp/janus_manifest_1754650273273824000_WhAaXyti.sock
+    2025/08/08 12:51:13 [GO-CLIENT] Resolving server address: /tmp/go-to-typescript-test-be328df6-da9a-45f4-8655-7040e4675ab5.sock
+    2025/08/08 12:51:13 [GO-CLIENT] Server address resolved: /tmp/go-to-typescript-test-be328df6-da9a-45f4-8655-7040e4675ab5.sock
+    2025/08/08 12:51:13 [GO-CLIENT] Dialing server socket: /tmp/go-to-typescript-test-be328df6-da9a-45f4-8655-7040e4675ab5.sock
+    2025/08/08 12:51:13 [GO-CLIENT] SUCCESS: Connected to server socket
+    2025/08/08 12:51:13 [GO-CLIENT] Setting write deadline: 2025-08-08 12:51:18.274015 +0200 CEST m=+5.000957710 (timeout: 5s)
+    2025/08/08 12:51:13 [GO-CLIENT] Sending datagram of 192 bytes to server...
+    2025/08/08 12:51:13 [GO-CLIENT] SUCCESS: Datagram sent to server, waiting for response on /tmp/janus_manifest_1754650273273824000_WhAaXyti.sock
+    2025/08/08 12:51:13 [GO-CLIENT] Setting read deadline: 2025-08-08 12:51:18.274026 +0200 CEST m=+5.000968418 (timeout: 5s)
+    2025/08/08 12:51:13 [GO-CLIENT] Reading response from /tmp/janus_manifest_1754650273273824000_WhAaXyti.sock...
+    2025/08/08 12:51:13 [GO-CLIENT] ✅ Socket file exists before read: /tmp/janus_manifest_1754650273273824000_WhAaXyti.sock
+    2025/08/08 12:51:13 [GO-CLIENT] SUCCESS: Received response of 254 bytes from /tmp/janus_manifest_1754650273273824000_WhAaXyti.sock
+    2025/08/08 12:51:13 [GO-CLIENT] CLEANUP (SUCCESS): Closing response socket /tmp/janus_manifest_1754650273273824000_WhAaXyti.sock
+    2025/08/08 12:51:13 [GO-CLIENT] CloseSocket ENTER - Path: /tmp/janus_manifest_1754650273273824000_WhAaXyti.sock
+    2025/08/08 12:51:13 [GO-CLIENT] Socket file exists before closing: /tmp/janus_manifest_1754650273273824000_WhAaXyti.sock
+    2025/08/08 12:51:13 [GO-CLIENT] Closing connection for: /tmp/janus_manifest_1754650273273824000_WhAaXyti.sock
+    2025/08/08 12:51:13 [GO-CLIENT] Connection closed successfully
+    2025/08/08 12:51:13 [GO-CLIENT] Removing socket file: /tmp/janus_manifest_1754650273273824000_WhAaXyti.sock
+    2025/08/08 12:51:13 [GO-CLIENT] Socket file removed successfully: /tmp/janus_manifest_1754650273273824000_WhAaXyti.sock
+    2025/08/08 12:51:13 [GO-CLIENT] CloseSocket EXIT - Path: /tmp/janus_manifest_1754650273273824000_WhAaXyti.sock
+    2025/08/08 12:51:13 [GO-CLIENT] Closing client connection
+    2025/08/08 12:51:13 [GO-PROTOCOL] SendDatagram SUCCESS - Received 254 bytes
+    2025/08/08 12:51:13 [GO-PROTOCOL] fetchManifestFromServer SUCCESS - Returning manifest
+    2025/08/08 12:51:13 [GO-PROTOCOL] Context cancel called
+    2025/08/08 12:51:13 [GO-CLIENT] SendDatagram START - Response socket path: /tmp/go_janus_client_34137_1754650273273260000.sock
+    2025/08/08 12:51:13 [GO-CLIENT] Server socket path: /tmp/go-to-typescript-test-be328df6-da9a-45f4-8655-7040e4675ab5.sock
+    2025/08/08 12:51:13 [GO-CLIENT] Request data size: 203 bytes
+    2025/08/08 12:51:13 [GO-CLIENT] Message validation passed
+    2025/08/08 12:51:13 [GO-CLIENT] Creating response socket at: /tmp/go_janus_client_34137_1754650273273260000.sock
+    2025/08/08 12:51:13 [GO-CLIENT] BindResponseSocket ENTER - Path: /tmp/go_janus_client_34137_1754650273273260000.sock
+    2025/08/08 12:51:13 [GO-CLIENT] Resolving Unix address: /tmp/go_janus_client_34137_1754650273273260000.sock
+    2025/08/08 12:51:13 [GO-CLIENT] Address resolved successfully: /tmp/go_janus_client_34137_1754650273273260000.sock
+    2025/08/08 12:51:13 [GO-CLIENT] Attempting to bind socket at: /tmp/go_janus_client_34137_1754650273273260000.sock
+    2025/08/08 12:51:13 [GO-CLIENT] Socket bound successfully at: /tmp/go_janus_client_34137_1754650273273260000.sock
+    2025/08/08 12:51:13 [GO-CLIENT] ✅ Socket file verified on filesystem: /tmp/go_janus_client_34137_1754650273273260000.sock
+    2025/08/08 12:51:13 [GO-CLIENT] BindResponseSocket EXIT - Path: /tmp/go_janus_client_34137_1754650273273260000.sock
+    2025/08/08 12:51:13 [GO-CLIENT] SUCCESS: Response socket bound at /tmp/go_janus_client_34137_1754650273273260000.sock
+    2025/08/08 12:51:13 [GO-CLIENT] Resolving server address: /tmp/go-to-typescript-test-be328df6-da9a-45f4-8655-7040e4675ab5.sock
+    2025/08/08 12:51:13 [GO-CLIENT] Server address resolved: /tmp/go-to-typescript-test-be328df6-da9a-45f4-8655-7040e4675ab5.sock
+    2025/08/08 12:51:13 [GO-CLIENT] Dialing server socket: /tmp/go-to-typescript-test-be328df6-da9a-45f4-8655-7040e4675ab5.sock
+    2025/08/08 12:51:13 [GO-CLIENT] SUCCESS: Connected to server socket
+    2025/08/08 12:51:13 [GO-CLIENT] Setting write deadline: 2025-08-08 12:51:18.27481 +0200 CEST m=+5.001752043 (timeout: 5s)
+    2025/08/08 12:51:13 [GO-CLIENT] Sending datagram of 203 bytes to server...
+    2025/08/08 12:51:13 [GO-CLIENT] SUCCESS: Datagram sent to server, waiting for response on /tmp/go_janus_client_34137_1754650273273260000.sock
+    2025/08/08 12:51:13 [GO-CLIENT] Setting read deadline: 2025-08-08 12:51:18.274816 +0200 CEST m=+5.001758376 (timeout: 5s)
+    2025/08/08 12:51:13 [GO-CLIENT] Reading response from /tmp/go_janus_client_34137_1754650273273260000.sock...
+    2025/08/08 12:51:13 [GO-CLIENT] ✅ Socket file exists before read: /tmp/go_janus_client_34137_1754650273273260000.sock
+    2025/08/08 12:51:13 [GO-CLIENT] SUCCESS: Received response of 254 bytes from /tmp/go_janus_client_34137_1754650273273260000.sock
+    2025/08/08 12:51:13 [GO-CLIENT] CLEANUP (SUCCESS): Closing response socket /tmp/go_janus_client_34137_1754650273273260000.sock
+    2025/08/08 12:51:13 [GO-CLIENT] CloseSocket ENTER - Path: /tmp/go_janus_client_34137_1754650273273260000.sock
+    2025/08/08 12:51:13 [GO-CLIENT] Socket file exists before closing: /tmp/go_janus_client_34137_1754650273273260000.sock
+    2025/08/08 12:51:13 [GO-CLIENT] Closing connection for: /tmp/go_janus_client_34137_1754650273273260000.sock
+    2025/08/08 12:51:13 [GO-CLIENT] Connection closed successfully
+    2025/08/08 12:51:13 [GO-CLIENT] Removing socket file: /tmp/go_janus_client_34137_1754650273273260000.sock
+    2025/08/08 12:51:13 [GO-CLIENT] Socket file removed successfully: /tmp/go_janus_client_34137_1754650273273260000.sock
+    2025/08/08 12:51:13 [GO-CLIENT] CloseSocket EXIT - Path: /tmp/go_janus_client_34137_1754650273273260000.sock
+    2025/08/08 12:51:13 [GO-CLIENT] Closing client connection
+
+      at Object.<anonymous> (tests/typescript-library.test.ts:317:15)
+
+  console.log
+    Go client exit code: 0
+
+      at Object.<anonymous> (tests/typescript-library.test.ts:318:15)
+
+  console.log
+    ✅ Go client → TypeScript server communication successful
+
+      at Object.<anonymous> (tests/typescript-library.test.ts:325:17)
+
+  console.log
+    🔍 Server cleanup: Cleaning up socket file
+
+      at JanusServer.performSocketCleanup (../../../TypeScriptJanus/src/server/janus-server.ts:596:17)
+
+  console.log
+    🔍 Server cleanup: Socket file cleaned up successfully
+
+      at JanusServer.performSocketCleanup (../../../TypeScriptJanus/src/server/janus-server.ts:598:17)
+

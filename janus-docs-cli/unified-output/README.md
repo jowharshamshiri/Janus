@@ -5,7 +5,7 @@ This is a professional Janus development environment with comprehensive tooling.
 ## Features
 
 ### 📖 Interactive Documentation
-- Live API reference with searchable commands
+- Live API reference with searchable requests
 - Interactive examples with "Try It" buttons
 - Copy-to-clipboard functionality
 - Professional syntax highlighting

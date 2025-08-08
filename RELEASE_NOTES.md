@@ -36,7 +36,7 @@
 
 ### Architecture Implementation
 - **SOCK_DGRAM Foundation**: Unix domain datagram socket implementation
-- **Dynamic Specification**: Server-provided API specifications with validation
+- **Dynamic Manifest**: Server-provided API manifests with validation
 - **Security Framework**: 27 security mechanisms across implementations
 - **JSON-RPC 2.0 Compliance**: Error handling with numeric codes
 
@@ -52,9 +52,9 @@
 
 ### Advanced Handler System
 - **Direct Value Responses**: Return any JSON-compatible type without dictionary wrapping
-- **Native Async Support**: Language-specific async patterns (goroutines, Tokio, Tasks, Promises)
+- **Native Async Support**: Language-manifestific async patterns (goroutines, Tokio, Tasks, Promises)
 - **Type Safety**: Compile-time type checking for handler responses
-- **Custom Error Handling**: JSONRPCError integration with language-specific error types
+- **Custom Error Handling**: JSONRPCError integration with language-manifestific error types
 
 ### Automatic ID Management
 - **Transparent UUIDs**: Automatic request ID assignment hidden from users
@@ -63,10 +63,10 @@
 - **Cross-Platform Consistency**: Identical request management across all languages
 
 ### Security & Validation
-- **Input Sanitization**: Comprehensive validation for paths, commands, and content
+- **Input Sanitization**: Comprehensive validation for paths, requests, and content
 - **Injection Prevention**: Protection against null byte, path traversal, and script attacks
 - **Resource Protection**: Configurable limits and monitoring
-- **Manifest Validation**: Automatic argument validation against API specifications
+- **Manifest Validation**: Automatic argument validation against API manifests
 
 ---
 
@@ -131,14 +131,14 @@ GoJanus:    97.5% stress test success
 ### Documentation
 - **USAGE.md**: Usage guide with examples
 - **CHANGELOG.md**: Release documentation with feature tracking
-- **PROTOCOL.md**: Protocol specification (95KB documentation)
+- **PROTOCOL.md**: Protocol manifest (95KB documentation)
 - **API Documentation**: Generated with `npx janus-docs-cli`
 
 ### Development Tools
 - **janus-docs-cli**: NPX CLI tool for professional HTML documentation generation
 - **Cross-Platform Testing**: Comprehensive 4×4 client-server testing matrix
 - **Performance Benchmarking**: Automated latency and throughput measurement
-- **Manifest Validation**: JSON schema validation for API specifications
+- **Manifest Validation**: JSON schema validation for API manifests
 
 ### Quality Assurance
 - **Unit Tests**: Comprehensive test suites across all implementations
@@ -175,14 +175,14 @@ npm install typescript-unix-sock-api@0.20.25988
 
 ### Example Usage
 
-**1. Create API Specification (Manifest):**
+**1. Create API Manifest (Manifest):**
 ```json
 {
   "name": "My API",
   "version": "1.0.0",
   "channels": {
     "default": {
-      "commands": {
+      "requests": {
         "get_user": {
           "arguments": {"user_id": {"type": "string", "required": true}},
           "response": {"type": "object"}
@@ -195,12 +195,12 @@ npm install typescript-unix-sock-api@0.20.25988
 
 **2. Implement Server (any language):**
 - Load Manifest file
-- Register command handlers
+- Register request handlers
 - Start listening on Unix socket
 
 **3. Create Client (any language):**
-- Connect to server with automatic spec fetching
-- Send commands with automatic validation
+- Connect to server with automatic manifest fetching
+- Send requests with automatic validation
 - Handle responses with type safety
 
 **4. Test Cross-Platform:**

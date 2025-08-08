@@ -39,7 +39,7 @@ class TestResult:
 class TestOrchestrator:
     """Main test orchestrator for cross-platform Janus testing"""
     
-    def __init__(self, config_path: str = "test-spec.json", verbose: bool = False):
+    def __init__(self, config_path: str = "test-manifest.json", verbose: bool = False):
         self.config_path = config_path
         self.verbose = verbose
         self.config = self._load_config()
@@ -107,11 +107,11 @@ class TestOrchestrator:
             except Exception as e:
                 self.logger.warning(f"Error cleaning up temp directory: {e}")
     
-    def run_command(self, cmd: List[str], cwd: Optional[str] = None, 
+    def run_request(self, cmd: List[str], cwd: Optional[str] = None, 
                    timeout: int = 30, capture_output: bool = True) -> Tuple[int, str, str]:
-        """Run a command with timeout and logging"""
+        """Run a request with timeout and logging"""
         cmd_str = " ".join(cmd)
-        self.logger.debug(f"Running command: {cmd_str} (cwd: {cwd})")
+        self.logger.debug(f"Running request: {cmd_str} (cwd: {cwd})")
         
         try:
             if capture_output:
@@ -136,13 +136,13 @@ class TestOrchestrator:
                 return 0, "", ""  # Success for start, actual monitoring happens elsewhere
                 
         except subprocess.TimeoutExpired:
-            self.logger.error(f"Command timed out after {timeout}s: {cmd_str}")
+            self.logger.error(f"Request timed out after {timeout}s: {cmd_str}")
             return 124, "", f"Timeout after {timeout}s"
         except FileNotFoundError:
-            self.logger.error(f"Command not found: {cmd[0]}")
-            return 127, "", f"Command not found: {cmd[0]}"
+            self.logger.error(f"Request not found: {cmd[0]}")
+            return 127, "", f"Request not found: {cmd[0]}"
         except Exception as e:
-            self.logger.error(f"Error running command: {e}")
+            self.logger.error(f"Error running request: {e}")
             return 1, "", str(e)
     
     def check_prerequisites(self) -> bool:
@@ -159,7 +159,7 @@ class TestOrchestrator:
         
         missing_tools = []
         for tool, cmd in tools.items():
-            returncode, stdout, stderr = self.run_command(cmd, timeout=10)
+            returncode, stdout, stderr = self.run_request(cmd, timeout=10)
             if returncode != 0:
                 missing_tools.append(tool)
                 self.logger.error(f"Missing tool: {tool}")
@@ -174,7 +174,7 @@ class TestOrchestrator:
         return True
     
     def build_implementation(self, impl_name: str) -> TestResult:
-        """Build a specific implementation"""
+        """Build a manifestific implementation"""
         impl = self.config["implementations"][impl_name]
         self.logger.info(f"Building {impl['name']}...")
         
@@ -191,9 +191,9 @@ class TestOrchestrator:
                 message=f"Implementation directory not found: {impl_dir}"
             )
         
-        # Run build command
-        returncode, stdout, stderr = self.run_command(
-            impl["build_command"],
+        # Run build request
+        returncode, stdout, stderr = self.run_request(
+            impl["build_request"],
             cwd=str(impl_dir),
             timeout=impl.get("build_timeout", 60)
         )
@@ -228,9 +228,9 @@ class TestOrchestrator:
         
         start_time = time.time()
         
-        # Run test command
-        returncode, stdout, stderr = self.run_command(
-            impl["test_command"],
+        # Run test request
+        returncode, stdout, stderr = self.run_request(
+            impl["test_request"],
             cwd=impl["directory"],
             timeout=impl.get("test_timeout", 60)
         )
@@ -271,7 +271,7 @@ class TestOrchestrator:
         
         # Start server process
         try:
-            cmd = impl["server_command"] + [socket_path]
+            cmd = impl["server_request"] + [socket_path]
             proc = subprocess.Popen(
                 cmd,
                 cwd=impl["directory"],
@@ -308,30 +308,30 @@ class TestOrchestrator:
     def test_client_communication(self, server_impl: str, client_impl: str, 
                                  socket_path: str, test_cmd: Dict) -> TestResult:
         """Test client communication with server"""
-        test_name = f"{client_impl}_to_{server_impl}_{test_cmd['command']}"
+        test_name = f"{client_impl}_to_{server_impl}_{test_cmd['request']}"
         self.logger.info(f"Testing {test_name}")
         
         start_time = time.time()
         
-        # Prepare client command
+        # Prepare client request
         client_config = self.config["implementations"][client_impl]
         
-        # Create test command JSON
-        command_json = {
+        # Create test request JSON
+        request_json = {
             "channel": test_cmd["channel"],
-            "command": test_cmd["command"],
+            "request": test_cmd["request"],
             "parameters": test_cmd["parameters"],
             "reply_to": f"/tmp/reply_{int(time.time() * 1000000)}.sock"
         }
         
-        # Write command to temp file
+        # Write request to temp file
         cmd_file = self.temp_dir / f"cmd_{test_name}.json"
         with open(cmd_file, 'w') as f:
-            json.dump(command_json, f)
+            json.dump(request_json, f)
         
         # Run client
-        client_cmd = client_config["client_command"] + [socket_path, str(cmd_file)]
-        returncode, stdout, stderr = self.run_command(
+        client_cmd = client_config["client_request"] + [socket_path, str(cmd_file)]
+        returncode, stdout, stderr = self.run_request(
             client_cmd,
             cwd=client_config["directory"],
             timeout=test_cmd.get("timeout", 10)
@@ -422,7 +422,7 @@ class TestOrchestrator:
             
             self.logger.info(f"\n=== Testing {server_impl} server with {client_impl} client ===")
             
-            # Use implementation-specific socket path
+            # Use implementation-manifestific socket path
             socket_path = f"/tmp/test_{server_impl}_server.sock"
             
             # Start server
@@ -438,8 +438,8 @@ class TestOrchestrator:
                 continue
             
             try:
-                # Run test commands
-                for cmd_name, test_cmd in self.config["test_commands"].items():
+                # Run test requests
+                for cmd_name, test_cmd in self.config["test_requests"].items():
                     result = self.test_client_communication(
                         server_impl, client_impl, socket_path, test_cmd
                     )
@@ -634,7 +634,7 @@ class TestOrchestrator:
 
 def main():
     parser = argparse.ArgumentParser(description="Janus Cross-Platform Test Orchestrator")
-    parser.add_argument("--config", default="test-spec.json", help="Test configuration file")
+    parser.add_argument("--config", default="test-manifest.json", help="Test configuration file")
     parser.add_argument("--verbose", "-v", action="store_true", help="Verbose output")
     parser.add_argument("--categories", nargs="+", 
                        choices=["build", "unit", "integration", "performance", "conformance"],

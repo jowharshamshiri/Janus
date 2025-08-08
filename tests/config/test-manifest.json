@@ -1,12 +1,12 @@
 {
   "version": "3.0.0",
-  "name": "Comprehensive Janus Test Specification",
+  "name": "Comprehensive Janus Test Manifest",
   "description": "Production-grade Manifest covering all data types, edge cases, concurrent patterns, failure modes, and extended session scenarios",
   "channels": {
     "test": {
       "name": "test",
       "description": "Primary test channel for comprehensive validation",
-      "commands": {
+      "requests": {
         "ping": {
           "name": "ping",
           "description": "Basic connectivity with configurable response patterns",
@@ -180,7 +180,7 @@
           "name": "edge_case_handling",
           "description": "Test extreme edge cases and boundary conditions",
           "args": {
-            "edge_case_type": {"type": "string", "required": true, "enum": ["empty_values", "max_values", "min_values", "special_characters", "encoding_edge_cases", "json_edge_cases", "socket_edge_cases"]},
+            "edge_case_type": {"type": "string", "required": true, "enum": ["empty_values", "max_values", "min_values", "manifestial_characters", "encoding_edge_cases", "json_edge_cases", "socket_edge_cases"]},
             "test_data": {"type": "object", "required": false},
             "boundary_value": {"type": "number", "required": false},
             "stress_multiplier": {"type": "number", "required": false, "min": 1, "max": 1000}
@@ -189,7 +189,7 @@
             "type": "object",
             "properties": {
               "edge_case_handled": {"type": "boolean", "required": true},
-              "boundary_respected": {"type": "boolean", "required": true},
+              "boundary_remanifestted": {"type": "boolean", "required": true},
               "error_handling_quality": {"type": "string", "required": true},
               "recovery_time_ms": {"type": "number", "required": false},
               "system_stability": {"type": "string", "required": true}
@@ -222,13 +222,13 @@
   "test_scenarios": {
     "basic_connectivity": {
       "description": "Basic ping-pong connectivity validation",
-      "commands": ["ping"],
+      "requests": ["ping"],
       "duration_seconds": 30,
       "expected_success_rate": 1.0
     },
     "data_type_comprehensive": {
       "description": "Test all data types and edge cases",
-      "commands": ["data_types_test"],
+      "requests": ["data_types_test"],
       "test_cases": [
         {"type": "string", "sizes": [0, 1, 1000, 100000, 1000000]},
         {"type": "number", "values": [0, -1, 1, 3.14159, 1e100, -1e100, "NaN", "Infinity"]},
@@ -243,7 +243,7 @@
     },
     "concurrent_stress": {
       "description": "High concurrency and race condition testing",
-      "commands": ["concurrent_test"],
+      "requests": ["concurrent_test"],
       "concurrent_clients": [1, 5, 10, 20, 50, 100],
       "operations_per_client": 100,
       "race_condition_detection": true,
@@ -251,7 +251,7 @@
     },
     "extended_session": {
       "description": "Medium-duration session stability",
-      "commands": ["session_persistence", "extended_operation"],
+      "requests": ["session_persistence", "extended_operation"],
       "session_duration_minutes": [3, 5, 10],
       "memory_leak_detection": true,
       "checkpoint_validation": true,
@@ -259,7 +259,7 @@
     },
     "failure_recovery": {
       "description": "Failure simulation and recovery testing",
-      "commands": ["failure_simulation"],
+      "requests": ["failure_simulation"],
       "failure_types": ["timeout", "network_partition", "process_crash", "resource_exhaustion"],
       "recovery_validation": true,
       "cascade_failure_testing": true,
@@ -267,7 +267,7 @@
     },
     "performance_validation": {
       "description": "Performance under various load patterns",
-      "commands": ["performance_benchmark"],
+      "requests": ["performance_benchmark"],
       "benchmark_types": ["latency", "throughput", "burst_traffic", "sustained_load"],
       "target_metrics": {
         "p99_latency_ms": 100,
@@ -279,7 +279,7 @@
     },
     "security_comprehensive": {
       "description": "Security testing and attack simulation",
-      "commands": ["security_validation"],
+      "requests": ["security_validation"],
       "attack_types": ["injection", "overflow", "fuzzing", "encoding_attacks"],
       "fuzzing_iterations": 10000,
       "vulnerability_scanning": true,
@@ -328,7 +328,7 @@
     "data_integrity": "Validate data remains unchanged through transmission",
     "resource_cleanup": "Validate proper cleanup of sockets and memory",
     "error_propagation": "Validate errors are properly handled and reported",
-    "timeout_compliance": "Validate timeout behavior matches specification",
+    "timeout_compliance": "Validate timeout behavior matches manifest",
     "concurrent_safety": "Validate no race conditions or deadlocks occur",
     "memory_stability": "Validate memory usage remains stable over time",
     "socket_compliance": "Validate SOCK_DGRAM usage and reply_to mechanism"

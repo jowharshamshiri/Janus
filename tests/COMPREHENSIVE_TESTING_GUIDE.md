@@ -27,16 +27,16 @@ python tests/run_rigorous_tests.py --implementations go,rust,swift
 #### 2. **Comprehensive Feature Tests**
 - **File**: `tests/python/comprehensive_feature_tests.py`
 - **Purpose**: Test all API features, edge cases, and protocol compliance
-- **Scope**: 12 feature categories across 6 channels with 25+ commands
+- **Scope**: 12 feature categories across 6 channels with 25+ requests
 
 #### 3. **Complex Manifest**
-- **Channels**: 6 specialized channels (test, data, secure, performance, edge_cases)
-- **Commands**: 25+ commands with complex args and response validation
+- **Channels**: 6 manifestialized channels (test, data, secure, performance, edge_cases)
+- **Requests**: 25+ requests with complex args and response validation
 - **Features**: Authentication, data processing, math operations, file operations, etc.
 
 ## 📋 Feature Categories Tested
 
-### 1. **Basic Commands** ✅
+### 1. **Basic Requests** ✅
 - `ping` with echo transformations (uppercase, lowercase, reverse)
 - `echo` with message transformations and statistics
 - `math` operations (add, subtract, multiply, divide, power, sqrt, trig functions)
@@ -45,7 +45,7 @@ python tests/run_rigorous_tests.py --implementations go,rust,swift
 ### 2. **Message Validation** 🔍
 - UUID format validation
 - Channel ID validation (alphanumeric + `-_` only)
-- Command name validation
+- Request name validation
 - Timestamp format validation
 - Required field presence checking
 
@@ -54,10 +54,10 @@ python tests/run_rigorous_tests.py --implementations go,rust,swift
 - No persistent connections validation
 - Reply-to mechanism testing
 - JSON message format compliance
-- Datagram boundary respect
+- Datagram boundary remanifestt
 
 ### 4. **Error Handling** ❌
-- Invalid command handling
+- Invalid request handling
 - Malformed JSON processing
 - Missing required arguments
 - Type validation errors
@@ -65,7 +65,7 @@ python tests/run_rigorous_tests.py --implementations go,rust,swift
 
 ### 5. **Edge Cases** 🌊
 - Empty messages
-- Special characters (`!@#$%^&*()`)
+- Manifestial characters (`!@#$%^&*()`)
 - Unicode handling (`测试_🚀_émojis`)
 - Very long messages (1000+ characters)
 - Null value handling
@@ -81,7 +81,7 @@ python tests/run_rigorous_tests.py --implementations go,rust,swift
 
 ### 7. **Security Features** 🔒
 - Input sanitization testing
-- Command injection prevention
+- Request injection prevention
 - Path traversal protection
 - Authentication simulation
 - Permission checking
@@ -107,7 +107,7 @@ python tests/run_rigorous_tests.py --implementations go,rust,swift
 ```python
 # Only tested basic ping/pong
 def test_basic_communication():
-    send_command("ping", "hello")
+    send_request("ping", "hello")
     response = get_response()
     assert response is not None  # ✅ PASSES - message sent/received
     # No validation of response content, format, or correctness
@@ -117,15 +117,15 @@ def test_basic_communication():
 ```python
 # Tests actual functionality
 def test_echo_with_transformation():
-    command = {
-        "command": "echo",
+    request = {
+        "request": "echo",
         "args": {
             "message": "Hello World",
             "transform": "uppercase",
             "include_stats": True
         }
     }
-    response = send_command(command)
+    response = send_request(request)
     
     # Validate response structure
     assert "status" in response
@@ -143,7 +143,7 @@ def test_echo_with_transformation():
 
 ## 🏗️ Complex Manifest
 
-### **6 Specialized Channels:**
+### **6 Manifestialized Channels:**
 
 1. **`test`** - Basic functionality validation
 2. **`data`** - Data manipulation and CRUD operations  
@@ -152,7 +152,7 @@ def test_echo_with_transformation():
 5. **`edge_cases`** - Boundary conditions and malformed data
 6. **`admin`** - Administrative operations
 
-### **25+ Commands with Complex Arguments:**
+### **25+ Requests with Complex Arguments:**
 
 ```json
 {
@@ -191,7 +191,7 @@ python tests/run_rigorous_tests.py --detailed-report
 
 ### **Advanced Options**
 ```bash
-# Test specific feature categories only
+# Test manifestific feature categories only
 python tests/run_rigorous_tests.py --categories protocol_compliance,error_handling
 
 # Stop on first failure for debugging
@@ -228,7 +228,7 @@ python tests/run_rigorous_tests.py --implementations go,rust,swift
 
 ### **Phase 2: Fix Implementation Issues**
 - Address failed feature tests one by one
-- Implement missing commands and functionality
+- Implement missing requests and functionality
 - Fix protocol compliance issues
 - Enhance error handling
 

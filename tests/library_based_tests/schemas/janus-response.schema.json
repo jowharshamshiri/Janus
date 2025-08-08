@@ -1,0 +1,104 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://janus.example.com/schemas/janus-response.schema.json",
+  "title": "JanusResponse",
+  "description": "Standard Janus response message format across all implementations",
+  "type": "object",
+  "required": ["id", "channelId", "success"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Request identifier from original request",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+    },
+    "channelId": {
+      "type": "string",
+      "description": "Channel identifier from original request",
+      "minLength": 1,
+      "maxLength": 256
+    },
+    "success": {
+      "type": "boolean",
+      "description": "Whether request executed successfully"
+    },
+    "result": {
+      "description": "Request result data (present when success=true) - UNWRAPPED direct value, not wrapped in additional object",
+      "oneOf": [
+        {"type": "null"},
+        {"type": "boolean"},
+        {"type": "number"},
+        {"type": "string"},
+        {"type": "array"},
+        {"type": "object"}
+      ]
+    },
+    "error": {
+      "type": "object",
+      "description": "Error information (present when success=false)",
+      "required": ["code", "message"],
+      "properties": {
+        "code": {
+          "type": "integer",
+          "description": "JSON-RPC 2.0 error code"
+        },
+        "message": {
+          "type": "string", 
+          "description": "Human-readable error message"
+        },
+        "data": {
+          "description": "Additional error details",
+          "oneOf": [
+            {"type": "null"},
+            {"type": "string"},
+            {"type": "object"}
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "timestamp": {
+      "type": "number",
+      "description": "Unix timestamp (optional)"
+    }
+  },
+  "additionalProperties": false,
+  "allOf": [
+    {
+      "description": "When success=true, result should be present and error should be omitted",
+      "if": {"properties": {"success": {"const": true}}},
+      "then": {
+        "required": ["result"],
+        "not": {"required": ["error"]}
+      }
+    },
+    {
+      "description": "When success=false, error should be present and result should be omitted", 
+      "if": {"properties": {"success": {"const": false}}},
+      "then": {
+        "required": ["error"],
+        "not": {"required": ["result"]}
+      }
+    }
+  ],
+  "examples": [
+    {
+      "id": "123e4567-e89b-12d3-a456-426614174000",
+      "channelId": "test", 
+      "success": true,
+      "result": {
+        "pong": true,
+        "echo": {"message": "hello"}
+      }
+    },
+    {
+      "id": "987fcdeb-51a2-43d1-9f4e-123456789abc",
+      "channelId": "api",
+      "success": false,
+      "error": {
+        "code": -32601,
+        "message": "Method not found",
+        "data": "Request 'invalid' not found in channel 'api'"
+      }
+    }
+  ]
+}

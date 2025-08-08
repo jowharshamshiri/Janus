@@ -20,7 +20,7 @@
         "summary": "Create User",
         "description": "Create a new user account with validation and security checks",
         "x-channel": "user-service",
-        "x-command": "create-user",
+        "x-request": "create-user",
         "x-timeout": 30,
         "requestBody": {
           "required": true,
@@ -31,7 +31,7 @@
                 "required": [
                   "id",
                   "channelId",
-                  "command",
+                  "request",
                   "timestamp"
                 ],
                 "properties": {
@@ -42,7 +42,7 @@
                   "channelId": {
                     "type": "string"
                   },
-                  "command": {
+                  "request": {
                     "type": "string"
                   },
                   "timestamp": {
@@ -111,13 +111,13 @@
                 "schema": {
                   "type": "object",
                   "required": [
-                    "commandId",
+                    "requestId",
                     "channelId",
                     "success",
                     "timestamp"
                   ],
                   "properties": {
-                    "commandId": {
+                    "requestId": {
                       "type": "string",
                       "format": "uuid"
                     },
@@ -162,7 +162,7 @@
         "summary": "Authenticate User",
         "description": "Authenticate user credentials and generate session token",
         "x-channel": "user-service",
-        "x-command": "authenticate-user",
+        "x-request": "authenticate-user",
         "x-timeout": 10,
         "requestBody": {
           "required": true,
@@ -173,7 +173,7 @@
                 "required": [
                   "id",
                   "channelId",
-                  "command",
+                  "request",
                   "timestamp"
                 ],
                 "properties": {
@@ -184,7 +184,7 @@
                   "channelId": {
                     "type": "string"
                   },
-                  "command": {
+                  "request": {
                     "type": "string"
                   },
                   "timestamp": {
@@ -235,13 +235,13 @@
                 "schema": {
                   "type": "object",
                   "required": [
-                    "commandId",
+                    "requestId",
                     "channelId",
                     "success",
                     "timestamp"
                   ],
                   "properties": {
-                    "commandId": {
+                    "requestId": {
                       "type": "string",
                       "format": "uuid"
                     },
@@ -300,7 +300,7 @@
         "summary": "Get User",
         "description": "Retrieve user information by ID or username",
         "x-channel": "user-service",
-        "x-command": "get-user",
+        "x-request": "get-user",
         "x-timeout": 15,
         "requestBody": {
           "required": true,
@@ -311,7 +311,7 @@
                 "required": [
                   "id",
                   "channelId",
-                  "command",
+                  "request",
                   "timestamp"
                 ],
                 "properties": {
@@ -322,7 +322,7 @@
                   "channelId": {
                     "type": "string"
                   },
-                  "command": {
+                  "request": {
                     "type": "string"
                   },
                   "timestamp": {
@@ -368,13 +368,13 @@
                 "schema": {
                   "type": "object",
                   "required": [
-                    "commandId",
+                    "requestId",
                     "channelId",
                     "success",
                     "timestamp"
                   ],
                   "properties": {
-                    "commandId": {
+                    "requestId": {
                       "type": "string",
                       "format": "uuid"
                     },
@@ -419,7 +419,7 @@
         "summary": "Update User",
         "description": "Update user information and profile",
         "x-channel": "user-service",
-        "x-command": "update-user",
+        "x-request": "update-user",
         "x-timeout": 30,
         "requestBody": {
           "required": true,
@@ -430,7 +430,7 @@
                 "required": [
                   "id",
                   "channelId",
-                  "command",
+                  "request",
                   "timestamp"
                 ],
                 "properties": {
@@ -441,7 +441,7 @@
                   "channelId": {
                     "type": "string"
                   },
-                  "command": {
+                  "request": {
                     "type": "string"
                   },
                   "timestamp": {
@@ -485,13 +485,13 @@
                 "schema": {
                   "type": "object",
                   "required": [
-                    "commandId",
+                    "requestId",
                     "channelId",
                     "success",
                     "timestamp"
                   ],
                   "properties": {
-                    "commandId": {
+                    "requestId": {
                       "type": "string",
                       "format": "uuid"
                     },
@@ -536,7 +536,7 @@
         "summary": "Delete User",
         "description": "Permanently delete a user account",
         "x-channel": "user-service",
-        "x-command": "delete-user",
+        "x-request": "delete-user",
         "x-timeout": 60,
         "requestBody": {
           "required": true,
@@ -547,7 +547,7 @@
                 "required": [
                   "id",
                   "channelId",
-                  "command",
+                  "request",
                   "timestamp"
                 ],
                 "properties": {
@@ -558,7 +558,7 @@
                   "channelId": {
                     "type": "string"
                   },
-                  "command": {
+                  "request": {
                     "type": "string"
                   },
                   "timestamp": {
@@ -604,13 +604,13 @@
                 "schema": {
                   "type": "object",
                   "required": [
-                    "commandId",
+                    "requestId",
                     "channelId",
                     "success",
                     "timestamp"
                   ],
                   "properties": {
-                    "commandId": {
+                    "requestId": {
                       "type": "string",
                       "format": "uuid"
                     },
@@ -664,7 +664,7 @@
         "summary": "Validate Session",
         "description": "Validate session token and return user information",
         "x-channel": "session-service",
-        "x-command": "validate-session",
+        "x-request": "validate-session",
         "x-timeout": 5,
         "requestBody": {
           "required": true,
@@ -675,7 +675,7 @@
                 "required": [
                   "id",
                   "channelId",
-                  "command",
+                  "request",
                   "timestamp"
                 ],
                 "properties": {
@@ -686,7 +686,7 @@
                   "channelId": {
                     "type": "string"
                   },
-                  "command": {
+                  "request": {
                     "type": "string"
                   },
                   "timestamp": {
@@ -724,13 +724,13 @@
                 "schema": {
                   "type": "object",
                   "required": [
-                    "commandId",
+                    "requestId",
                     "channelId",
                     "success",
                     "timestamp"
                   ],
                   "properties": {
-                    "commandId": {
+                    "requestId": {
                       "type": "string",
                       "format": "uuid"
                     },
@@ -789,7 +789,7 @@
         "summary": "Logout",
         "description": "Invalidate session token and logout user",
         "x-channel": "session-service",
-        "x-command": "logout",
+        "x-request": "logout",
         "x-timeout": 10,
         "requestBody": {
           "required": true,
@@ -800,7 +800,7 @@
                 "required": [
                   "id",
                   "channelId",
-                  "command",
+                  "request",
                   "timestamp"
                 ],
                 "properties": {
@@ -811,7 +811,7 @@
                   "channelId": {
                     "type": "string"
                   },
-                  "command": {
+                  "request": {
                     "type": "string"
                   },
                   "timestamp": {
@@ -849,13 +849,13 @@
                 "schema": {
                   "type": "object",
                   "required": [
-                    "commandId",
+                    "requestId",
                     "channelId",
                     "success",
                     "timestamp"
                   ],
                   "properties": {
-                    "commandId": {
+                    "requestId": {
                       "type": "string",
                       "format": "uuid"
                     },
@@ -1131,14 +1131,14 @@
       "ErrorResponse": {
         "type": "object",
         "required": [
-          "commandId",
+          "requestId",
           "channelId",
           "success",
           "error",
           "timestamp"
         ],
         "properties": {
-          "commandId": {
+          "requestId": {
             "type": "string",
             "format": "uuid"
           },
@@ -1196,6 +1196,6 @@
         "description": "Session management and token validation operations"
       }
     },
-    "x-commands": {}
+    "x-requests": {}
   }
 }

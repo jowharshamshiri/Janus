@@ -51,7 +51,7 @@ def measure_latency(socket_path: str, iterations: int = 50) -> Tuple[float, int]
             msg = {
                 'id': str(uuid.uuid4()),
                 'channelId': 'system',
-                'command': 'ping',
+                'request': 'ping',
                 'reply_to': reply_path,
                 'args': {'message': 'benchmark'},
                 'timestamp': time.time()

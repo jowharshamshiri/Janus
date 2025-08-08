@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Test script for the spec command across all Janus implementations.
+Test script for the manifest request across all Janus implementations.
 Validates that all implementations properly return their loaded Manifests.
 """
 
@@ -18,26 +18,26 @@ from pathlib import Path
 IMPLEMENTATIONS = {
     'go': {
         'name': 'Go',
-        'start_cmd': ['go', 'run', './cmd/janus', '--listen', '--socket', '{socket}', '--spec', '{spec}'],
-        'test_cmd': ['go', 'run', './cmd/janus', '--send-to', '{socket}', '--command', 'spec', '--channel', 'test'],
+        'start_cmd': ['go', 'run', './cmd/janus', '--listen', '--socket', '{socket}', '--manifest', '{manifest}'],
+        'test_cmd': ['go', 'run', './cmd/janus', '--send-to', '{socket}', '--request', 'manifest', '--channel', 'test'],
         'dir': 'GoJanus'
     },
     'rust': {
         'name': 'Rust', 
-        'start_cmd': ['cargo', 'run', '--bin', 'janus', '--', '--listen', '--socket', '{socket}', '--spec', '{spec}'],
-        'test_cmd': ['cargo', 'run', '--bin', 'janus', '--', '--send-to', '{socket}', '--command', 'spec'],
+        'start_cmd': ['cargo', 'run', '--bin', 'janus', '--', '--listen', '--socket', '{socket}', '--manifest', '{manifest}'],
+        'test_cmd': ['cargo', 'run', '--bin', 'janus', '--', '--send-to', '{socket}', '--request', 'manifest'],
         'dir': 'RustJanus'
     },
     'swift': {
         'name': 'Swift',
-        'start_cmd': ['swift', 'run', 'SwiftJanusDgram', '--listen', '--socket', '{socket}', '--spec', '{spec}'],
-        'test_cmd': ['swift', 'run', 'SwiftJanusDgram', '--send-to', '{socket}', '--command', 'spec'],
+        'start_cmd': ['swift', 'run', 'SwiftJanusDgram', '--listen', '--socket', '{socket}', '--manifest', '{manifest}'],
+        'test_cmd': ['swift', 'run', 'SwiftJanusDgram', '--send-to', '{socket}', '--request', 'manifest'],
         'dir': 'SwiftJanus'
     },
     'typescript': {
         'name': 'TypeScript',
-        'start_cmd': ['node', 'dist/bin/janus.js', '--listen', '--socket', '{socket}', '--spec', '{spec}'],
-        'test_cmd': ['node', 'dist/bin/janus.js', '--send-to', '{socket}', '--command', 'spec'],
+        'start_cmd': ['node', 'dist/bin/janus.js', '--listen', '--socket', '{socket}', '--manifest', '{manifest}'],
+        'test_cmd': ['node', 'dist/bin/janus.js', '--send-to', '{socket}', '--request', 'manifest'],
         'dir': 'TypeScriptJanus'
     }
 }
@@ -125,13 +125,13 @@ def build_implementation(impl_name, config):
     finally:
         os.chdir(original_dir)
 
-def test_spec_command(impl_name, config):
-    """Test the spec command for a specific implementation"""
-    print(f"\nTesting {config['name']} spec command...")
+def test_manifest_request(impl_name, config):
+    """Test the manifest request for a manifestific implementation"""
+    print(f"\nTesting {config['name']} manifest request...")
     
     # Create unique socket path
-    socket_path = f"/tmp/{impl_name}_spec_test_{os.getpid()}.sock"
-    spec_path = os.path.abspath("tests/config/spec-command-test-api.json")
+    socket_path = f"/tmp/{impl_name}_manifest_test_{os.getpid()}.sock"
+    manifest_path = os.path.abspath("tests/config/manifest-request-test-api.json")
     
     # Clean up any existing socket
     cleanup_socket(socket_path)
@@ -143,9 +143,9 @@ def test_spec_command(impl_name, config):
     try:
         os.chdir(config['dir'])
         
-        # Format commands
-        start_cmd = [arg.format(socket=socket_path, spec=spec_path) for arg in config['start_cmd']]
-        test_cmd = [arg.format(socket=socket_path, spec=spec_path) for arg in config['test_cmd']]
+        # Format requests
+        start_cmd = [arg.format(socket=socket_path, manifest=manifest_path) for arg in config['start_cmd']]
+        test_cmd = [arg.format(socket=socket_path, manifest=manifest_path) for arg in config['test_cmd']]
         
         print(f"Starting server: {' '.join(start_cmd)}")
         server_proc = subprocess.Popen(start_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -157,12 +157,12 @@ def test_spec_command(impl_name, config):
         
         print_success(f"Server started successfully")
         
-        # Test spec command
-        print(f"Testing spec command: {' '.join(test_cmd)}")
+        # Test manifest request
+        print(f"Testing manifest request: {' '.join(test_cmd)}")
         result = subprocess.run(test_cmd, capture_output=True, text=True, timeout=10)
         
         if result.returncode != 0:
-            print_error(f"Spec command failed: {result.stderr}")
+            print_error(f"Manifest request failed: {result.stderr}")
             return False
         
         # Parse and validate response
@@ -171,13 +171,13 @@ def test_spec_command(impl_name, config):
         
         # Look for success indicators in output
         if 'Success=true' in output or 'success": true' in output or 'success: true' in output:
-            # Try to extract and validate spec data
-            if 'specification' in output.lower():
-                print_success(f"Spec command returned specification data")
+            # Try to extract and validate manifest data
+            if 'manifest' in output.lower():
+                print_success(f"Manifest request returned manifest data")
                 
                 # Additional validation: check if it contains expected fields
                 if 'Cross-Platform Test API' in output:
-                    print_success(f"Returned correct specification name")
+                    print_success(f"Returned correct manifest name")
                 if 'version' in output.lower() and '1.0.0' in output:
                     print_success(f"Returned correct version")
                 if 'channels' in output.lower():
@@ -185,14 +185,14 @@ def test_spec_command(impl_name, config):
                     
                 return True
             else:
-                print_error(f"Response missing specification data")
+                print_error(f"Response missing manifest data")
                 return False
         else:
-            print_error(f"Command reported failure")
+            print_error(f"Request reported failure")
             return False
             
     except subprocess.TimeoutExpired:
-        print_error(f"Spec command timeout")
+        print_error(f"Manifest request timeout")
         return False
     except Exception as e:
         print_error(f"Test error: {e}")
@@ -212,17 +212,17 @@ def test_spec_command(impl_name, config):
         cleanup_socket(socket_path)
         os.chdir(original_dir)
 
-def run_cross_platform_spec_test():
-    """Test spec command across all implementations"""
-    print_header("JANUS SPEC COMMAND CROSS-PLATFORM TEST")
+def run_cross_platform_manifest_test():
+    """Test manifest request across all implementations"""
+    print_header("JANUS MANIFEST REQUEST CROSS-PLATFORM TEST")
     
-    # Check test spec file exists
-    spec_file = "tests/config/spec-command-test-api.json"
-    if not os.path.exists(spec_file):
-        print_error(f"{spec_file} not found")
+    # Check test manifest file exists
+    manifest_file = "tests/config/manifest-request-test-api.json"
+    if not os.path.exists(manifest_file):
+        print_error(f"{manifest_file} not found")
         return False
     
-    print_success(f"Found {spec_file}")
+    print_success(f"Found {manifest_file}")
     
     results = {}
     
@@ -241,13 +241,13 @@ def run_cross_platform_spec_test():
             results[impl_name] = 'BUILD_FAILED'
             continue
         
-        # Test spec command
-        if test_spec_command(impl_name, config):
+        # Test manifest request
+        if test_manifest_request(impl_name, config):
             results[impl_name] = 'PASSED'
-            print_success(f"{config['name']} spec command test PASSED")
+            print_success(f"{config['name']} manifest request test PASSED")
         else:
             results[impl_name] = 'FAILED'
-            print_error(f"{config['name']} spec command test FAILED")
+            print_error(f"{config['name']} manifest request test FAILED")
     
     # Print summary
     print_header("TEST SUMMARY")
@@ -275,5 +275,5 @@ def run_cross_platform_spec_test():
         return False
 
 if __name__ == "__main__":
-    success = run_cross_platform_spec_test()
+    success = run_cross_platform_manifest_test()
     sys.exit(0 if success else 1)

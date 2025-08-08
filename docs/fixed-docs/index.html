@@ -90,36 +90,36 @@
                                     <div class="tree-header expandable" data-channel="user-service">
                                         <i class="fas fa-folder tree-icon"></i>
                                         <span>User Service</span>
-                                        <span class="command-count">5</span>
+                                        <span class="request-count">5</span>
                                     </div>
                                     <div class="tree-items" id="tree-user-service">
                                         
-                                            <a href="#user-service-create-user" class="tree-item command-item" 
-                                               data-channel="user-service" data-command="create-user">
+                                            <a href="#user-service-create-user" class="tree-item request-item" 
+                                               data-channel="user-service" data-request="create-user">
                                                 <i class="fas fa-bolt"></i>
                                                 <span>create-user</span>
                                             </a>
                                         
-                                            <a href="#user-service-authenticate-user" class="tree-item command-item" 
-                                               data-channel="user-service" data-command="authenticate-user">
+                                            <a href="#user-service-authenticate-user" class="tree-item request-item" 
+                                               data-channel="user-service" data-request="authenticate-user">
                                                 <i class="fas fa-bolt"></i>
                                                 <span>authenticate-user</span>
                                             </a>
                                         
-                                            <a href="#user-service-get-user" class="tree-item command-item" 
-                                               data-channel="user-service" data-command="get-user">
+                                            <a href="#user-service-get-user" class="tree-item request-item" 
+                                               data-channel="user-service" data-request="get-user">
                                                 <i class="fas fa-bolt"></i>
                                                 <span>get-user</span>
                                             </a>
                                         
-                                            <a href="#user-service-update-user" class="tree-item command-item" 
-                                               data-channel="user-service" data-command="update-user">
+                                            <a href="#user-service-update-user" class="tree-item request-item" 
+                                               data-channel="user-service" data-request="update-user">
                                                 <i class="fas fa-bolt"></i>
                                                 <span>update-user</span>
                                             </a>
                                         
-                                            <a href="#user-service-delete-user" class="tree-item command-item" 
-                                               data-channel="user-service" data-command="delete-user">
+                                            <a href="#user-service-delete-user" class="tree-item request-item" 
+                                               data-channel="user-service" data-request="delete-user">
                                                 <i class="fas fa-bolt"></i>
                                                 <span>delete-user</span>
                                             </a>
@@ -131,18 +131,18 @@
                                     <div class="tree-header expandable" data-channel="session-service">
                                         <i class="fas fa-folder tree-icon"></i>
                                         <span>Session Service</span>
-                                        <span class="command-count">2</span>
+                                        <span class="request-count">2</span>
                                     </div>
                                     <div class="tree-items" id="tree-session-service">
                                         
-                                            <a href="#session-service-validate-session" class="tree-item command-item" 
-                                               data-channel="session-service" data-command="validate-session">
+                                            <a href="#session-service-validate-session" class="tree-item request-item" 
+                                               data-channel="session-service" data-request="validate-session">
                                                 <i class="fas fa-bolt"></i>
                                                 <span>validate-session</span>
                                             </a>
                                         
-                                            <a href="#session-service-logout" class="tree-item command-item" 
-                                               data-channel="session-service" data-command="logout">
+                                            <a href="#session-service-logout" class="tree-item request-item" 
+                                               data-channel="session-service" data-request="logout">
                                                 <i class="fas fa-bolt"></i>
                                                 <span>logout</span>
                                             </a>
@@ -179,9 +179,9 @@
                                     </select>
                                 </div>
                                 <div class="form-group">
-                                    <label>Command</label>
-                                    <select id="explorer-command" class="form-select" disabled>
-                                        <option value="">Select Command...</option>
+                                    <label>Request</label>
+                                    <select id="explorer-request" class="form-select" disabled>
+                                        <option value="">Select Request...</option>
                                     </select>
                                 </div>
                             </div>
@@ -319,8 +319,8 @@
                 <i class="fas fa-bolt"></i>
               </div>
               <div class="card-content">
-                <h3>Commands</h3>
-                <p>7 total commands</p>
+                <h3>Requests</h3>
+                <p>7 total requests</p>
               </div>
             </div>
           </div>
@@ -349,8 +349,8 @@
                 <pre id="request-format"><code>{
   "id": "uuid-v4",
   "channelId": "channel-name",
-  "command": "command-name",
-  "args": { /* command arguments */ },
+  "request": "request-name",
+  "args": { /* request arguments */ },
   "timeout": 30.0,
   "timestamp": "ISO-8601"
 }</code></pre>
@@ -367,7 +367,7 @@
                   </button>
                 </div>
                 <pre id="response-format"><code>{
-  "commandId": "original-request-id",
+  "requestId": "original-request-id",
   "channelId": "channel-name",
   "success": true,
   "result": { /* response data */ },
@@ -385,34 +385,34 @@
             <div class="section-header">
               <h2>User Service</h2>
               <div class="channel-meta">
-                <span class="command-count-badge">5 commands</span>
+                <span class="request-count-badge">5 requests</span>
               </div>
             </div>
             <p class="section-description">Core user management operations including registration, authentication, and profile management</p>
             
-            <div class="commands-grid">
+            <div class="requests-grid">
               
-                <div class="command-card" id="user-service-create-user">
-                  <div class="command-header">
+                <div class="request-card" id="user-service-create-user">
+                  <div class="request-header">
                     <h3>create-user</h3>
-                    <div class="command-actions">
-                      <button class="action-btn" data-action="try-command" 
-                              data-channel="user-service" data-command="create-user">
+                    <div class="request-actions">
+                      <button class="action-btn" data-action="try-request" 
+                              data-channel="user-service" data-request="create-user">
                         <i class="fas fa-play"></i>
                         Try
                       </button>
                       <button class="action-btn" data-action="copy-example" 
-                              data-channel="user-service" data-command="create-user">
+                              data-channel="user-service" data-request="create-user">
                         <i class="fas fa-copy"></i>
                         Copy
                       </button>
                     </div>
                   </div>
-                  <p class="command-description">Create a new user account with validation and security checks</p>
+                  <p class="request-description">Create a new user account with validation and security checks</p>
                   
                   
                   
-                  <div class="command-example">
+                  <div class="request-example">
                     <div class="example-tabs">
                       <button class="example-tab active" data-tab="request">Request</button>
                       <button class="example-tab" data-tab="response">Response</button>
@@ -422,7 +422,7 @@
                         <pre><code>{
   "id": "550e8400-e29b-41d4-a716-446655440000",
   "channelId": "user-service",
-  "command": "create-user",
+  "request": "create-user",
   "args": {},
   "timeout": 30,
   "timestamp": "2025-07-29T18:15:09.125Z"
@@ -430,11 +430,11 @@
                       </div>
                       <div class="example-panel" data-panel="response">
                         <pre><code>{
-  "commandId": "550e8400-e29b-41d4-a716-446655440000",
+  "requestId": "550e8400-e29b-41d4-a716-446655440000",
   "channelId": "user-service",
   "success": true,
   "result": {
-    "message": "Command executed successfully",
+    "message": "Request executed successfully",
     "data": {}
   },
   "error": null,
@@ -445,27 +445,27 @@
                   </div>
                 </div>
               
-                <div class="command-card" id="user-service-authenticate-user">
-                  <div class="command-header">
+                <div class="request-card" id="user-service-authenticate-user">
+                  <div class="request-header">
                     <h3>authenticate-user</h3>
-                    <div class="command-actions">
-                      <button class="action-btn" data-action="try-command" 
-                              data-channel="user-service" data-command="authenticate-user">
+                    <div class="request-actions">
+                      <button class="action-btn" data-action="try-request" 
+                              data-channel="user-service" data-request="authenticate-user">
                         <i class="fas fa-play"></i>
                         Try
                       </button>
                       <button class="action-btn" data-action="copy-example" 
-                              data-channel="user-service" data-command="authenticate-user">
+                              data-channel="user-service" data-request="authenticate-user">
                         <i class="fas fa-copy"></i>
                         Copy
                       </button>
                     </div>
                   </div>
-                  <p class="command-description">Authenticate user credentials and generate session token</p>
+                  <p class="request-description">Authenticate user credentials and generate session token</p>
                   
                   
                   
-                  <div class="command-example">
+                  <div class="request-example">
                     <div class="example-tabs">
                       <button class="example-tab active" data-tab="request">Request</button>
                       <button class="example-tab" data-tab="response">Response</button>
@@ -475,7 +475,7 @@
                         <pre><code>{
   "id": "550e8400-e29b-41d4-a716-446655440000",
   "channelId": "user-service",
-  "command": "authenticate-user",
+  "request": "authenticate-user",
   "args": {},
   "timeout": 10,
   "timestamp": "2025-07-29T18:15:09.126Z"
@@ -483,11 +483,11 @@
                       </div>
                       <div class="example-panel" data-panel="response">
                         <pre><code>{
-  "commandId": "550e8400-e29b-41d4-a716-446655440000",
+  "requestId": "550e8400-e29b-41d4-a716-446655440000",
   "channelId": "user-service",
   "success": true,
   "result": {
-    "message": "Command executed successfully",
+    "message": "Request executed successfully",
     "data": {}
   },
   "error": null,
@@ -498,27 +498,27 @@
                   </div>
                 </div>
               
-                <div class="command-card" id="user-service-get-user">
-                  <div class="command-header">
+                <div class="request-card" id="user-service-get-user">
+                  <div class="request-header">
                     <h3>get-user</h3>
-                    <div class="command-actions">
-                      <button class="action-btn" data-action="try-command" 
-                              data-channel="user-service" data-command="get-user">
+                    <div class="request-actions">
+                      <button class="action-btn" data-action="try-request" 
+                              data-channel="user-service" data-request="get-user">
                         <i class="fas fa-play"></i>
                         Try
                       </button>
                       <button class="action-btn" data-action="copy-example" 
-                              data-channel="user-service" data-command="get-user">
+                              data-channel="user-service" data-request="get-user">
                         <i class="fas fa-copy"></i>
                         Copy
                       </button>
                     </div>
                   </div>
-                  <p class="command-description">Retrieve user information by ID or username</p>
+                  <p class="request-description">Retrieve user information by ID or username</p>
                   
                   
                   
-                  <div class="command-example">
+                  <div class="request-example">
                     <div class="example-tabs">
                       <button class="example-tab active" data-tab="request">Request</button>
                       <button class="example-tab" data-tab="response">Response</button>
@@ -528,7 +528,7 @@
                         <pre><code>{
   "id": "550e8400-e29b-41d4-a716-446655440000",
   "channelId": "user-service",
-  "command": "get-user",
+  "request": "get-user",
   "args": {},
   "timeout": 15,
   "timestamp": "2025-07-29T18:15:09.126Z"
@@ -536,11 +536,11 @@
                       </div>
                       <div class="example-panel" data-panel="response">
                         <pre><code>{
-  "commandId": "550e8400-e29b-41d4-a716-446655440000",
+  "requestId": "550e8400-e29b-41d4-a716-446655440000",
   "channelId": "user-service",
   "success": true,
   "result": {
-    "message": "Command executed successfully",
+    "message": "Request executed successfully",
     "data": {}
   },
   "error": null,
@@ -551,27 +551,27 @@
                   </div>
                 </div>
               
-                <div class="command-card" id="user-service-update-user">
-                  <div class="command-header">
+                <div class="request-card" id="user-service-update-user">
+                  <div class="request-header">
                     <h3>update-user</h3>
-                    <div class="command-actions">
-                      <button class="action-btn" data-action="try-command" 
-                              data-channel="user-service" data-command="update-user">
+                    <div class="request-actions">
+                      <button class="action-btn" data-action="try-request" 
+                              data-channel="user-service" data-request="update-user">
                         <i class="fas fa-play"></i>
                         Try
                       </button>
                       <button class="action-btn" data-action="copy-example" 
-                              data-channel="user-service" data-command="update-user">
+                              data-channel="user-service" data-request="update-user">
                         <i class="fas fa-copy"></i>
                         Copy
                       </button>
                     </div>
                   </div>
-                  <p class="command-description">Update user information and profile</p>
+                  <p class="request-description">Update user information and profile</p>
                   
                   
                   
-                  <div class="command-example">
+                  <div class="request-example">
                     <div class="example-tabs">
                       <button class="example-tab active" data-tab="request">Request</button>
                       <button class="example-tab" data-tab="response">Response</button>
@@ -581,7 +581,7 @@
                         <pre><code>{
   "id": "550e8400-e29b-41d4-a716-446655440000",
   "channelId": "user-service",
-  "command": "update-user",
+  "request": "update-user",
   "args": {},
   "timeout": 30,
   "timestamp": "2025-07-29T18:15:09.126Z"
@@ -589,11 +589,11 @@
                       </div>
                       <div class="example-panel" data-panel="response">
                         <pre><code>{
-  "commandId": "550e8400-e29b-41d4-a716-446655440000",
+  "requestId": "550e8400-e29b-41d4-a716-446655440000",
   "channelId": "user-service",
   "success": true,
   "result": {
-    "message": "Command executed successfully",
+    "message": "Request executed successfully",
     "data": {}
   },
   "error": null,
@@ -604,27 +604,27 @@
                   </div>
                 </div>
               
-                <div class="command-card" id="user-service-delete-user">
-                  <div class="command-header">
+                <div class="request-card" id="user-service-delete-user">
+                  <div class="request-header">
                     <h3>delete-user</h3>
-                    <div class="command-actions">
-                      <button class="action-btn" data-action="try-command" 
-                              data-channel="user-service" data-command="delete-user">
+                    <div class="request-actions">
+                      <button class="action-btn" data-action="try-request" 
+                              data-channel="user-service" data-request="delete-user">
                         <i class="fas fa-play"></i>
                         Try
                       </button>
                       <button class="action-btn" data-action="copy-example" 
-                              data-channel="user-service" data-command="delete-user">
+                              data-channel="user-service" data-request="delete-user">
                         <i class="fas fa-copy"></i>
                         Copy
                       </button>
                     </div>
                   </div>
-                  <p class="command-description">Permanently delete a user account</p>
+                  <p class="request-description">Permanently delete a user account</p>
                   
                   
                   
-                  <div class="command-example">
+                  <div class="request-example">
                     <div class="example-tabs">
                       <button class="example-tab active" data-tab="request">Request</button>
                       <button class="example-tab" data-tab="response">Response</button>
@@ -634,7 +634,7 @@
                         <pre><code>{
   "id": "550e8400-e29b-41d4-a716-446655440000",
   "channelId": "user-service",
-  "command": "delete-user",
+  "request": "delete-user",
   "args": {},
   "timeout": 60,
   "timestamp": "2025-07-29T18:15:09.126Z"
@@ -642,11 +642,11 @@
                       </div>
                       <div class="example-panel" data-panel="response">
                         <pre><code>{
-  "commandId": "550e8400-e29b-41d4-a716-446655440000",
+  "requestId": "550e8400-e29b-41d4-a716-446655440000",
   "channelId": "user-service",
   "success": true,
   "result": {
-    "message": "Command executed successfully",
+    "message": "Request executed successfully",
     "data": {}
   },
   "error": null,
@@ -664,34 +664,34 @@
             <div class="section-header">
               <h2>Session Service</h2>
               <div class="channel-meta">
-                <span class="command-count-badge">2 commands</span>
+                <span class="request-count-badge">2 requests</span>
               </div>
             </div>
             <p class="section-description">Session management and token validation operations</p>
             
-            <div class="commands-grid">
+            <div class="requests-grid">
               
-                <div class="command-card" id="session-service-validate-session">
-                  <div class="command-header">
+                <div class="request-card" id="session-service-validate-session">
+                  <div class="request-header">
                     <h3>validate-session</h3>
-                    <div class="command-actions">
-                      <button class="action-btn" data-action="try-command" 
-                              data-channel="session-service" data-command="validate-session">
+                    <div class="request-actions">
+                      <button class="action-btn" data-action="try-request" 
+                              data-channel="session-service" data-request="validate-session">
                         <i class="fas fa-play"></i>
                         Try
                       </button>
                       <button class="action-btn" data-action="copy-example" 
-                              data-channel="session-service" data-command="validate-session">
+                              data-channel="session-service" data-request="validate-session">
                         <i class="fas fa-copy"></i>
                         Copy
                       </button>
                     </div>
                   </div>
-                  <p class="command-description">Validate session token and return user information</p>
+                  <p class="request-description">Validate session token and return user information</p>
                   
                   
                   
-                  <div class="command-example">
+                  <div class="request-example">
                     <div class="example-tabs">
                       <button class="example-tab active" data-tab="request">Request</button>
                       <button class="example-tab" data-tab="response">Response</button>
@@ -701,7 +701,7 @@
                         <pre><code>{
   "id": "550e8400-e29b-41d4-a716-446655440000",
   "channelId": "session-service",
-  "command": "validate-session",
+  "request": "validate-session",
   "args": {},
   "timeout": 5,
   "timestamp": "2025-07-29T18:15:09.126Z"
@@ -709,11 +709,11 @@
                       </div>
                       <div class="example-panel" data-panel="response">
                         <pre><code>{
-  "commandId": "550e8400-e29b-41d4-a716-446655440000",
+  "requestId": "550e8400-e29b-41d4-a716-446655440000",
   "channelId": "session-service",
   "success": true,
   "result": {
-    "message": "Command executed successfully",
+    "message": "Request executed successfully",
     "data": {}
   },
   "error": null,
@@ -724,27 +724,27 @@
                   </div>
                 </div>
               
-                <div class="command-card" id="session-service-logout">
-                  <div class="command-header">
+                <div class="request-card" id="session-service-logout">
+                  <div class="request-header">
                     <h3>logout</h3>
-                    <div class="command-actions">
-                      <button class="action-btn" data-action="try-command" 
-                              data-channel="session-service" data-command="logout">
+                    <div class="request-actions">
+                      <button class="action-btn" data-action="try-request" 
+                              data-channel="session-service" data-request="logout">
                         <i class="fas fa-play"></i>
                         Try
                       </button>
                       <button class="action-btn" data-action="copy-example" 
-                              data-channel="session-service" data-command="logout">
+                              data-channel="session-service" data-request="logout">
                         <i class="fas fa-copy"></i>
                         Copy
                       </button>
                     </div>
                   </div>
-                  <p class="command-description">Invalidate session token and logout user</p>
+                  <p class="request-description">Invalidate session token and logout user</p>
                   
                   
                   
-                  <div class="command-example">
+                  <div class="request-example">
                     <div class="example-tabs">
                       <button class="example-tab active" data-tab="request">Request</button>
                       <button class="example-tab" data-tab="response">Response</button>
@@ -754,7 +754,7 @@
                         <pre><code>{
   "id": "550e8400-e29b-41d4-a716-446655440000",
   "channelId": "session-service",
-  "command": "logout",
+  "request": "logout",
   "args": {},
   "timeout": 10,
   "timestamp": "2025-07-29T18:15:09.126Z"
@@ -762,11 +762,11 @@
                       </div>
                       <div class="example-panel" data-panel="response">
                         <pre><code>{
-  "commandId": "550e8400-e29b-41d4-a716-446655440000",
+  "requestId": "550e8400-e29b-41d4-a716-446655440000",
   "channelId": "session-service",
   "success": true,
   "result": {
-    "message": "Command executed successfully",
+    "message": "Request executed successfully",
     "data": {}
   },
   "error": null,
@@ -864,7 +864,7 @@
           <div class="message-stream">
             <div class="stream-tabs">
               <button class="stream-tab active" data-stream="all">All Messages</button>
-              <button class="stream-tab" data-stream="commands">Commands</button>
+              <button class="stream-tab" data-stream="requests">Requests</button>
               <button class="stream-tab" data-stream="responses">Responses</button>
               <button class="stream-tab" data-stream="errors">Errors</button>
             </div>
@@ -894,8 +894,8 @@
               <label>Message Type</label>
               <div class="checkbox-group">
                 <label class="checkbox-label">
-                  <input type="checkbox" checked id="filter-commands">
-                  <span>Commands</span>
+                  <input type="checkbox" checked id="filter-requests">
+                  <span>Requests</span>
                 </label>
                 <label class="checkbox-label">
                   <input type="checkbox" checked id="filter-responses">
@@ -1108,7 +1108,7 @@
             </div>
             <div class="overview-stat">
               <span class="stat-number">7</span>
-              <span class="stat-label">Commands</span>
+              <span class="stat-label">Requests</span>
             </div>
           </div>
         </div>
@@ -1159,7 +1159,7 @@
                         <div class="console-welcome">
                             <i class="fas fa-code"></i>
                             <span>Janus Development Environment Ready</span>
-                            <div class="console-info">API: User Management API | Channels: 2 | Commands: 7</div>
+                            <div class="console-info">API: User Management API | Channels: 2 | Requests: 7</div>
                         </div>
                     </div>
                 </div>

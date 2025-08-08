@@ -1,0 +1,55 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://janus.example.com/schemas/janus-request.schema.json",
+  "title": "JanusRequest",
+  "description": "Standard Janus request message format across all implementations",
+  "type": "object",
+  "required": ["id", "request", "channelId", "args"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Unique request identifier (UUID v4)",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+    },
+    "request": {
+      "type": "string",
+      "description": "Request name to execute",
+      "minLength": 1,
+      "maxLength": 256
+    },
+    "channelId": {
+      "type": "string", 
+      "description": "Channel identifier for request routing",
+      "minLength": 1,
+      "maxLength": 256
+    },
+    "args": {
+      "type": "object",
+      "description": "Request arguments as key-value pairs",
+      "additionalProperties": true
+    },
+    "replyTo": {
+      "type": ["string", "null"],
+      "description": "Response socket path for SOCK_DGRAM reply-to mechanism"
+    }
+  },
+  "additionalProperties": false,
+  "examples": [
+    {
+      "id": "123e4567-e89b-12d3-a456-426614174000",
+      "request": "ping",
+      "channelId": "test",
+      "args": {
+        "message": "hello"
+      },
+      "replyTo": "/tmp/response.sock"
+    },
+    {
+      "id": "987fcdeb-51a2-43d1-9f4e-123456789abc", 
+      "request": "manifest",
+      "channelId": "api",
+      "args": {},
+      "replyTo": null
+    }
+  ]
+}

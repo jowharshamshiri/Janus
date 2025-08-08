@@ -45,9 +45,9 @@ export class DocumentationGenerator {
   /**
    * Create generator from Manifest file
    */
-  static async fromSpecFile(specFilePath: string, options: DocumentationOptions = {}): Promise<DocumentationGenerator> {
-    const specContent = await fs.readFile(specFilePath, 'utf8');
-    const manifest = JSON.parse(specContent) as Manifest;
+  static async fromManifestFile(manifestFilePath: string, options: DocumentationOptions = {}): Promise<DocumentationGenerator> {
+    const manifestContent = await fs.readFile(manifestFilePath, 'utf8');
+    const manifest = JSON.parse(manifestContent) as Manifest;
     return new DocumentationGenerator(manifest, options);
   }
 
@@ -93,8 +93,8 @@ export class DocumentationGenerator {
    */
   private generateUnifiedHTML(): string {
     const channels = Object.entries(this.manifest.channels);
-    const totalCommands = channels.reduce((total, [, channel]: [string, any]) => 
-      total + Object.keys(channel.commands).length, 0);
+    const totalRequests = channels.reduce((total, [, channel]: [string, any]) => 
+      total + Object.keys(channel.requests).length, 0);
 
     return `<!DOCTYPE html>
 <html lang="en">
@@ -188,14 +188,14 @@ export class DocumentationGenerator {
                                     <div class="tree-header expandable" data-channel="${channelId}">
                                         <i class="fas fa-folder tree-icon"></i>
                                         <span>${channel.name}</span>
-                                        <span class="command-count">${Object.keys(channel.commands).length}</span>
+                                        <span class="request-count">${Object.keys(channel.requests).length}</span>
                                     </div>
                                     <div class="tree-items" id="tree-${channelId}">
-                                        ${Object.entries(channel.commands).map(([commandName, _command]: [string, any]) => `
-                                            <a href="#${channelId}-${commandName}" class="tree-item command-item" 
-                                               data-channel="${channelId}" data-command="${commandName}">
+                                        ${Object.entries(channel.requests).map(([requestName, _request]: [string, any]) => `
+                                            <a href="#${channelId}-${requestName}" class="tree-item request-item" 
+                                               data-channel="${channelId}" data-request="${requestName}">
                                                 <i class="fas fa-bolt"></i>
-                                                <span>${commandName}</span>
+                                                <span>${requestName}</span>
                                             </a>
                                         `).join('')}
                                     </div>
@@ -232,9 +232,9 @@ export class DocumentationGenerator {
                                     </select>
                                 </div>
                                 <div class="form-group">
-                                    <label>Command</label>
-                                    <select id="explorer-command" class="form-select" disabled>
-                                        <option value="">Select Command...</option>
+                                    <label>Request</label>
+                                    <select id="explorer-request" class="form-select" disabled>
+                                        <option value="">Select Request...</option>
                                     </select>
                                 </div>
                             </div>
@@ -398,7 +398,7 @@ export class DocumentationGenerator {
                         <div class="console-welcome">
                             <i class="fas fa-code"></i>
                             <span>Janus Development Environment Ready</span>
-                            <div class="console-info">API: ${this.options.title} | Channels: ${channels.length} | Commands: ${totalCommands}</div>
+                            <div class="console-info">API: ${this.options.title} | Channels: ${channels.length} | Requests: ${totalRequests}</div>
                         </div>
                     </div>
                 </div>
@@ -460,9 +460,9 @@ export class DocumentationGenerator {
                 <i class="fas fa-bolt"></i>
               </div>
               <div class="card-content">
-                <h3>Commands</h3>
+                <h3>Requests</h3>
                 <p>${channels.reduce((total, [, channel]: [string, any]) => 
-                  total + Object.keys(channel.commands).length, 0)} total commands</p>
+                  total + Object.keys(channel.requests).length, 0)} total requests</p>
               </div>
             </div>
           </div>
@@ -491,8 +491,8 @@ export class DocumentationGenerator {
                 <pre id="request-format"><code>{
   "id": "uuid-v4",
   "channelId": "channel-name",
-  "command": "command-name",
-  "args": { /* command arguments */ },
+  "request": "request-name",
+  "args": { /* request arguments */ },
   "timeout": 30.0,
   "timestamp": "ISO-8601"
 }</code></pre>
@@ -509,7 +509,7 @@ export class DocumentationGenerator {
                   </button>
                 </div>
                 <pre id="response-format"><code>{
-  "commandId": "original-request-id",
+  "requestId": "original-request-id",
   "channelId": "channel-name",
   "success": true,
   "result": { /* response data */ },
@@ -527,36 +527,36 @@ export class DocumentationGenerator {
             <div class="section-header">
               <h2>${channel.name}</h2>
               <div class="channel-meta">
-                <span class="command-count-badge">${Object.keys(channel.commands).length} commands</span>
+                <span class="request-count-badge">${Object.keys(channel.requests).length} requests</span>
               </div>
             </div>
             <p class="section-description">${channel.description || 'Channel for ' + channel.name}</p>
             
-            <div class="commands-grid">
-              ${Object.entries(channel.commands).map(([commandName, command]: [string, any]) => `
-                <div class="command-card" id="${channelId}-${commandName}">
-                  <div class="command-header">
-                    <h3>${commandName}</h3>
-                    <div class="command-actions">
-                      <button class="action-btn" data-action="try-command" 
-                              data-channel="${channelId}" data-command="${commandName}">
+            <div class="requests-grid">
+              ${Object.entries(channel.requests).map(([requestName, request]: [string, any]) => `
+                <div class="request-card" id="${channelId}-${requestName}">
+                  <div class="request-header">
+                    <h3>${requestName}</h3>
+                    <div class="request-actions">
+                      <button class="action-btn" data-action="try-request" 
+                              data-channel="${channelId}" data-request="${requestName}">
                         <i class="fas fa-play"></i>
                         Try
                       </button>
                       <button class="action-btn" data-action="copy-example" 
-                              data-channel="${channelId}" data-command="${commandName}">
+                              data-channel="${channelId}" data-request="${requestName}">
                         <i class="fas fa-copy"></i>
                         Copy
                       </button>
                     </div>
                   </div>
-                  <p class="command-description">${command.description || 'Execute ' + commandName + ' command'}</p>
+                  <p class="request-description">${request.description || 'Execute ' + requestName + ' request'}</p>
                   
-                  ${command.arguments && command.arguments.length > 0 ? `
-                    <div class="command-params">
+                  ${request.arguments && request.arguments.length > 0 ? `
+                    <div class="request-params">
                       <h4>Parameters</h4>
                       <div class="params-list">
-                        ${command.arguments.map((arg: any) => `
+                        ${request.arguments.map((arg: any) => `
                           <div class="param-item">
                             <div class="param-name">
                               <code>${arg.name}</code>
@@ -570,17 +570,17 @@ export class DocumentationGenerator {
                     </div>
                   ` : ''}
                   
-                  <div class="command-example">
+                  <div class="request-example">
                     <div class="example-tabs">
                       <button class="example-tab active" data-tab="request">Request</button>
                       <button class="example-tab" data-tab="response">Response</button>
                     </div>
                     <div class="example-content">
                       <div class="example-panel active" data-panel="request">
-                        <pre><code>${this.generateCommandExample(channelId, commandName, command)}</code></pre>
+                        <pre><code>${this.generateRequestExample(channelId, requestName, request)}</code></pre>
                       </div>
                       <div class="example-panel" data-panel="response">
-                        <pre><code>${this.generateResponseExample(channelId, commandName)}</code></pre>
+                        <pre><code>${this.generateResponseExample(channelId, requestName)}</code></pre>
                       </div>
                     </div>
                   </div>
@@ -677,7 +677,7 @@ export class DocumentationGenerator {
           <div class="message-stream">
             <div class="stream-tabs">
               <button class="stream-tab active" data-stream="all">All Messages</button>
-              <button class="stream-tab" data-stream="commands">Commands</button>
+              <button class="stream-tab" data-stream="requests">Requests</button>
               <button class="stream-tab" data-stream="responses">Responses</button>
               <button class="stream-tab" data-stream="errors">Errors</button>
             </div>
@@ -709,8 +709,8 @@ export class DocumentationGenerator {
               <label>Message Type</label>
               <div class="checkbox-group">
                 <label class="checkbox-label">
-                  <input type="checkbox" checked id="filter-commands">
-                  <span>Commands</span>
+                  <input type="checkbox" checked id="filter-requests">
+                  <span>Requests</span>
                 </label>
                 <label class="checkbox-label">
                   <input type="checkbox" checked id="filter-responses">
@@ -921,8 +921,8 @@ export class DocumentationGenerator {
             </div>
             <div class="overview-stat">
               <span class="stat-number">${Object.values(this.manifest.channels).reduce((total, channel: any) => 
-                total + Object.keys(channel.commands).length, 0)}</span>
-              <span class="stat-label">Commands</span>
+                total + Object.keys(channel.requests).length, 0)}</span>
+              <span class="stat-label">Requests</span>
             </div>
           </div>
         </div>
@@ -940,13 +940,13 @@ export class DocumentationGenerator {
   }
 
   /**
-   * Generate command example JSON
+   * Generate request example JSON
    */
-  private generateCommandExample(channelId: string, commandName: string, command: any): string {
+  private generateRequestExample(channelId: string, requestName: string, request: any): string {
     const args: any = {};
     
-    if (command.arguments) {
-      command.arguments.forEach((arg: any) => {
+    if (request.arguments) {
+      request.arguments.forEach((arg: any) => {
         switch (arg.type) {
           case 'string':
             args[arg.name] = `example-${arg.name}`;
@@ -972,9 +972,9 @@ export class DocumentationGenerator {
     const example = {
       id: '550e8400-e29b-41d4-a716-446655440000',
       channelId,
-      command: commandName,
+      request: requestName,
       args,
-      timeout: command.timeout || 30,
+      timeout: request.timeout || 30,
       timestamp: new Date().toISOString()
     };
 
@@ -984,13 +984,13 @@ export class DocumentationGenerator {
   /**
    * Generate response example JSON
    */
-  private generateResponseExample(channelId: string, _commandName: string): string {
+  private generateResponseExample(channelId: string, _requestName: string): string {
     const example = {
-      commandId: '550e8400-e29b-41d4-a716-446655440000',
+      requestId: '550e8400-e29b-41d4-a716-446655440000',
       channelId,
       success: true,
       result: {
-        message: 'Command executed successfully',
+        message: 'Request executed successfully',
         data: {}
       },
       error: null,
@@ -1546,12 +1546,12 @@ body {
   font-size: 0.875rem;
 }
 
-.commands-grid {
+.requests-grid {
   display: grid;
   gap: var(--space-4);
 }
 
-.command-item {
+.request-item {
   padding: var(--space-4);
   border: 1px solid var(--gray-200);
   border-radius: var(--radius);
@@ -1560,32 +1560,32 @@ body {
   cursor: pointer;
 }
 
-.command-item:hover {
+.request-item:hover {
   border-color: var(--primary-300);
   background: var(--primary-50);
   box-shadow: var(--shadow-sm);
 }
 
-.command-header {
+.request-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   margin-bottom: var(--space-2);
 }
 
-.command-name {
+.request-name {
   font-weight: 600;
   color: var(--primary-600);
   font-family: var(--font-mono);
   font-size: 0.875rem;
 }
 
-.command-actions {
+.request-actions {
   display: flex;
   gap: var(--space-2);
 }
 
-.command-btn {
+.request-btn {
   padding: var(--space-1) var(--space-2);
   font-size: 0.75rem;
   border: 1px solid var(--gray-300);
@@ -1596,19 +1596,19 @@ body {
   transition: all 0.2s;
 }
 
-.command-btn:hover {
+.request-btn:hover {
   border-color: var(--primary-300);
   color: var(--primary-600);
 }
 
-.command-description {
+.request-description {
   font-size: 0.875rem;
   color: var(--gray-600);
   line-height: 1.5;
   margin-bottom: var(--space-3);
 }
 
-.command-parameters {
+.request-parameters {
   font-size: 0.75rem;
   color: var(--gray-500);
   font-family: var(--font-mono);
@@ -2033,24 +2033,24 @@ class JanusDevelopmentEnvironment {
 
     // Action buttons
     document.addEventListener('click', (e) => {
-      if (e.target.matches('[data-action="try-command"]')) {
-        this.tryCommand(e.target.dataset.channel, e.target.dataset.command);
+      if (e.target.matches('[data-action="try-request"]')) {
+        this.tryRequest(e.target.dataset.channel, e.target.dataset.request);
       } else if (e.target.matches('[data-action="copy-example"]')) {
-        this.copyExample(e.target.dataset.channel, e.target.dataset.command);
+        this.copyExample(e.target.dataset.channel, e.target.dataset.request);
       }
     });
   }
 
-  tryCommand(channelId, commandName) {
+  tryRequest(channelId, requestName) {
     // Switch to explorer and populate
     this.switchPanel('explorer');
     const channelSelect = document.getElementById('explorer-channel');
-    const commandSelect = document.getElementById('explorer-command');
+    const requestSelect = document.getElementById('explorer-request');
     
     if (channelSelect) channelSelect.value = channelId;
-    this.populateCommands(channelId);
-    if (commandSelect) commandSelect.value = commandName;
-    this.updateRequestEditor(channelId, commandName);
+    this.populateRequests(channelId);
+    if (requestSelect) requestSelect.value = requestName;
+    this.updateRequestEditor(channelId, requestName);
   }
 
   setupExplorerListeners() {
@@ -2059,7 +2059,7 @@ class JanusDevelopmentEnvironment {
     const disconnectBtn = document.getElementById('explorer-disconnect');
     const newRequestBtn = document.getElementById('new-request-btn');
     const channelSelect = document.getElementById('explorer-channel');
-    const commandSelect = document.getElementById('explorer-command');
+    const requestSelect = document.getElementById('explorer-request');
     
     if (connectBtn) {
       connectBtn.addEventListener('click', () => {
@@ -2082,31 +2082,31 @@ class JanusDevelopmentEnvironment {
     
     if (channelSelect) {
       channelSelect.addEventListener('change', (e) => {
-        this.populateCommands(e.target.value);
+        this.populateRequests(e.target.value);
       });
     }
     
-    if (commandSelect) {
-      commandSelect.addEventListener('change', (e) => {
+    if (requestSelect) {
+      requestSelect.addEventListener('change', (e) => {
         const channelId = channelSelect.value;
-        const commandName = e.target.value;
-        if (channelId && commandName) {
-          this.updateRequestEditor(channelId, commandName);
+        const requestName = e.target.value;
+        if (channelId && requestName) {
+          this.updateRequestEditor(channelId, requestName);
         }
       });
     }
 
-    // Handle try command buttons
+    // Handle try request buttons
     document.addEventListener('click', (e) => {
-      if (e.target.matches('.try-command-btn')) {
+      if (e.target.matches('.try-request-btn')) {
         const channelId = e.target.dataset.channel;
-        const commandName = e.target.dataset.command;
-        this.tryCommand(channelId, commandName);
+        const requestName = e.target.dataset.request;
+        this.tryRequest(channelId, requestName);
       }
       if (e.target.matches('.copy-example-btn')) {
         const channelId = e.target.dataset.channel;
-        const commandName = e.target.dataset.command;
-        this.copyExample(channelId, commandName);
+        const requestName = e.target.dataset.request;
+        this.copyExample(channelId, requestName);
       }
     });
   }
@@ -2140,8 +2140,8 @@ class JanusDevelopmentEnvironment {
         this.generateClientCode(language);
       } else if (e.target.matches('[data-action="export-openapi"]')) {
         this.exportOpenAPI();
-      } else if (e.target.matches('[data-action="validate-spec"]')) {
-        this.validateSpecification();
+      } else if (e.target.matches('[data-action="validate-manifest"]')) {
+        this.validateManifest();
       }
     });
   }
@@ -2173,43 +2173,43 @@ class JanusDevelopmentEnvironment {
     this.showToast('OpenManifest exported');
   }
 
-  populateCommands() {
-    // Populate command dropdowns based on Manifest
-    const commandSelect = document.getElementById('command-select');
-    if (commandSelect && this.manifest && this.manifest.channels) {
-      commandSelect.innerHTML = '';
+  populateRequests() {
+    // Populate request dropdowns based on Manifest
+    const requestSelect = document.getElementById('request-select');
+    if (requestSelect && this.manifest && this.manifest.channels) {
+      requestSelect.innerHTML = '';
       Object.entries(this.manifest.channels).forEach(function(entry) {
         const channelId = entry[0];
         const channel = entry[1];
-        Object.keys(channel.commands || {}).forEach(function(commandName) {
+        Object.keys(channel.requests || {}).forEach(function(requestName) {
           const option = document.createElement('option');
-          option.value = channelId + ':' + commandName;
-          option.textContent = channelId + ' - ' + commandName;
-          commandSelect.appendChild(option);
+          option.value = channelId + ':' + requestName;
+          option.textContent = channelId + ' - ' + requestName;
+          requestSelect.appendChild(option);
         });
       });
     }
   }
 
-  updateRequestEditor(channelId, commandName) {
-    const command = this.manifest && this.manifest.channels && this.manifest.channels[channelId] && this.manifest.channels[channelId].commands && this.manifest.channels[channelId].commands[commandName];
-    if (command && this.editors.has('request')) {
+  updateRequestEditor(channelId, requestName) {
+    const request = this.manifest && this.manifest.channels && this.manifest.channels[channelId] && this.manifest.channels[channelId].requests && this.manifest.channels[channelId].requests[requestName];
+    if (request && this.editors.has('request')) {
       const editor = this.editors.get('request');
-      const exampleRequest = this.generateCommandExample(channelId, commandName, command);
+      const exampleRequest = this.generateRequestExample(channelId, requestName, request);
       editor.setValue(exampleRequest);
     }
   }
 
-  generateCommandExample(channelId, commandName, command) {
-    // Generate example command JSON
+  generateRequestExample(channelId, requestName, request) {
+    // Generate example request JSON
     const example = {
       channel: channelId,
-      command: commandName,
+      request: requestName,
       parameters: {}
     };
     
-    if (command.parameters) {
-      Object.entries(command.parameters).forEach(function(entry) {
+    if (request.parameters) {
+      Object.entries(request.parameters).forEach(function(entry) {
         const paramName = entry[0];
         const param = entry[1];
         example.parameters[paramName] = param.example || param.default || '';
@@ -2219,10 +2219,10 @@ class JanusDevelopmentEnvironment {
     return JSON.stringify(example, null, 2);
   }
 
-  copyExample(channelId, commandName) {
-    const command = this.manifest && this.manifest.channels && this.manifest.channels[channelId] && this.manifest.channels[channelId].commands && this.manifest.channels[channelId].commands[commandName];
-    if (command) {
-      const example = this.generateCommandExample(channelId, commandName, command);
+  copyExample(channelId, requestName) {
+    const request = this.manifest && this.manifest.channels && this.manifest.channels[channelId] && this.manifest.channels[channelId].requests && this.manifest.channels[channelId].requests[requestName];
+    if (request) {
+      const example = this.generateRequestExample(channelId, requestName, request);
       navigator.clipboard.writeText(example);
       this.showToast('Example copied to clipboard');
     }
@@ -2346,13 +2346,13 @@ class JanusDevelopmentEnvironment {
     this.showToast('New request template created');
     var socketPath = document.getElementById('explorer-socket-path');
     var channelSelect = document.getElementById('explorer-channel');
-    var commandSelect = document.getElementById('explorer-command');
+    var requestSelect = document.getElementById('explorer-request');
     
     if (socketPath) socketPath.value = '/tmp/api.sock';
     if (channelSelect) channelSelect.value = '';
-    if (commandSelect) {
-      commandSelect.innerHTML = '<option value="">Select Command...</option>';
-      commandSelect.disabled = true;
+    if (requestSelect) {
+      requestSelect.innerHTML = '<option value="">Select Request...</option>';
+      requestSelect.disabled = true;
     }
   }
   
@@ -2397,7 +2397,7 @@ class JanusDevelopmentEnvironment {
     }
   }
   
-  validateSpecification() {
+  validateManifest() {
     var self = this;
     this.showToast('Validating Manifest...');
     setTimeout(function() {
@@ -2424,7 +2424,7 @@ This is a professional Janus development environment with comprehensive tooling.
 ## Features
 
 ### 📖 Interactive Documentation
-- Live API reference with searchable commands
+- Live API reference with searchable requests
 - Interactive examples with "Try It" buttons
 - Copy-to-clipboard functionality
 - Professional syntax highlighting

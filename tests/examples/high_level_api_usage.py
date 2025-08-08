@@ -182,7 +182,7 @@ func main() {{
     srv := &server.JanusServer{{}}
     
     // Register ping handler
-    srv.RegisterHandler("ping", func(cmd *models.JanusCommand) (interface{{}}, *models.SocketError) {{
+    srv.RegisterHandler("ping", func(cmd *models.JanusRequest) (interface{{}}, *models.SocketError) {{
         return map[string]interface{{}}{{
             "message":   "pong",
             "timestamp": time.Now().Unix(),
@@ -190,7 +190,7 @@ func main() {{
     }})
     
     // Register echo handler
-    srv.RegisterHandler("echo", func(cmd *models.JanusCommand) (interface{{}}, *models.SocketError) {{
+    srv.RegisterHandler("echo", func(cmd *models.JanusRequest) (interface{{}}, *models.SocketError) {{
         if cmd.Args == nil {{
             return nil, &models.SocketError{{
                 Code:    "NO_ARGUMENTS",
@@ -215,7 +215,7 @@ func main() {{
     }})
     
     // Register math handler
-    srv.RegisterHandler("math", func(cmd *models.JanusCommand) (interface{{}}, *models.SocketError) {{
+    srv.RegisterHandler("math", func(cmd *models.JanusRequest) (interface{{}}, *models.SocketError) {{
         if cmd.Args == nil {{
             return nil, &models.SocketError{{
                 Code:    "NO_ARGUMENTS",
@@ -257,7 +257,7 @@ func main() {{
     }})
     
     // Register validate handler
-    srv.RegisterHandler("validate", func(cmd *models.JanusCommand) (interface{{}}, *models.SocketError) {{
+    srv.RegisterHandler("validate", func(cmd *models.JanusRequest) (interface{{}}, *models.SocketError) {{
         valid := cmd.Args != nil
         return map[string]interface{{}}{{
             "valid": valid,
@@ -265,7 +265,7 @@ func main() {{
     }})
     
     // Register slow_process handler
-    srv.RegisterHandler("slow_process", func(cmd *models.JanusCommand) (interface{{}}, *models.SocketError) {{
+    srv.RegisterHandler("slow_process", func(cmd *models.JanusRequest) (interface{{}}, *models.SocketError) {{
         time.Sleep(2 * time.Second)
         return map[string]interface{{}}{{
             "completed": true,
@@ -334,8 +334,8 @@ require github.com/jowharshamshiri/GoJanus v0.0.0-00010101000000-000000000000
         
         return server
     
-    def send_command_rust(self, target_socket: str, command: str, args: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
-        """Send command using Rust high-level JanusClient API"""
+    def send_request_rust(self, target_socket: str, request: str, args: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+        """Send request using Rust high-level JanusClient API"""
         
         # Create Rust client code using high-level API
         args_json = json.dumps(args) if args else "None"
@@ -356,7 +356,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {{
         map
     }});
     
-    let response = client.send_command("{target_socket}", "{command}", args).await?;
+    let response = client.send_request("{target_socket}", "{request}", args).await?;
     
     println!("{{}}", serde_json::to_string(&response)?);
     
@@ -383,8 +383,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {{
         
         return json.loads(result.stdout.strip())
     
-    def send_command_go(self, target_socket: str, command: str, args: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
-        """Send command using Go high-level JanusClient API"""
+    def send_request_go(self, target_socket: str, request: str, args: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+        """Send request using Go high-level JanusClient API"""
         
         go_client_code = f'''
 package main
@@ -405,7 +405,7 @@ func main() {{
     var args map[string]interface{{}}
     {self._generate_go_args_code(args)}
     
-    response, err := client.SendCommand("{target_socket}", "{command}", args)
+    response, err := client.SendRequest("{target_socket}", "{request}", args)
     if err != nil {{
         fmt.Printf(`{{"error": "%s", "success": false}}`, err.Error())
         return
@@ -524,11 +524,11 @@ if __name__ == "__main__":
         
         # Test cross-platform communication using high-level clients
         print("Testing Rust client -> Go server")
-        response = framework.send_command_rust("/tmp/test-go.sock", "ping")
+        response = framework.send_request_rust("/tmp/test-go.sock", "ping")
         print(f"Response: {response}")
         
         print("Testing Go client -> Rust server")  
-        response = framework.send_command_go("/tmp/test-rust.sock", "echo", {"message": "Hello from Go!"})
+        response = framework.send_request_go("/tmp/test-rust.sock", "echo", {"message": "Hello from Go!"})
         print(f"Response: {response}")
         
     finally:

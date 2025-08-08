@@ -7,7 +7,7 @@ This directory contains automatically generated documentation for the Janus with
 - `index.html` - Main documentation page with development hub (open in browser)
 - `styles.css` - Modern styling with gradient themes
 - `script.js` - Interactive functionality and development tools
-- `openapi.json` - OpenAPI/Swagger specification
+- `openapi.json` - OpenAPI/Swagger manifest
 - `manifest.json` - Raw Manifest for runtime access
 
 ## Development Hub Features
@@ -20,7 +20,7 @@ This directory contains automatically generated documentation for the Janus with
 
 ### 📤 Message Sender
 - Send messages using Manifest
-- Auto-generated forms based on command definitions
+- Auto-generated forms based on request definitions
 - Message validation before sending
 - Response display with formatted output
 
@@ -46,10 +46,10 @@ This directory contains automatically generated documentation for the Janus with
 ## Features
 
 - 📱 **Responsive Design**: Works on desktop and mobile
-- 🔍 **Search Functionality**: Find commands and models quickly
+- 🔍 **Search Functionality**: Find requests and models quickly
 - 📋 **Copy Examples**: Click to copy code examples
 - 🎨 **Modern UI**: Clean, gradient-based design
-- 🔗 **Deep Linking**: Direct links to sections and commands
+- 🔗 **Deep Linking**: Direct links to sections and requests
 - 🔄 **Live Reload**: Automatic updates during development
 - 🛠️ **Development Tools**: Socket monitoring and message sending
 - ⚡ **Real-time Updates**: Live socket communication monitoring

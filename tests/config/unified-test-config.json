@@ -15,7 +15,7 @@
       "parallel": true
     },
     "unit_tests": {
-      "description": "Language-specific unit test suites", 
+      "description": "Language-manifestific unit test suites", 
       "timeout": 600,
       "parallel": true
     },
@@ -25,7 +25,7 @@
       "parallel": false
     },
     "feature_tests": {
-      "description": "Command variations and edge cases",
+      "description": "Request variations and edge cases",
       "timeout": 45,
       "parallel": true
     },
@@ -50,52 +50,52 @@
       "name": "GoJanus",
       "language": "go",
       "directory": "GoJanus",
-      "build_command": ["go", "build", "-o", "janus", "./cmd/janus"],
-      "test_command": ["go", "test", "./..."],
+      "build_request": ["go", "build", "-o", "janus", "./cmd/janus"],
+      "test_request": ["go", "test", "./..."],
       "unified_binary": "./janus",
       "socket_path": "/tmp/go-janus-api.sock",
       "build_artifacts": ["janus"],
       "listen_args": ["--listen", "--socket", "/tmp/go-janus-api.sock"],
-      "send_args": ["--send-to", "{target_socket}", "--command", "{command}", "--message", "{message}"],
+      "send_args": ["--send-to", "{target_socket}", "--request", "{request}", "--message", "{message}"],
       "test_timeout": 30
     },
     "rust": {
       "name": "RustJanus",
       "language": "rust", 
       "directory": "RustJanus",
-      "build_command": ["cargo", "build"],
-      "test_command": ["cargo", "test"],
+      "build_request": ["cargo", "build"],
+      "test_request": ["cargo", "test"],
       "unified_binary": "cargo run --bin janus --",
       "socket_path": "/tmp/rust-janus-api.sock",
       "build_artifacts": ["target/debug/janus"],
       "listen_args": ["--listen", "--socket", "/tmp/rust-janus-api.sock"],
-      "send_args": ["--send-to", "{target_socket}", "--command", "{command}", "--message", "{message}"],
+      "send_args": ["--send-to", "{target_socket}", "--request", "{request}", "--message", "{message}"],
       "test_timeout": 30
     },
     "swift": {
       "name": "SwiftJanus",
       "language": "swift",
       "directory": "SwiftJanus", 
-      "build_command": ["swift", "build"],
-      "test_command": ["swift", "test"],
+      "build_request": ["swift", "build"],
+      "test_request": ["swift", "test"],
       "unified_binary": "./.build/debug/SwiftJanusDgram",
       "socket_path": "/tmp/swift-janus-api.sock",
       "build_artifacts": [".build/debug/SwiftJanusDgram"],
       "listen_args": ["--listen", "--socket", "/tmp/swift-janus-api.sock"],
-      "send_args": ["--send-to", "{target_socket}", "--command", "{command}", "--message", "{message}"],
+      "send_args": ["--send-to", "{target_socket}", "--request", "{request}", "--message", "{message}"],
       "test_timeout": 30
     },
     "typescript": {
       "name": "TypeScriptJanus",
       "language": "typescript",
       "directory": "TypeScriptJanus",
-      "build_command": ["npm", "run", "build"],
-      "test_command": ["npm", "test"],
+      "build_request": ["npm", "run", "build"],
+      "test_request": ["npm", "test"],
       "unified_binary": "node dist/bin/janus.js",
       "socket_path": "/tmp/typescript-janus-api.sock",
       "build_artifacts": ["dist/"],
       "listen_args": ["--listen", "--socket", "/tmp/typescript-janus-api.sock"],
-      "send_args": ["--send-to", "{target_socket}", "--command", "{command}", "--message", "{message}"],
+      "send_args": ["--send-to", "{target_socket}", "--request", "{request}", "--message", "{message}"],
       "test_timeout": 30
     }
   },
@@ -127,10 +127,10 @@
       ]
     }
   },
-  "test_commands": {
+  "test_requests": {
     "ping": {
       "description": "Basic connectivity test",
-      "command": "ping",
+      "request": "ping",
       "message": "hello",
       "expected_response_fields": ["status", "echo", "timestamp"],
       "expected_values": {
@@ -140,7 +140,7 @@
     },
     "echo": {
       "description": "Echo message test",
-      "command": "echo", 
+      "request": "echo", 
       "message": "test_message",
       "expected_response_fields": ["status", "data", "original_length"],
       "expected_values": {
@@ -152,7 +152,7 @@
     },
     "math_add": {
       "description": "Mathematical addition test",
-      "command": "math",
+      "request": "math",
       "args": {
         "operation": "add",
         "a": 15,
@@ -167,7 +167,7 @@
     },
     "math_multiply": {
       "description": "Mathematical multiplication test",
-      "command": "math",
+      "request": "math",
       "args": {
         "operation": "multiply",
         "a": 7,
@@ -182,7 +182,7 @@
     },
     "validate_data": {
       "description": "Data validation test",
-      "command": "validate",
+      "request": "validate",
       "args": {
         "data": {
           "username": "test_user",
@@ -196,20 +196,20 @@
       },
       "timeout": 5
     },
-    "special_chars": {
-      "description": "Special character handling test",
-      "command": "echo",
-      "message": "special_chars_!@#$%^&*()",
+    "manifestial_chars": {
+      "description": "Manifestial character handling test",
+      "request": "echo",
+      "message": "manifestial_chars_!@#$%^&*()",
       "expected_response_fields": ["status", "data"],
       "expected_values": {
         "status": "success",
-        "data": "special_chars_!@#$%^&*()"
+        "data": "manifestial_chars_!@#$%^&*()"
       },
       "timeout": 10
     },
     "unicode_handling": {
       "description": "Unicode character handling test",
-      "command": "echo",
+      "request": "echo",
       "message": "unicode_测试_🚀_émojis",
       "expected_response_fields": ["status", "data"],
       "expected_values": {
@@ -220,7 +220,7 @@
     },
     "long_message": {
       "description": "Long message handling test", 
-      "command": "echo",
+      "request": "echo",
       "message": "long_message_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
       "expected_response_fields": ["status", "data"],
       "expected_values": {
@@ -230,7 +230,7 @@
     },
     "empty_message": {
       "description": "Empty message handling test",
-      "command": "echo",
+      "request": "echo",
       "message": "",
       "expected_response_fields": ["status", "data"],
       "expected_values": {
@@ -241,7 +241,7 @@
     },
     "json_payload": {
       "description": "JSON payload handling test",
-      "command": "echo",
+      "request": "echo",
       "message": "{\"nested\": \"json\", \"number\": 42}",
       "expected_response_fields": ["status", "data"],
       "expected_values": {
@@ -252,7 +252,7 @@
     },
     "null_handling": {
       "description": "Null value handling test",
-      "command": "validate",
+      "request": "validate",
       "args": {
         "data": {
           "nullable_field": null,
@@ -268,7 +268,7 @@
     },
     "timeout_test_quick": {
       "description": "Quick timeout test",
-      "command": "timeout_test",
+      "request": "timeout_test",
       "args": {
         "delay_seconds": 0.5
       },
@@ -278,17 +278,17 @@
       },
       "timeout": 2
     },
-    "error_invalid_command": {
-      "description": "Invalid command error test",
-      "command": "nonexistent_command",
+    "error_invalid_request": {
+      "description": "Invalid request error test",
+      "request": "nonexistent_request",
       "message": "test",
       "expect_error": true,
-      "expected_error_code": "COMMAND_NOT_FOUND",
+      "expected_error_code": "REQUEST_NOT_FOUND",
       "timeout": 5
     },
     "error_invalid_args": {
       "description": "Invalid arguments error test",
-      "command": "math",
+      "request": "math",
       "args": {
         "operation": "add",
         "a": "not_a_number",
@@ -300,7 +300,7 @@
     },
     "security_injection_test": {
       "description": "Security injection test",
-      "command": "echo",
+      "request": "echo",
       "message": "; rm -rf /tmp/test; echo 'injected'",
       "expected_response_fields": ["status", "data"],
       "expected_values": {
@@ -351,7 +351,7 @@
     {
       "name": "reply_to_mechanism",
       "description": "Verify proper reply_to socket usage",
-      "validation": "message_inspection"
+      "validation": "message_inmanifesttion"
     },
     {
       "name": "json_message_format",

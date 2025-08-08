@@ -6,10 +6,10 @@
     "example-service": {
       "name": "Example Service",
       "description": "Example service demonstrating the API",
-      "commands": {
+      "requests": {
         "ping": {
           "name": "Ping",
-          "description": "Simple ping command",
+          "description": "Simple ping request",
           "args": {},
           "response": {
             "type": "object",

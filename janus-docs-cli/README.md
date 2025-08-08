@@ -1,11 +1,11 @@
 # Janus Documentation CLI
 
-A powerful CLI tool for generating and serving professional documentation from Janus specifications.
+A powerful CLI tool for generating and serving professional documentation from Janus manifests.
 
 ## Features
 
 🚀 **Static Generation**: Generate beautiful, responsive documentation  
-🔄 **Live Reload**: Serve with automatic updates when specs change  
+🔄 **Live Reload**: Serve with automatic updates when manifests change  
 📱 **Responsive**: Works perfectly on desktop and mobile  
 🎨 **Professional**: Swagger/OpenAPI-style documentation  
 🔍 **Interactive**: Search, copy examples, deep linking  
@@ -33,18 +33,18 @@ janus-docs serve manifest.json --port 8080
 # Initialize new Manifest
 janus-docs init "My API"
 
-# Validate specification
+# Validate manifest
 janus-docs validate manifest.json
 ```
 
-## Commands
+## Requests
 
 ### `generate`
 
 Generate static documentation from an Manifest.
 
 ```bash
-janus-docs generate <spec-file> [options]
+janus-docs generate <manifest-file> [options]
 
 Options:
   -o, --output <dir>        Output directory (default: "./docs")
@@ -71,7 +71,7 @@ janus-docs generate manifest.json \\
 Serve documentation with live reload during development.
 
 ```bash
-janus-docs serve <spec-file> [options]
+janus-docs serve <manifest-file> [options]
 
 Options:
   -p, --port <port>         Server port (default: 8080)
@@ -95,7 +95,7 @@ janus-docs serve manifest.json \\
 Validate an Manifest file for correctness.
 
 ```bash
-janus-docs validate <spec-file>
+janus-docs validate <manifest-file>
 ```
 
 ### `init`
@@ -111,7 +111,7 @@ Options:
 
 ## Manifest Format
 
-The CLI expects JSON files following the Janus specification format:
+The CLI expects JSON files following the Janus manifest format:
 
 ```json
 {
@@ -122,7 +122,7 @@ The CLI expects JSON files following the Janus specification format:
     "user-service": {
       "name": "User Service",
       "description": "User management operations",
-      "commands": {
+      "requests": {
         "create-user": {
           "name": "Create User",
           "description": "Create a new user account",
@@ -200,17 +200,17 @@ janus-docs generate manifest.json --logo "https://example.com/logo.png"
 - Touch-friendly interactions
 
 ### 🔍 Search Functionality
-- Real-time command search
+- Real-time request search
 - Keyboard shortcuts
 - Filter by channels and models
 
 ### 📋 Interactive Examples
 - Copy code examples with one click
 - Working request/response examples
-- Protocol-specific formatting
+- Protocol-manifestific formatting
 
 ### 🔗 Deep Linking
-- Direct links to commands and models
+- Direct links to requests and models
 - Bookmarkable URLs
 - Navigation highlighting
 
@@ -231,7 +231,7 @@ janus-docs generate manifest.json --logo "https://example.com/logo.png"
    janus-docs serve manifest.json --watch --open
    ```
 
-3. **Validate Specification**:
+3. **Validate Manifest**:
    ```bash
    janus-docs validate manifest.json
    ```

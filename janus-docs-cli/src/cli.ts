@@ -5,14 +5,14 @@
  * Generate and serve documentation with live reload
  */
 
-import { Command } from 'commander';
+import { Request } from 'requester';
 import * as fs from 'fs/promises';
 import * as path from 'path';
 import { DocumentationGenerator } from './generator';
 import { DocumentationServer } from './server';
 import { FileWatcher } from './watcher';
 
-const program = new Command();
+const program = new Request();
 
 interface GenerateOptions {
   output: string;
@@ -38,9 +38,9 @@ program
   .version('1.0.0');
 
 program
-  .command('generate')
+  .request('generate')
   .description('Generate static documentation from Manifest')
-  .argument('<spec-file>', 'Path to Manifest JSON file')
+  .argument('<manifest-file>', 'Path to Manifest JSON file')
   .option('-o, --output <dir>', 'Output directory', './docs')
   .option('-t, --title <title>', 'Documentation title')
   .option('-d, --description <desc>', 'Documentation description')
@@ -49,14 +49,14 @@ program
   .option('-s, --styles <file>', 'Custom CSS file')
   .option('--no-examples', 'Exclude examples')
   .option('--no-types', 'Exclude TypeScript types')
-  .action(async (specFile: string, options: GenerateOptions) => {
+  .action(async (manifestFile: string, options: GenerateOptions) => {
     try {
       console.log('🚀 Generating Janus documentation...');
       
-      // Validate spec file
-      const specPath = path.resolve(specFile);
-      const specContent = await fs.readFile(specPath, 'utf8');
-      const manifest = JSON.parse(specContent);
+      // Validate manifest file
+      const manifestPath = path.resolve(manifestFile);
+      const manifestContent = await fs.readFile(manifestPath, 'utf8');
+      const manifest = JSON.parse(manifestContent);
       
       console.log(`📋 Loaded Manifest: ${manifest.name} v${manifest.version}`);
       
@@ -105,9 +105,9 @@ program
   });
 
 program
-  .command('serve')
+  .request('serve')
   .description('Serve documentation with live reload')
-  .argument('<spec-file>', 'Path to Manifest JSON file')
+  .argument('<manifest-file>', 'Path to Manifest JSON file')
   .option('-p, --port <port>', 'Server port', '8080')
   .option('-h, --host <host>', 'Server host', 'localhost')
   .option('-o, --output <dir>', 'Output directory', './docs')
@@ -120,16 +120,16 @@ program
   .option('-s, --styles <file>', 'Custom CSS file')
   .option('--no-examples', 'Exclude examples')
   .option('--no-types', 'Exclude TypeScript types')
-  .action(async (specFile: string, options: ServeOptions & GenerateOptions) => {
+  .action(async (manifestFile: string, options: ServeOptions & GenerateOptions) => {
     try {
       console.log('🚀 Starting Janus documentation server...');
       
-      const specPath = path.resolve(specFile);
+      const manifestPath = path.resolve(manifestFile);
       const outputDir = path.resolve(options.output);
       const port = parseInt(options.port.toString());
       
       // Initial generation
-      await generateDocumentation(specPath, outputDir, {
+      await generateDocumentation(manifestPath, outputDir, {
         title: options.title,
         description: options.description,
         version: options.version,
@@ -154,12 +154,12 @@ program
       if (options.watch) {
         console.log('👀 Watching for file changes...');
         
-        const watcher = new FileWatcher([specPath], async (changedFile) => {
+        const watcher = new FileWatcher([manifestPath], async (changedFile) => {
           console.log(`📝 File changed: ${changedFile}`);
           console.log('🔄 Regenerating documentation...');
           
           try {
-            await generateDocumentation(specPath, outputDir, {
+            await generateDocumentation(manifestPath, outputDir, {
               title: options.title,
               description: options.description,
               version: options.version,
@@ -200,16 +200,16 @@ program
   });
 
 program
-  .command('validate')
+  .request('validate')
   .description('Validate Manifest file')
-  .argument('<spec-file>', 'Path to Manifest JSON file')
-  .action(async (specFile: string) => {
+  .argument('<manifest-file>', 'Path to Manifest JSON file')
+  .action(async (manifestFile: string) => {
     try {
       console.log('🔍 Validating Manifest...');
       
-      const specPath = path.resolve(specFile);
-      const specContent = await fs.readFile(specPath, 'utf8');
-      const manifest = JSON.parse(specContent);
+      const manifestPath = path.resolve(manifestFile);
+      const manifestContent = await fs.readFile(manifestPath, 'utf8');
+      const manifest = JSON.parse(manifestContent);
       
       // Basic validation
       if (!manifest.version) {
@@ -235,15 +235,15 @@ program
           throw new Error(`Channel ${channelId} missing name`);
         }
         
-        if (!channelObj.commands || Object.keys(channelObj.commands).length === 0) {
-          throw new Error(`Channel ${channelId} has no commands`);
+        if (!channelObj.requests || Object.keys(channelObj.requests).length === 0) {
+          throw new Error(`Channel ${channelId} has no requests`);
         }
         
-        // Validate commands
-        for (const [commandName, command] of Object.entries(channelObj.commands)) {
-          const commandObj = command as any;
-          if (!commandObj.name || !commandObj.description) {
-            throw new Error(`Command ${channelId}.${commandName} missing name or description`);
+        // Validate requests
+        for (const [requestName, request] of Object.entries(channelObj.requests)) {
+          const requestObj = request as any;
+          if (!requestObj.name || !requestObj.description) {
+            throw new Error(`Request ${channelId}.${requestName} missing name or description`);
           }
         }
       }
@@ -252,11 +252,11 @@ program
       console.log(`📋 API: ${manifest.name} v${manifest.version}`);
       console.log(`📁 Channels: ${Object.keys(manifest.channels).length}`);
       
-      const totalCommands = Object.values(manifest.channels).reduce((total: number, channel: any) => {
-        return total + Object.keys(channel.commands).length;
+      const totalRequests = Object.values(manifest.channels).reduce((total: number, channel: any) => {
+        return total + Object.keys(channel.requests).length;
       }, 0);
       
-      console.log(`⚡ Commands: ${totalCommands}`);
+      console.log(`⚡ Requests: ${totalRequests}`);
       
       if (manifest.models) {
         console.log(`🏗️  Models: ${Object.keys(manifest.models).length}`);
@@ -269,7 +269,7 @@ program
   });
 
 program
-  .command('init')
+  .request('init')
   .description('Initialize a new Manifest file')
   .argument('[name]', 'API name', 'My API')
   .option('-o, --output <file>', 'Output file', 'manifest.json')
@@ -285,10 +285,10 @@ program
           'example-service': {
             name: 'Example Service',
             description: 'Example service demonstrating the API',
-            commands: {
+            requests: {
               'ping': {
                 name: 'Ping',
-                description: 'Simple ping command',
+                description: 'Simple ping request',
                 args: {},
                 response: {
                   type: 'object',
@@ -327,14 +327,14 @@ program
       console.log(`   4. Serve with live reload: janus-docs serve ${options.output}`);
       
     } catch (error) {
-      console.error('❌ Error creating specification:', error);
+      console.error('❌ Error creating manifest:', error);
       process.exit(1);
     }
   });
 
 // Helper function
 async function generateDocumentation(
-  specPath: string,
+  manifestPath: string,
   outputDir: string,
   options: {
     title?: string;
@@ -346,8 +346,8 @@ async function generateDocumentation(
     types: boolean;
   }
 ): Promise<void> {
-  const specContent = await fs.readFile(specPath, 'utf8');
-  const manifest = JSON.parse(specContent);
+  const manifestContent = await fs.readFile(manifestPath, 'utf8');
+  const manifest = JSON.parse(manifestContent);
   
   let customStyles = '';
   if (options.styles) {
@@ -371,7 +371,7 @@ async function generateDocumentation(
   await generator.saveToDirectory(outputDir);
 }
 
-// Parse command line arguments
+// Parse request line arguments
 if (require.main === module) {
   program.parse();
 }

@@ -1,0 +1,91 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://janus.example.com/schemas/manifest-response.schema.json",
+  "title": "ManifestRequestResponse", 
+  "description": "Standard response format for manifest request - CRITICAL: No 'manifest' wrapper",
+  "type": "object",
+  "required": ["version", "channels"],
+  "properties": {
+    "version": {
+      "type": "string",
+      "description": "Manifest version identifier",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+    },
+    "channels": {
+      "type": "object",
+      "description": "Channel definitions",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["description", "requests"],
+        "properties": {
+          "description": {
+            "type": "string",
+            "description": "Channel description"
+          },
+          "requests": {
+            "type": "object",
+            "description": "Available requests in this channel",
+            "additionalProperties": {
+              "type": "object",
+              "required": ["description"],
+              "properties": {
+                "description": {
+                  "type": "string"
+                },
+                "args": {
+                  "type": "object"
+                },
+                "response": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "models": {
+      "type": "object",
+      "description": "Data model definitions (optional)",
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": false,
+  "not": {
+    "required": ["manifest"],
+    "description": "CRITICAL: Response must NOT be wrapped in 'manifest' field"
+  },
+  "examples": [
+    {
+      "version": "1.0.0",
+      "channels": {
+        "test": {
+          "description": "Test channel for cross-platform communication",
+          "requests": {
+            "test_echo": {
+              "description": "Echo test request",
+              "args": {
+                "message": {
+                  "type": "string",
+                  "required": false,
+                  "description": "Message to echo back"
+                }
+              },
+              "response": {
+                "type": "object",
+                "properties": {
+                  "echo": {"type": "string"}
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  ],
+  "definitions": {
+    "critical_requirement": {
+      "description": "The manifest request response caused terraform deployment failures when wrapped in 'manifest' field. This schema prevents that bug by explicitly forbidding the wrapper."
+    }
+  }
+}

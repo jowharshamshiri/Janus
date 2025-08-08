@@ -78,11 +78,11 @@ body {
     color: white;
 }
 
-.command-list {
+.request-list {
     background: #34495e;
 }
 
-.command-list li a {
+.request-list li a {
     display: block;
     padding: 0.5rem 2.5rem;
     color: #95a5a6;
@@ -91,7 +91,7 @@ body {
     transition: all 0.2s;
 }
 
-.command-list li a:hover {
+.request-list li a:hover {
     background: #3498db;
     color: white;
 }
@@ -186,7 +186,7 @@ body {
     color: #ecf0f1;
 }
 
-.command {
+.request {
     border: 1px solid #ecf0f1;
     border-radius: 6px;
     margin: 1.5rem 0;
@@ -194,11 +194,11 @@ body {
     background: #fdfdfd;
 }
 
-.command-details {
+.request-details {
     margin-top: 1rem;
 }
 
-.command-info {
+.request-info {
     margin-bottom: 1rem;
 }
 

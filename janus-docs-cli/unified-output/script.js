@@ -69,30 +69,30 @@ class JanusDevelopmentEnvironment {
 
     // Action buttons
     document.addEventListener('click', (e) => {
-      if (e.target.matches('[data-action="try-command"]')) {
-        this.tryCommand(e.target.dataset.channel, e.target.dataset.command);
+      if (e.target.matches('[data-action="try-request"]')) {
+        this.tryRequest(e.target.dataset.channel, e.target.dataset.request);
       } else if (e.target.matches('[data-action="copy-example"]')) {
-        this.copyExample(e.target.dataset.channel, e.target.dataset.command);
+        this.copyExample(e.target.dataset.channel, e.target.dataset.request);
       }
     });
   }
 
-  tryCommand(channelId, commandName) {
+  tryRequest(channelId, requestName) {
     // Switch to explorer and populate
     this.switchPanel('explorer');
     const channelSelect = document.getElementById('explorer-channel');
-    const commandSelect = document.getElementById('explorer-command');
+    const requestSelect = document.getElementById('explorer-request');
     
     if (channelSelect) channelSelect.value = channelId;
-    this.populateCommands(channelId);
-    if (commandSelect) commandSelect.value = commandName;
-    this.updateRequestEditor(channelId, commandName);
+    this.populateRequests(channelId);
+    if (requestSelect) requestSelect.value = requestName;
+    this.updateRequestEditor(channelId, requestName);
   }
 
-  copyExample(channelId, commandName) {
-    const command = this.manifest?.channels[channelId]?.commands[commandName];
-    if (command) {
-      const example = this.generateCommandExample(channelId, commandName, command);
+  copyExample(channelId, requestName) {
+    const request = this.manifest?.channels[channelId]?.requests[requestName];
+    if (request) {
+      const example = this.generateRequestExample(channelId, requestName, request);
       navigator.clipboard.writeText(example);
       this.showToast('Example copied to clipboard');
     }

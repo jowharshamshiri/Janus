@@ -6,7 +6,7 @@
     "user-service": {
       "name": "User Service",
       "description": "Core user management operations including registration, authentication, and profile management",
-      "commands": {
+      "requests": {
         "create-user": {
           "name": "Create User",
           "description": "Create a new user account with validation and security checks",
@@ -249,7 +249,7 @@
     "session-service": {
       "name": "Session Service",
       "description": "Session management and token validation operations",
-      "commands": {
+      "requests": {
         "validate-session": {
           "name": "Validate Session",
           "description": "Validate session token and return user information",

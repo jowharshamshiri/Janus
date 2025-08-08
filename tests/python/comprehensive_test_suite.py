@@ -66,12 +66,12 @@ class TestResult:
 
 @dataclass
 class ImplementationInfo:
-    """Information about a specific implementation"""
+    """Information about a manifestific implementation"""
     name: str
     language: str
     directory: Path
-    build_command: List[str]
-    test_command: List[str]
+    build_request: List[str]
+    test_request: List[str]
     unified_binary: str
     listen_args: List[str]
     send_args: List[str]
@@ -82,7 +82,7 @@ class ImplementationInfo:
 class ComprehensiveTestSuite:
     """Comprehensive test suite for SOCK_DGRAM Unix Socket implementations"""
     
-    def __init__(self, config_path: str = "test-spec.json", verbose: bool = False):
+    def __init__(self, config_path: str = "test-manifest.json", verbose: bool = False):
         self.config_path = Path(config_path)
         self.verbose = verbose
         self.config = self._load_config()
@@ -142,8 +142,8 @@ class ComprehensiveTestSuite:
                 name=impl_name,
                 language=impl_config.get("language", impl_name),
                 directory=project_root / impl_config["directory"],
-                build_command=impl_config["build_command"],
-                test_command=impl_config["test_command"],
+                build_request=impl_config["build_request"],
+                test_request=impl_config["test_request"],
                 unified_binary=self._get_unified_binary_path(impl_name, impl_config),
                 listen_args=self._get_listen_args(impl_name, impl_config),
                 send_args=self._get_send_args(impl_name, impl_config),
@@ -174,7 +174,7 @@ class ComprehensiveTestSuite:
     
     def _get_send_args(self, impl_name: str, config: Dict) -> List[str]:
         """Get send arguments for unified binary"""
-        base_args = ["--send-to", "{target_socket}", "--command", "ping", "--message", "test"]
+        base_args = ["--send-to", "{target_socket}", "--request", "ping", "--message", "test"]
         return base_args
     
     def _signal_handler(self, signum, frame):
@@ -228,9 +228,9 @@ class ComprehensiveTestSuite:
                 original_cwd = os.getcwd()
                 os.chdir(impl.directory)
                 
-                # Run build command
+                # Run build request
                 process = subprocess.run(
-                    impl.build_command,
+                    impl.build_request,
                     capture_output=True,
                     text=True,
                     timeout=300  # 5 minute timeout
@@ -313,9 +313,9 @@ class ComprehensiveTestSuite:
                 original_cwd = os.getcwd()
                 os.chdir(impl.directory)
                 
-                # Run test command
+                # Run test request
                 process = subprocess.run(
-                    impl.test_command,
+                    impl.test_request,
                     capture_output=True,
                     text=True,
                     timeout=600  # 10 minute timeout
@@ -470,7 +470,7 @@ class ComprehensiveTestSuite:
                 stderr=sender_result.get("stderr", ""),
                 details={
                     "listener_socket": listener_impl.socket_path,
-                    "sender_args": sender_result.get("command", [])
+                    "sender_args": sender_result.get("request", [])
                 }
             )
             
@@ -492,7 +492,7 @@ class ComprehensiveTestSuite:
             if Path(impl.socket_path).exists():
                 Path(impl.socket_path).unlink()
             
-            # Build command
+            # Build request
             if impl.unified_binary.startswith("cargo run"):
                 cmd = impl.unified_binary.split() + impl.listen_args
             elif impl.unified_binary.startswith("swift run"):
@@ -529,7 +529,7 @@ class ComprehensiveTestSuite:
     def _run_sender(self, impl: ImplementationInfo, target_socket: str) -> Dict:
         """Run sender against target socket"""
         try:
-            # Build send command
+            # Build send request
             send_args = []
             for arg in impl.send_args:
                 if arg == "{target_socket}":
@@ -565,7 +565,7 @@ class ComprehensiveTestSuite:
                 "success": process.returncode == 0,
                 "stdout": process.stdout,
                 "stderr": process.stderr,
-                "command": cmd,
+                "request": cmd,
                 "error": None if process.returncode == 0 else f"Exit code {process.returncode}"
             }
             
@@ -574,7 +574,7 @@ class ComprehensiveTestSuite:
                 "success": False,
                 "stdout": "",
                 "stderr": "",
-                "command": cmd,
+                "request": cmd,
                 "error": "Sender timeout after 30 seconds"
             }
         except Exception as e:
@@ -582,7 +582,7 @@ class ComprehensiveTestSuite:
                 "success": False,
                 "stdout": "",
                 "stderr": "",
-                "command": [],
+                "request": [],
                 "error": str(e)
             }
     
@@ -654,16 +654,16 @@ class ComprehensiveTestSuite:
         """Fallback basic feature tests if comprehensive tests unavailable"""
         results = []
         
-        # Test different commands and features
-        test_commands = [
-            ("ping", "hello", "Basic ping command"),
-            ("echo", "test_message", "Echo command with message"),
-            ("ping", "special_chars_!@#$%", "Special characters handling"),
+        # Test different requests and features
+        test_requests = [
+            ("ping", "hello", "Basic ping request"),
+            ("echo", "test_message", "Echo request with message"),
+            ("ping", "manifestial_chars_!@#$%", "Manifestial characters handling"),
             ("echo", "long_message_" + "x" * 100, "Long message handling"),
         ]
         
-        for command, message, description in test_commands:
-            result = self._test_specific_command(impl_name, impl, command, message, description)
+        for request, message, description in test_requests:
+            result = self._test_manifestific_request(impl_name, impl, request, message, description)
             results.append(result)
         
         # Test timeout handling
@@ -676,10 +676,10 @@ class ComprehensiveTestSuite:
         
         return results
     
-    def _test_specific_command(self, impl_name: str, impl: ImplementationInfo, 
-                              command: str, message: str, description: str) -> TestResult:
-        """Test a specific command with the implementation"""
-        test_name = f"feature_{impl_name}_{command}_{message[:20]}"
+    def _test_manifestific_request(self, impl_name: str, impl: ImplementationInfo, 
+                              request: str, message: str, description: str) -> TestResult:
+        """Test a manifestific request with the implementation"""
+        test_name = f"feature_{impl_name}_{request}_{message[:20]}"
         start_time = time.time()
         
         try:
@@ -709,8 +709,8 @@ class ComprehensiveTestSuite:
             
             time.sleep(1)  # Stabilize
             
-            # Run sender with specific command
-            sender_result = self._run_sender_with_command(impl, impl.socket_path, command, message)
+            # Run sender with manifestific request
+            sender_result = self._run_sender_with_request(impl, impl.socket_path, request, message)
             
             # Cleanup
             listener_process.terminate()
@@ -738,7 +738,7 @@ class ComprehensiveTestSuite:
                 stdout=sender_result.get("stdout", ""),
                 stderr=sender_result.get("stderr", ""),
                 details={
-                    "command": command,
+                    "request": request,
                     "message": message,
                     "description": description
                 }
@@ -754,12 +754,12 @@ class ComprehensiveTestSuite:
                 message=f"{description}: Error - {str(e)}"
             )
     
-    def _run_sender_with_command(self, impl: ImplementationInfo, target_socket: str, 
-                                command: str, message: str) -> Dict:
-        """Run sender with specific command and message"""
+    def _run_sender_with_request(self, impl: ImplementationInfo, target_socket: str, 
+                                request: str, message: str) -> Dict:
+        """Run sender with manifestific request and message"""
         try:
-            # Build send command with custom command and message
-            send_args = ["--send-to", target_socket, "--command", command, "--message", message]
+            # Build send request with custom request and message
+            send_args = ["--send-to", target_socket, "--request", request, "--message", message]
             
             if impl.unified_binary.startswith("cargo run"):
                 cmd = impl.unified_binary.split() + send_args
@@ -789,7 +789,7 @@ class ComprehensiveTestSuite:
                 "success": process.returncode == 0,
                 "stdout": process.stdout,
                 "stderr": process.stderr,
-                "command": cmd,
+                "request": cmd,
                 "error": None if process.returncode == 0 else f"Exit code {process.returncode}"
             }
             
@@ -798,15 +798,15 @@ class ComprehensiveTestSuite:
                 "success": False,
                 "stdout": "",
                 "stderr": "",
-                "command": cmd,
-                "error": "Command timeout after 30 seconds"
+                "request": cmd,
+                "error": "Request timeout after 30 seconds"
             }
         except Exception as e:
             return {
                 "success": False,
                 "stdout": "",
                 "stderr": "",
-                "command": [],
+                "request": [],
                 "error": str(e)
             }
     
@@ -819,7 +819,7 @@ class ComprehensiveTestSuite:
             # Try to send to non-existent socket (should timeout gracefully)
             nonexistent_socket = f"/tmp/nonexistent_socket_{uuid.uuid4().hex[:8]}.sock"
             
-            sender_result = self._run_sender_with_command(impl, nonexistent_socket, "ping", "test")
+            sender_result = self._run_sender_with_request(impl, nonexistent_socket, "ping", "test")
             
             duration = time.time() - start_time
             
@@ -894,7 +894,7 @@ class ComprehensiveTestSuite:
             concurrent_results = []
             
             def run_concurrent_sender(index):
-                return self._run_sender_with_command(
+                return self._run_sender_with_request(
                     impl, impl.socket_path, 
                     "ping", f"concurrent_test_{index}"
                 )
@@ -1132,7 +1132,7 @@ class ComprehensiveTestSuite:
                 f.write("\n")
     
     def run_all_tests(self, categories: Set[TestCategory] = None) -> Dict:
-        """Run all specified test categories"""
+        """Run all manifestified test categories"""
         if categories is None:
             categories = {TestCategory.BUILD, TestCategory.UNIT, TestCategory.CROSS_PLATFORM}
         
@@ -1175,11 +1175,11 @@ class ComprehensiveTestSuite:
 def main():
     """Main entry point"""
     parser = argparse.ArgumentParser(description="Janus Comprehensive Test Suite")
-    parser.add_argument("--config", default="test-spec.json", help="Test configuration file")
+    parser.add_argument("--config", default="test-manifest.json", help="Test configuration file")
     parser.add_argument("--verbose", "-v", action="store_true", help="Enable verbose output")
     parser.add_argument("--categories", default="build,unit,cross_platform", 
                        help="Test categories to run (comma-separated)")
-    parser.add_argument("--implementations", help="Specific implementations to test (comma-separated)")
+    parser.add_argument("--implementations", help="Manifestific implementations to test (comma-separated)")
     parser.add_argument("--performance", action="store_true", help="Include performance tests")
     parser.add_argument("--security", action="store_true", help="Include security tests")
     

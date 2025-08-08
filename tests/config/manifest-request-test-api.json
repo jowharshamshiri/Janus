@@ -1,15 +1,15 @@
 {
   "version": "1.0.0",
   "name": "Cross-Platform Test API",
-  "description": "Test Manifest for spec command validation",
+  "description": "Test Manifest for manifest request validation",
   "channels": {
     "test": {
       "name": "Test Channel",
       "description": "Test channel for cross-platform communication",
-      "commands": {
+      "requests": {
         "ping": {
           "name": "Ping",
-          "description": "Simple ping command",
+          "description": "Simple ping request",
           "args": {},
           "response": {
             "type": "object",
@@ -51,14 +51,14 @@
           },
           "errorCodes": ["INVALID_ARGUMENT", "INTERNAL_ERROR"]
         },
-        "spec": {
+        "manifest": {
           "name": "Get Manifest",
           "description": "Returns the complete Manifest",
           "args": {},
           "response": {
             "type": "object",
             "properties": {
-              "specification": {
+              "manifest": {
                 "name": "Manifest",
                 "type": "object",
                 "description": "Complete Manifest object"

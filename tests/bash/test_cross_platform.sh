@@ -190,7 +190,7 @@ run_cross_platform_tests() {
     local impl_dirs=("${TEST_DIR}/SwiftJanus" "${TEST_DIR}/RustJanus" "${TEST_DIR}/GoJanus" "${TEST_DIR}/TypeScriptJanus")
     local build_cmds=("swift build" "cargo build" "go build -o janus ./cmd/janus" "npm run build")
     local listen_cmds=("swift run SwiftJanusDgram --listen --socket ${SOCKET_PATH}" "cargo run --bin janus -- --listen --socket ${SOCKET_PATH}" "./janus --listen --socket ${SOCKET_PATH}" "node dist/bin/janus.js --listen --socket ${SOCKET_PATH}")
-    local send_cmds=("swift run SwiftJanusDgram --send-to ${SOCKET_PATH} --command ping --message test" "cargo run --bin janus -- --send-to ${SOCKET_PATH} --command ping --message test" "./janus --send-to ${SOCKET_PATH} --command ping --message test" "node dist/bin/janus.js --send-to ${SOCKET_PATH} --command ping --message test")
+    local send_cmds=("swift run SwiftJanusDgram --send-to ${SOCKET_PATH} --request ping --message test" "cargo run --bin janus -- --send-to ${SOCKET_PATH} --request ping --message test" "./janus --send-to ${SOCKET_PATH} --request ping --message test" "node dist/bin/janus.js --send-to ${SOCKET_PATH} --request ping --message test")
     
     local total_tests=0
     local passed_tests=0
@@ -299,10 +299,10 @@ create_test_examples() {
         "test": {
             "name": "test",
             "description": "Test channel for cross-platform communication",
-            "commands": {
+            "requests": {
                 "ping": {
                     "name": "ping",
-                    "description": "Simple ping command",
+                    "description": "Simple ping request",
                     "args": {},
                     "response": {
                         "type": "object",
@@ -343,7 +343,7 @@ create_test_examples() {
 }
 EOF
     
-    # Copy spec to each implementation directory for consistent paths
+    # Copy manifest to each implementation directory for consistent paths
     cp "${TEST_DIR}/test-manifest.json" "${TEST_DIR}/RustJanus/test-manifest.json" 2>/dev/null || true
     cp "${TEST_DIR}/test-manifest.json" "${TEST_DIR}/GoJanus/test-manifest.json" 2>/dev/null || true
     cp "${TEST_DIR}/test-manifest.json" "${TEST_DIR}/SwiftJanus/test-manifest.json" 2>/dev/null || true
@@ -351,7 +351,7 @@ EOF
     log_success "Test Manifest created: test-manifest.json"
 }
 
-# Command line argument handling
+# Request line argument handling
 case "${1:-test}" in
     "test"|"")
         create_test_examples
@@ -373,9 +373,9 @@ case "${1:-test}" in
     "help"|"-h"|"--help")
         echo "Cross-Platform Janus Test Infrastructure"
         echo
-        echo "Usage: $0 [command]"
+        echo "Usage: $0 [request]"
         echo
-        echo "Commands:"
+        echo "Requests:"
         echo "  test (default)  Run full cross-platform communication tests"
         echo "  check          Check if all implementations build successfully"
         echo "  clean          Clean up test artifacts and logs"
@@ -391,7 +391,7 @@ case "${1:-test}" in
         echo "  $0 clean              # Clean up"
         ;;
     *)
-        log_error "Unknown command: $1"
+        log_error "Unknown request: $1"
         echo "Use '$0 help' for usage information"
         exit 1
         ;;

@@ -31,7 +31,7 @@ class BenchmarkResult:
 class PerformanceBenchmark:
     """Performance benchmark suite for Janus implementations"""
     
-    def __init__(self, config_path: str = "test-spec.json", verbose: bool = False):
+    def __init__(self, config_path: str = "test-manifest.json", verbose: bool = False):
         self.config_path = config_path
         self.verbose = verbose
         self.config = self._load_config()
@@ -61,7 +61,7 @@ class PerformanceBenchmark:
             pass
         
         try:
-            # Build server command using unified_binary and listen_args
+            # Build server request using unified_binary and listen_args
             if impl_name == "rust":
                 cmd = ["cargo", "run", "--bin", "janus", "--"] + impl["listen_args"]
             elif impl_name == "swift": 
@@ -141,7 +141,7 @@ class PerformanceBenchmark:
         
         message = {
             'channel': 'system',
-            'command': 'ping',
+            'request': 'ping',
             'parameters': {'message': 'benchmark'}
         }
         
@@ -205,7 +205,7 @@ class PerformanceBenchmark:
         
         message = {
             'channel': 'system',
-            'command': 'echo',
+            'request': 'echo',
             'parameters': {'data': 'throughput_test_data'}
         }
         
@@ -274,7 +274,7 @@ class PerformanceBenchmark:
         
         message = {
             'channel': 'system',
-            'command': 'ping',
+            'request': 'ping',
             'parameters': {'message': f'concurrent_test'}
         }
         
@@ -357,7 +357,7 @@ class PerformanceBenchmark:
         try:
             # Get server process info
             result = subprocess.run(
-                ['pgrep', '-f', impl["server_command"][0]],
+                ['pgrep', '-f', impl["server_request"][0]],
                 capture_output=True, text=True
             )
             
@@ -381,7 +381,7 @@ class PerformanceBenchmark:
             def load_generator():
                 message = {
                     'channel': 'system',
-                    'command': 'ping',
+                    'request': 'ping',
                     'parameters': {'message': 'memory_test'}
                 }
                 
@@ -616,7 +616,7 @@ def main():
     import argparse
     
     parser = argparse.ArgumentParser(description="Performance benchmark suite")
-    parser.add_argument("--config", default="test-spec.json", help="Test configuration file")
+    parser.add_argument("--config", default="test-manifest.json", help="Test configuration file")
     parser.add_argument("--implementations", nargs="+", 
                        help="Implementations to benchmark (default: all)")
     parser.add_argument("--output", default="benchmark_results.json", help="Results output file")

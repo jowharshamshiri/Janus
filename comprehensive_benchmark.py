@@ -55,7 +55,7 @@ class ComprehensiveBenchmark:
         proc.terminate()
         return None
     
-    def send_request(self, socket_path: str, command: str = "ping") -> Tuple[bool, float]:
+    def send_request(self, socket_path: str, request: str = "ping") -> Tuple[bool, float]:
         """Send single request and measure latency"""
         start = time.perf_counter()
         
@@ -68,7 +68,7 @@ class ComprehensiveBenchmark:
             msg = {
                 'id': str(uuid.uuid4()),
                 'channelId': 'system',
-                'command': command,
+                'request': request,
                 'reply_to': reply_path,
                 'args': {'message': 'benchmark'},
                 'timestamp': time.time()

@@ -17,19 +17,19 @@ The testing infrastructure provides:
 
 ### Central Manifest
 
-All tests are driven by a central Manifest (`test-spec.json`) that defines:
+All tests are driven by a central Manifest (`test-manifest.json`) that defines:
 
 - Protocol requirements (SOCK_DGRAM only)
-- Test commands and expected responses
+- Test requests and expected responses
 - Performance targets and benchmarks
-- Implementation-specific build/test commands
+- Implementation-manifestific build/test requests
 - Cross-platform test matrix (4×4 = 16 combinations)
 
 ### Test Components
 
 ```
 Janus/
-├── test-spec.json                    # Central test specification
+├── test-manifest.json                    # Central test manifest
 ├── test_orchestrator.py             # Main test orchestrator
 ├── manifest_validator.py            # API compliance validator
 ├── performance_benchmark.py         # Performance benchmarking suite
@@ -69,7 +69,7 @@ swift (5.9+)
 # Run with performance benchmarks
 ./run_comprehensive_tests.sh --performance --verbose
 
-# Run specific implementations only
+# Run manifestific implementations only
 ./run_comprehensive_tests.sh -i go,rust --performance
 ```
 
@@ -121,7 +121,7 @@ Validates that all implementations compile successfully:
 
 ### 2. Unit Tests
 
-Runs language-specific unit test suites:
+Runs language-manifestific unit test suites:
 
 - **Go**: `go test ./...`
 - **Rust**: `cargo test`
@@ -135,7 +135,7 @@ Cross-platform communication validation:
 - **Self-communication**: Each implementation talks to itself (4 tests)
 - **Cross-communication**: Each implementation talks to others (12 tests)
 - **Total combinations**: 16 client/server pairs
-- **Test commands**: ping, echo, get_info, stress_test
+- **Test requests**: ping, echo, get_info, stress_test
 
 ### 4. Manifest Compliance
 
@@ -163,27 +163,27 @@ Security validation and vulnerability scanning:
 - **Code analysis**: Pattern matching for forbidden constructs
 - **Protocol validation**: SOCK_DGRAM enforcement
 - **Input validation**: Security constraint verification
-- **Static analysis**: Language-specific security scanning
+- **Static analysis**: Language-manifestific security scanning
 
-## Test Specification Format
+## Test Manifest Format
 
-The central `test-spec.json` defines the complete test configuration:
+The central `test-manifest.json` defines the complete test configuration:
 
 ```json
 {
   "implementations": {
     "go": {
       "directory": "GoJanus",
-      "build_command": ["go", "build", "./..."],
-      "test_command": ["go", "test", "./..."],
-      "server_command": ["go", "run", "cmd/server/main.go"],
+      "build_request": ["go", "build", "./..."],
+      "test_request": ["go", "test", "./..."],
+      "server_request": ["go", "run", "cmd/server/main.go"],
       "socket_path": "/tmp/go-janus-api.sock"
     }
   },
-  "test_commands": {
+  "test_requests": {
     "ping": {
       "channel": "system",
-      "command": "ping",
+      "request": "ping",
       "parameters": {"message": "hello"},
       "expected_response": {"status": "success", "echo": "hello"}
     }
@@ -212,7 +212,7 @@ The project includes comprehensive GitHub Actions workflows (`.github/workflows/
 #### Test Phases
 
 1. **Build validation** - Compile all implementations
-2. **Unit tests** - Language-specific test suites
+2. **Unit tests** - Language-manifestific test suites
 3. **Integration tests** - Cross-platform communication
 4. **Security tests** - Compliance and vulnerability scanning
 5. **Performance tests** - Benchmarks (on schedule or `[benchmark]` commit message)
@@ -255,7 +255,7 @@ test_reports/YYYYMMDD_HHMMSS/
 
 - **Executive Summary**: Pass/fail status, timing, coverage
 - **Build Status**: Compilation results for each implementation
-- **Unit Test Results**: Language-specific test outcomes
+- **Unit Test Results**: Language-manifestific test outcomes
 - **Integration Matrix**: 4×4 communication test results
 - **Performance Metrics**: Latency, throughput, memory usage
 - **Security Analysis**: Compliance and vulnerability assessment
@@ -322,7 +322,7 @@ htop
 df -h /tmp
 ```
 
-### Debugging Commands
+### Debugging Requests
 
 **Check socket files:**
 
@@ -346,7 +346,7 @@ tail -f test_logs/latest/comprehensive_test.log
 
 ### Adding New Tests
 
-1. **Update test specification** (`test-spec.json`)
+1. **Update test manifest** (`test-manifest.json`)
 2. **Add test logic** to appropriate component
 3. **Update CI workflow** if needed
 4. **Test locally** before committing
@@ -358,7 +358,7 @@ tail -f test_logs/latest/comprehensive_test.log
 2. **Run full test suite** before committing
 3. **Update performance baselines** if needed
 4. **Maintain API compatibility**
-5. **Update test commands** if API changes
+5. **Update test requests** if API changes
 
 ### Best Practices
 
@@ -373,13 +373,13 @@ tail -f test_logs/latest/comprehensive_test.log
 
 ### Custom Test Configurations
 
-**Create custom test spec:**
+**Create custom test manifest:**
 
 ```json
 {
   "name": "Custom Test Suite",
   "implementations": {"go": {...}},
-  "test_commands": {"custom_test": {...}},
+  "test_requests": {"custom_test": {...}},
   "performance_benchmarks": {...}
 }
 ```
@@ -387,7 +387,7 @@ tail -f test_logs/latest/comprehensive_test.log
 **Run with custom config:**
 
 ```bash
-python3 test_orchestrator.py --config custom-test-spec.json
+python3 test_orchestrator.py --config custom-test-manifest.json
 ```
 
 ### Parallel Testing
@@ -401,7 +401,7 @@ python3 test_orchestrator.py --config custom-test-spec.json
 **Limit concurrent tests:**
 
 ```bash
-# Modify test-spec.json
+# Modify test-manifest.json
 "environment": {
   "max_parallel_tests": 2
 }
@@ -413,7 +413,7 @@ python3 test_orchestrator.py --config custom-test-spec.json
 
 ```bash
 python3 performance_benchmark.py \
-  --config extended-perf-spec.json \
+  --config extended-perf-manifest.json \
   --implementations all \
   --verbose
 ```
@@ -439,14 +439,14 @@ When contributing to the test infrastructure:
 
 **Adding new test categories:**
 
-1. Update `test-spec.json` with new category
+1. Update `test-manifest.json` with new category
 2. Add implementation in `test_orchestrator.py`
 3. Update CI workflow
 4. Add documentation
 
 **Modifying performance targets:**
 
-1. Update targets in `test-spec.json`
+1. Update targets in `test-manifest.json`
 2. Validate with current implementations
 3. Update CI thresholds
 4. Document rationale

@@ -337,7 +337,7 @@ jobs:
       run: |
         pip install bandit safety semgrep
         
-        # Install language-specific security tools
+        # Install language-manifestific security tools
         go install github.com/securecodewarrior/gosec/v2/cmd/gosec@latest
         cargo install cargo-audit
         npm install -g npm-audit

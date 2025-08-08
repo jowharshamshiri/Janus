@@ -35,15 +35,15 @@
                     
                         <li>
                             <a href="#channel-user-service">User Service</a>
-                            <ul class="command-list">
-                                <li><a href="#command-user-service-create-user">create-user</a></li><li><a href="#command-user-service-authenticate-user">authenticate-user</a></li><li><a href="#command-user-service-get-user">get-user</a></li><li><a href="#command-user-service-update-user">update-user</a></li><li><a href="#command-user-service-delete-user">delete-user</a></li>
+                            <ul class="request-list">
+                                <li><a href="#request-user-service-create-user">create-user</a></li><li><a href="#request-user-service-authenticate-user">authenticate-user</a></li><li><a href="#request-user-service-get-user">get-user</a></li><li><a href="#request-user-service-update-user">update-user</a></li><li><a href="#request-user-service-delete-user">delete-user</a></li>
                             </ul>
                         </li>
                     
                         <li>
                             <a href="#channel-session-service">Session Service</a>
-                            <ul class="command-list">
-                                <li><a href="#command-session-service-validate-session">validate-session</a></li><li><a href="#command-session-service-logout">logout</a></li>
+                            <ul class="request-list">
+                                <li><a href="#request-session-service-validate-session">validate-session</a></li><li><a href="#request-session-service-logout">logout</a></li>
                             </ul>
                         </li>
                     
@@ -90,7 +90,7 @@
                     <p>2 available</p>
                 </div>
                 <div class="info-card">
-                    <h3>Commands</h3>
+                    <h3>Requests</h3>
                     <p>7 total</p>
                 </div>
             </div>
@@ -105,7 +105,7 @@
                 <pre><code class="language-json">{
   "id": "uuid-v4-string",
   "channelId": "channel-identifier", 
-  "command": "command-name",
+  "request": "request-name",
   "args": {
     "key": "value"
   },
@@ -117,7 +117,7 @@
             <h3>Response Format</h3>
             <div class="code-block">
                 <pre><code class="language-json">{
-  "commandId": "uuid-from-request",
+  "requestId": "uuid-from-request",
   "channelId": "channel-identifier",
   "success": true,
   "result": {
@@ -130,16 +130,16 @@
 
         <section id="authentication" class="section">
             <h2>Authentication</h2>
-            <p>Authentication is handled through Unix socket permissions and optional channel-specific authentication mechanisms.</p>
+            <p>Authentication is handled through Unix socket permissions and optional channel-manifestific authentication mechanisms.</p>
         </section>
 
         <section id="errors" class="section">
             <h2>Error Handling</h2>
-            <p>All errors follow a standardized format with specific error codes and detailed messages.</p>
+            <p>All errors follow a standardized format with manifestific error codes and detailed messages.</p>
             
             <div class="code-block">
                 <pre><code class="language-json">{
-  "commandId": "uuid-from-request",
+  "requestId": "uuid-from-request",
   "channelId": "channel-identifier", 
   "success": false,
   "error": {
@@ -158,14 +158,14 @@
             <p>Core user management operations including registration, authentication, and profile management</p>
             
             
-        <div id="command-user-service-create-user" class="command">
+        <div id="request-user-service-create-user" class="request">
             <h3>Create User</h3>
             <p>Create a new user account with validation and security checks</p>
             
-            <div class="command-details">
-                <div class="command-info">
+            <div class="request-details">
+                <div class="request-info">
                     <span class="badge">Channel: user-service</span>
-                    <span class="badge">Command: create-user</span>
+                    <span class="badge">Request: create-user</span>
                     <span class="badge">Timeout: 30s</span>
                 </div>
                 
@@ -284,7 +284,7 @@
                 <pre><code class="language-json">{
   "id": "550e8400-e29b-41d4-a716-446655440000",
   "channelId": "user-service",
-  "command": "create-user",
+  "request": "create-user",
   "args": {
     "username": "example-username",
     "email": "example-email",
@@ -302,11 +302,11 @@
             <h5>Response</h5>
             <div class="code-block">
                 <pre><code class="language-json">{
-  "commandId": "550e8400-e29b-41d4-a716-446655440000",
+  "requestId": "550e8400-e29b-41d4-a716-446655440000",
   "channelId": "user-service",
   "success": true,
   "result": {
-    "message": "Command executed successfully"
+    "message": "Request executed successfully"
   },
   "timestamp": "2025-07-29T13:15:58.982Z"
 }</code></pre>
@@ -316,14 +316,14 @@
             </div>
         </div>
     
-        <div id="command-user-service-authenticate-user" class="command">
+        <div id="request-user-service-authenticate-user" class="request">
             <h3>Authenticate User</h3>
             <p>Authenticate user credentials and generate session token</p>
             
-            <div class="command-details">
-                <div class="command-info">
+            <div class="request-details">
+                <div class="request-info">
                     <span class="badge">Channel: user-service</span>
-                    <span class="badge">Command: authenticate-user</span>
+                    <span class="badge">Request: authenticate-user</span>
                     <span class="badge">Timeout: 10s</span>
                 </div>
                 
@@ -410,7 +410,7 @@
                 <pre><code class="language-json">{
   "id": "550e8400-e29b-41d4-a716-446655440000",
   "channelId": "user-service",
-  "command": "authenticate-user",
+  "request": "authenticate-user",
   "args": {
     "username": "example-username",
     "password": "example-password",
@@ -424,11 +424,11 @@
             <h5>Response</h5>
             <div class="code-block">
                 <pre><code class="language-json">{
-  "commandId": "550e8400-e29b-41d4-a716-446655440000",
+  "requestId": "550e8400-e29b-41d4-a716-446655440000",
   "channelId": "user-service",
   "success": true,
   "result": {
-    "message": "Command executed successfully"
+    "message": "Request executed successfully"
   },
   "timestamp": "2025-07-29T13:15:58.982Z"
 }</code></pre>
@@ -438,14 +438,14 @@
             </div>
         </div>
     
-        <div id="command-user-service-get-user" class="command">
+        <div id="request-user-service-get-user" class="request">
             <h3>Get User</h3>
             <p>Retrieve user information by ID or username</p>
             
-            <div class="command-details">
-                <div class="command-info">
+            <div class="request-details">
+                <div class="request-info">
                     <span class="badge">Channel: user-service</span>
-                    <span class="badge">Command: get-user</span>
+                    <span class="badge">Request: get-user</span>
                     <span class="badge">Timeout: 15s</span>
                 </div>
                 
@@ -532,7 +532,7 @@
                 <pre><code class="language-json">{
   "id": "550e8400-e29b-41d4-a716-446655440000",
   "channelId": "user-service",
-  "command": "get-user",
+  "request": "get-user",
   "args": {
     "userId": "example-userId",
     "username": "example-username",
@@ -546,11 +546,11 @@
             <h5>Response</h5>
             <div class="code-block">
                 <pre><code class="language-json">{
-  "commandId": "550e8400-e29b-41d4-a716-446655440000",
+  "requestId": "550e8400-e29b-41d4-a716-446655440000",
   "channelId": "user-service",
   "success": true,
   "result": {
-    "message": "Command executed successfully"
+    "message": "Request executed successfully"
   },
   "timestamp": "2025-07-29T13:15:58.982Z"
 }</code></pre>
@@ -560,14 +560,14 @@
             </div>
         </div>
     
-        <div id="command-user-service-update-user" class="command">
+        <div id="request-user-service-update-user" class="request">
             <h3>Update User</h3>
             <p>Update user information and profile</p>
             
-            <div class="command-details">
-                <div class="command-info">
+            <div class="request-details">
+                <div class="request-info">
                     <span class="badge">Channel: user-service</span>
-                    <span class="badge">Command: update-user</span>
+                    <span class="badge">Request: update-user</span>
                     <span class="badge">Timeout: 30s</span>
                 </div>
                 
@@ -638,7 +638,7 @@
                 <pre><code class="language-json">{
   "id": "550e8400-e29b-41d4-a716-446655440000",
   "channelId": "user-service",
-  "command": "update-user",
+  "request": "update-user",
   "args": {
     "userId": "example-userId",
     "updates": {
@@ -653,11 +653,11 @@
             <h5>Response</h5>
             <div class="code-block">
                 <pre><code class="language-json">{
-  "commandId": "550e8400-e29b-41d4-a716-446655440000",
+  "requestId": "550e8400-e29b-41d4-a716-446655440000",
   "channelId": "user-service",
   "success": true,
   "result": {
-    "message": "Command executed successfully"
+    "message": "Request executed successfully"
   },
   "timestamp": "2025-07-29T13:15:58.982Z"
 }</code></pre>
@@ -667,14 +667,14 @@
             </div>
         </div>
     
-        <div id="command-user-service-delete-user" class="command">
+        <div id="request-user-service-delete-user" class="request">
             <h3>Delete User</h3>
             <p>Permanently delete a user account</p>
             
-            <div class="command-details">
-                <div class="command-info">
+            <div class="request-details">
+                <div class="request-info">
                     <span class="badge">Channel: user-service</span>
-                    <span class="badge">Command: delete-user</span>
+                    <span class="badge">Request: delete-user</span>
                     <span class="badge">Timeout: 60s</span>
                 </div>
                 
@@ -745,7 +745,7 @@
                 <pre><code class="language-json">{
   "id": "550e8400-e29b-41d4-a716-446655440000",
   "channelId": "user-service",
-  "command": "delete-user",
+  "request": "delete-user",
   "args": {
     "userId": "example-userId",
     "confirmation": "DELETE"
@@ -758,11 +758,11 @@
             <h5>Response</h5>
             <div class="code-block">
                 <pre><code class="language-json">{
-  "commandId": "550e8400-e29b-41d4-a716-446655440000",
+  "requestId": "550e8400-e29b-41d4-a716-446655440000",
   "channelId": "user-service",
   "success": true,
   "result": {
-    "message": "Command executed successfully"
+    "message": "Request executed successfully"
   },
   "timestamp": "2025-07-29T13:15:58.982Z"
 }</code></pre>
@@ -779,14 +779,14 @@
             <p>Session management and token validation operations</p>
             
             
-        <div id="command-session-service-validate-session" class="command">
+        <div id="request-session-service-validate-session" class="request">
             <h3>Validate Session</h3>
             <p>Validate session token and return user information</p>
             
-            <div class="command-details">
-                <div class="command-info">
+            <div class="request-details">
+                <div class="request-info">
                     <span class="badge">Channel: session-service</span>
-                    <span class="badge">Command: validate-session</span>
+                    <span class="badge">Request: validate-session</span>
                     <span class="badge">Timeout: 5s</span>
                 </div>
                 
@@ -841,7 +841,7 @@
                 <pre><code class="language-json">{
   "id": "550e8400-e29b-41d4-a716-446655440000",
   "channelId": "session-service",
-  "command": "validate-session",
+  "request": "validate-session",
   "args": {
     "sessionToken": "example-sessionToken"
   },
@@ -853,11 +853,11 @@
             <h5>Response</h5>
             <div class="code-block">
                 <pre><code class="language-json">{
-  "commandId": "550e8400-e29b-41d4-a716-446655440000",
+  "requestId": "550e8400-e29b-41d4-a716-446655440000",
   "channelId": "session-service",
   "success": true,
   "result": {
-    "message": "Command executed successfully"
+    "message": "Request executed successfully"
   },
   "timestamp": "2025-07-29T13:15:58.982Z"
 }</code></pre>
@@ -867,14 +867,14 @@
             </div>
         </div>
     
-        <div id="command-session-service-logout" class="command">
+        <div id="request-session-service-logout" class="request">
             <h3>Logout</h3>
             <p>Invalidate session token and logout user</p>
             
-            <div class="command-details">
-                <div class="command-info">
+            <div class="request-details">
+                <div class="request-info">
                     <span class="badge">Channel: session-service</span>
-                    <span class="badge">Command: logout</span>
+                    <span class="badge">Request: logout</span>
                     <span class="badge">Timeout: 10s</span>
                 </div>
                 
@@ -929,7 +929,7 @@
                 <pre><code class="language-json">{
   "id": "550e8400-e29b-41d4-a716-446655440000",
   "channelId": "session-service",
-  "command": "logout",
+  "request": "logout",
   "args": {
     "sessionToken": "example-sessionToken"
   },
@@ -941,11 +941,11 @@
             <h5>Response</h5>
             <div class="code-block">
                 <pre><code class="language-json">{
-  "commandId": "550e8400-e29b-41d4-a716-446655440000",
+  "requestId": "550e8400-e29b-41d4-a716-446655440000",
   "channelId": "session-service",
   "success": true,
   "result": {
-    "message": "Command executed successfully"
+    "message": "Request executed successfully"
   },
   "timestamp": "2025-07-29T13:15:58.982Z"
 }</code></pre>
@@ -1597,9 +1597,9 @@
               </div>
               
               <div class="input-group">
-                <label for="select-command">Command:</label>
-                <select id="select-command" class="form-select" disabled>
-                  <option value="">Select a command...</option>
+                <label for="select-request">Request:</label>
+                <select id="select-request" class="form-select" disabled>
+                  <option value="">Select a request...</option>
                 </select>
               </div>
             </div>
@@ -1683,9 +1683,9 @@
               </div>
               
               <div class="input-group">
-                <label for="format-command">Command:</label>
-                <select id="format-command" class="form-select">
-                  <option value="">Select command...</option>
+                <label for="format-request">Request:</label>
+                <select id="format-request" class="form-select">
+                  <option value="">Select request...</option>
                 </select>
               </div>
               

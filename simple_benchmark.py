@@ -65,7 +65,7 @@ class SimpleBenchmark:
             print(f"Error starting {impl_name} server: {e}")
             return None
     
-    def send_request(self, socket_path: str, command: str = "ping") -> Tuple[bool, float]:
+    def send_request(self, socket_path: str, request: str = "ping") -> Tuple[bool, float]:
         """Send a single request and measure latency"""
         start_time = time.perf_counter()
         
@@ -78,7 +78,7 @@ class SimpleBenchmark:
                 
                 message = {
                     'channel': 'system',
-                    'command': command,
+                    'request': request,
                     'parameters': {'message': 'benchmark'},
                     'reply_to': reply_path
                 }
