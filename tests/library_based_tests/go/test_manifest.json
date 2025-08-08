@@ -1,0 +1,29 @@
+
+{
+    "version": "1.0.0",
+    "models": {
+        "CustomTestRequest": {
+            "type": "object",
+            "properties": {
+                "test_param": {
+                    "type": "string",
+                    "description": "Test parameter for custom request"
+                }
+            },
+            "required": ["test_param"]
+        },
+        "CustomTestResponse": {
+            "type": "object", 
+            "properties": {
+                "result": {
+                    "type": "string",
+                    "description": "Result of custom test"
+                },
+                "received_param": {
+                    "type": "string",
+                    "description": "Parameter that was received"
+                }
+            }
+        }
+    }
+}

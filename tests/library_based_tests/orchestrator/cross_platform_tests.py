@@ -37,6 +37,7 @@ import (
     "os/signal"
     "syscall"
     "GoJanus/pkg/server"
+    "GoJanus/pkg/models"
 )
 
 func main() {
@@ -45,13 +46,28 @@ func main() {
     // Remove existing socket
     os.Remove(socketPath)
     
-    srv, err := server.NewJanusServer(socketPath)
-    if err != nil {
-        log.Fatalf("Failed to create server: %v", err)
+    config := &server.ServerConfig{
+        SocketPath: socketPath,
     }
+    srv := server.NewJanusServer(config)
+    
+    // Register custom request handler
+    srv.RegisterHandler("custom_test", server.NewObjectHandler(func(request *models.JanusRequest) (map[string]interface{}, error) {
+        testParam := ""
+        if request.Args != nil {
+            if param, ok := request.Args["test_param"].(string); ok {
+                testParam = param
+            }
+        }
+        
+        return map[string]interface{}{
+            "result": "custom_test_success",
+            "received_param": testParam,
+        }, nil
+    }))
     
     // Start server
-    if err := srv.Start(); err != nil {
+    if err := srv.StartListening(); err != nil {
         log.Fatalf("Failed to start server: %v", err)
     }
     
@@ -70,6 +86,40 @@ func main() {
         server_file = test_dir / "temp_server.go"
         server_file.write_text(server_code)
         
+        # Create test manifest with custom request
+        test_manifest = '''
+{
+    "version": "1.0.0",
+    "models": {
+        "CustomTestRequest": {
+            "type": "object",
+            "properties": {
+                "test_param": {
+                    "type": "string",
+                    "description": "Test parameter for custom request"
+                }
+            },
+            "required": ["test_param"]
+        },
+        "CustomTestResponse": {
+            "type": "object", 
+            "properties": {
+                "result": {
+                    "type": "string",
+                    "description": "Result of custom test"
+                },
+                "received_param": {
+                    "type": "string",
+                    "description": "Parameter that was received"
+                }
+            }
+        }
+    }
+}
+'''
+        manifest_file = test_dir / "test_manifest.json"
+        manifest_file.write_text(test_manifest)
+        
         try:
             # Build server
             build_result = subprocess.run(
@@ -87,7 +137,8 @@ func main() {
         except subprocess.TimeoutExpired:
             self.error_message = "Go build timed out after 30 seconds"
             return False
-            
+        
+        try:
             # Start server process
             self.process = subprocess.Popen(
                 ["./test_server", self.socket_path],
@@ -114,6 +165,8 @@ func main() {
 use std::env;
 use tokio::runtime::Runtime;
 use rust_janus::server::{JanusServer, ServerConfig};
+use rust_janus::JSONRPCError;
+use serde_json;
 
 fn main() {
     let args: Vec<String> = env::args().collect();
@@ -139,6 +192,20 @@ fn main() {
         };
         
         let mut server = JanusServer::new(config);
+        
+        // Register custom request handler
+        server.register_handler("custom_test", |request| {
+            let test_param = request.args
+                .as_ref()
+                .and_then(|args| args.get("test_param"))
+                .and_then(|v| v.as_str())
+                .unwrap_or("unknown");
+            
+            Ok(serde_json::json!({
+                "result": "custom_test_success",
+                "received_param": test_param
+            }))
+        }).await;
         
         // Start the server
         if let Err(e) = server.start_listening().await {
@@ -232,11 +299,11 @@ struct ServerApp {
         server_file = sources_dir / "main.swift"
         server_file.write_text(server_code)
         
-        # Update Package.swift to include executable
+        # Check if Package.swift already has TestServer target (avoid unnecessary rebuilds)
         package_swift = test_dir / "Package.swift"
         package_content = package_swift.read_text()
         if "TestServer" not in package_content:
-            # Add executable target
+            # Add executable target only once
             package_content = package_content.replace(
                 'targets: [',
                 '''targets: [
@@ -246,19 +313,28 @@ struct ServerApp {
         ),'''
             )
             package_swift.write_text(package_content)
+            # Clear build cache when Package.swift changes
+            import shutil
+            build_dir = test_dir / ".build"
+            if build_dir.exists():
+                shutil.rmtree(build_dir)
         
         try:
-            # Build server
-            build_result = subprocess.run(
-                ["swift", "build", "--product", "TestServer"],
-                cwd=test_dir,
-                capture_output=True,
-                text=True
-            )
-            
-            if build_result.returncode != 0:
-                self.error_message = f"Swift build failed: {build_result.stderr}"
-                return False
+            # Check if TestServer is already built to avoid unnecessary rebuilds
+            test_server_path = test_dir / ".build" / "debug" / "TestServer"
+            if not test_server_path.exists():
+                # Build server only if needed
+                build_result = subprocess.run(
+                    ["swift", "build", "--product", "TestServer"],
+                    cwd=test_dir,
+                    capture_output=True,
+                    text=True,
+                    timeout=30  # Add timeout for build
+                )
+                
+                if build_result.returncode != 0:
+                    self.error_message = f"Swift build failed: {build_result.stderr}"
+                    return False
             
             # Start server process
             self.process = subprocess.Popen(
@@ -441,6 +517,7 @@ class ClientTester:
 package main
 
 import (
+    "context"
     "encoding/json"
     "fmt"
     "log"
@@ -459,13 +536,20 @@ func main() {
     defer client.Close()
     
     // Test 1: Manifest request
-    manifest, err := client.GetManifest()
+    ctx := context.Background()
+    manifestResp, err := client.SendRequest(ctx, "manifest", nil)
     if err != nil {
         log.Printf("Manifest request failed: %v", err)
         os.Exit(1)
     }
     
-    fmt.Printf("MANIFEST_VERSION:%s\\n", manifest.Version)
+    if manifestResp.Success && manifestResp.Result != nil {
+        if resultMap, ok := manifestResp.Result.(map[string]interface{}); ok {
+            if version, ok := resultMap["version"].(string); ok {
+                fmt.Printf("MANIFEST_VERSION:%s\\n", version)
+            }
+        }
+    }
     
     // Test 2: Echo request
     args := map[string]interface{}{
@@ -473,16 +557,32 @@ func main() {
         "timestamp": time.Now().Format(time.RFC3339Nano),
     }
     
-    result, err := client.Request("echo", args, 5.0)
+    result, err := client.SendRequest(ctx, "echo", args)
     if err != nil {
         log.Printf("Echo request failed: %v", err)
         os.Exit(1)
     }
     
-    resultJSON, _ := json.Marshal(result)
-    fmt.Printf("ECHO_RESULT:%s\\n", string(resultJSON))
+    if result.Success && result.Result != nil {
+        resultJSON, _ := json.Marshal(result.Result)
+        fmt.Printf("ECHO_RESULT:%s\\n", string(resultJSON))
+    }
     
-    fmt.Println("TEST_COMPLETE")
+    // Test 3: Custom request (if available)
+    fmt.Println("\\nTest 3: Custom request...")
+    customArgs := map[string]interface{}{
+        "test_param": "go_value",
+    }
+    
+    customResult, err := client.SendRequest(ctx, "custom_test", customArgs)
+    if err != nil {
+        log.Printf("Custom request failed: %v", err)
+    } else if customResult.Success && customResult.Result != nil {
+        customJSON, _ := json.Marshal(customResult.Result)
+        fmt.Printf("CUSTOM_RESULT:%s\\n", string(customJSON))
+    }
+    
+    fmt.Println("\\n✅ All tests completed")
 }
 '''
         
@@ -513,7 +613,8 @@ func main() {
                 "error": "Go client build timed out after 30 seconds",
                 "tests": {}
             }
-            
+        
+        try:    
             # Run client test
             result = subprocess.run(
                 ["./test_client", server_socket],
@@ -549,6 +650,18 @@ func main() {
                         "error": "No echo result in output"
                     }
                 
+                # Check custom request test
+                if "CUSTOM_RESULT:" in output:
+                    tests["custom_request"] = {
+                        "passed": True,
+                        "result": output.split("CUSTOM_RESULT:")[1].split("\n")[0]
+                    }
+                else:
+                    tests["custom_request"] = {
+                        "passed": False,
+                        "error": "Custom request not supported or failed"
+                    }
+                
                 return {
                     "success": True,
                     "tests": tests
@@ -577,7 +690,8 @@ func main() {
 use std::env;
 use std::collections::HashMap;
 use tokio::runtime::Runtime;
-use rust_janus::protocol::JanusClient;
+use rust_janus::protocol::janus_client::JanusClient;
+use rust_janus::config::JanusClientConfig;
 use serde_json::json;
 
 fn main() {
@@ -605,19 +719,46 @@ fn main() {
 }
 
 async fn run_tests(server_socket: &str) -> Result<(), Box<dyn std::error::Error>> {
-    let client = JanusClient::new(server_socket).await?;
+    use rust_janus::config::JanusClientConfig;
+    
+    let client_config = JanusClientConfig::default();
+    let mut client = JanusClient::new(server_socket.to_string(), client_config).await?;
     
     // Test 1: Manifest request
-    let manifest = client.get_manifest().await?;
-    println!("MANIFEST_VERSION:{}", manifest.version);
+    let manifest_result = client.send_request("manifest", None, None).await?;
+    if manifest_result.success {
+        if let Some(manifest_data) = manifest_result.result {
+            if let Some(version) = manifest_data.get("version") {
+                if let Some(version_str) = version.as_str() {
+                    println!("MANIFEST_VERSION:{}", version_str);
+                }
+            }
+        }
+    }
     
-    // Test 2: Echo request
+    // Test 2: Echo request  
     let mut args = HashMap::new();
     args.insert("message".to_string(), json!("Hello from Rust"));
     args.insert("timestamp".to_string(), json!(chrono::Utc::now().to_rfc3339()));
     
-    let result = client.request("echo", args, Some(5.0)).await?;
-    println!("ECHO_RESULT:{}", serde_json::to_string(&result)?);
+    let result = client.send_request("echo", Some(args), None).await?;
+    if result.success {
+        if let Some(result_data) = result.result {
+            println!("ECHO_RESULT:{}", serde_json::to_string(&result_data)?);
+        }
+    }
+    
+    // Test 3: Custom request
+    println!("\\nTest 3: Custom request...");
+    let mut custom_args = HashMap::new();
+    custom_args.insert("test_param".to_string(), json!("rust_value"));
+    
+    let custom_result = client.send_request("custom_test", Some(custom_args), None).await?;
+    if custom_result.success {
+        if let Some(result_data) = custom_result.result {
+            println!("CUSTOM_RESULT:{}", serde_json::to_string(&result_data)?);
+        }
+    }
     
     Ok(())
 }
@@ -679,6 +820,18 @@ async fn run_tests(server_socket: &str) -> Result<(), Box<dyn std::error::Error>
                         "error": "No echo result in output"
                     }
                 
+                # Check custom request test
+                if "CUSTOM_RESULT:" in output:
+                    tests["custom_request"] = {
+                        "passed": True,
+                        "result": output.split("CUSTOM_RESULT:")[1].split("\n")[0]
+                    }
+                else:
+                    tests["custom_request"] = {
+                        "passed": False,
+                        "error": "Custom request not supported or failed"
+                    }
+                
                 return {
                     "success": True,
                     "tests": tests
@@ -703,13 +856,196 @@ async fn run_tests(server_socket: &str) -> Result<(), Box<dyn std::error::Error>
     @staticmethod
     def test_swift_client(server_socket: str, test_dir: Path) -> Dict:
         """Test Swift client against a server"""
-        # Swift client test would be similar
-        # For now, return a placeholder
-        return {
-            "success": False,
-            "error": "Swift client test not yet implemented",
-            "tests": {}
+        client_code = '''
+import Foundation
+import SwiftJanus
+
+@main
+struct ClientApp {
+    static func main() async {
+        let serverSocket = CommandLine.arguments[1]
+        
+        do {
+            let client = JanusClient()
+            
+            // Test 1: Manifest request
+            let manifestResponse = try await client.sendRequest(
+                to: serverSocket,
+                request: "manifest",
+                args: nil
+            )
+            
+            if manifestResponse.success,
+               let manifestData = manifestResponse.result,
+               case .dictionary(let dict) = manifestData,
+               case .string(let version) = dict["version"] ?? .null {
+                print("MANIFEST_VERSION:\\(version)")
+            }
+            
+            // Test 2: Echo request
+            let echoArgs: [String: AnyCodable] = [
+                "message": AnyCodable("Hello from Swift"),
+                "timestamp": AnyCodable(ISO8601DateFormatter().string(from: Date()))
+            ]
+            
+            let echoResponse = try await client.sendRequest(
+                to: serverSocket,
+                request: "echo", 
+                args: echoArgs
+            )
+            
+            if echoResponse.success, let resultData = echoResponse.result {
+                let encoder = JSONEncoder()
+                if let jsonData = try? encoder.encode(resultData),
+                   let jsonString = String(data: jsonData, encoding: .utf8) {
+                    print("ECHO_RESULT:\\(jsonString)")
+                }
+            }
+            
+            // Test 3: Custom request (if available)
+            let customResponse = try await client.sendRequest(
+                to: serverSocket,
+                request: "custom_test",
+                args: ["test_param": AnyCodable("swift_value")]
+            )
+            
+            if customResponse.success, let resultData = customResponse.result {
+                let encoder = JSONEncoder()
+                if let jsonData = try? encoder.encode(resultData),
+                   let jsonString = String(data: jsonData, encoding: .utf8) {
+                    print("CUSTOM_RESULT:\\(jsonString)")
+                }
+            }
+            
+            print("TEST_COMPLETE")
+            
+        } catch {
+            print("Test failed: \\(error)")
+            exit(1)
         }
+    }
+}
+'''
+        
+        # Write test client
+        sources_dir = test_dir / "Sources" / "TestClient"  
+        sources_dir.mkdir(parents=True, exist_ok=True)
+        client_file = sources_dir / "main.swift"
+        client_file.write_text(client_code)
+        
+        # Update Package.swift to include client executable
+        package_swift = test_dir / "Package.swift"
+        package_content = package_swift.read_text()
+        if "TestClient" not in package_content:
+            package_content = package_content.replace(
+                'targets: [',
+                '''targets: [
+        .executableTarget(
+            name: "TestClient",
+            dependencies: ["SwiftJanus"]
+        ),'''
+            )
+            package_swift.write_text(package_content)
+        
+        try:
+            # Build client
+            build_result = subprocess.run(
+                ["swift", "build", "--product", "TestClient"],
+                cwd=test_dir,
+                capture_output=True,
+                text=True,
+                timeout=30
+            )
+            
+            if build_result.returncode != 0:
+                return {
+                    "success": False,
+                    "error": f"Swift client build failed: {build_result.stderr}",
+                    "tests": {}
+                }
+            
+            # Run client test
+            result = subprocess.run(
+                [".build/debug/TestClient", server_socket],
+                cwd=test_dir,
+                capture_output=True,
+                text=True,
+                timeout=15
+            )
+            
+            # Parse results
+            tests = {}
+            if result.returncode == 0:
+                output = result.stdout
+                
+                # Check manifest test
+                if "MANIFEST_VERSION:" in output:
+                    tests["manifest_request"] = {
+                        "passed": True,
+                        "version": output.split("MANIFEST_VERSION:")[1].split("\n")[0]
+                    }
+                else:
+                    tests["manifest_request"] = {
+                        "passed": False,
+                        "error": "No manifest version in output"
+                    }
+                
+                # Check echo test
+                if "ECHO_RESULT:" in output:
+                    tests["echo_request"] = {
+                        "passed": True,
+                        "result": output.split("ECHO_RESULT:")[1].split("\n")[0]
+                    }
+                else:
+                    tests["echo_request"] = {
+                        "passed": False,
+                        "error": "No echo result in output"
+                    }
+                
+                # Check custom request test
+                if "CUSTOM_RESULT:" in output:
+                    tests["custom_request"] = {
+                        "passed": True,
+                        "result": output.split("CUSTOM_RESULT:")[1].split("\n")[0]
+                    }
+                else:
+                    tests["custom_request"] = {
+                        "passed": False,
+                        "error": "Custom request not supported or failed"
+                    }
+                
+                # Check custom request test
+                if "CUSTOM_RESULT:" in output:
+                    tests["custom_request"] = {
+                        "passed": True,
+                        "result": output.split("CUSTOM_RESULT:")[1].split("\n")[0]
+                    }
+                else:
+                    tests["custom_request"] = {
+                        "passed": False,
+                        "error": "Custom request not supported or failed"
+                    }
+                
+                return {
+                    "success": True,
+                    "tests": tests
+                }
+            else:
+                return {
+                    "success": False,
+                    "error": f"Swift client test failed: {result.stderr}",
+                    "tests": {}
+                }
+            
+        except Exception as e:
+            return {
+                "success": False,
+                "error": f"Exception running Swift client: {e}",
+                "tests": {}
+            }
+        finally:
+            if client_file.exists():
+                client_file.unlink()
     
     @staticmethod
     def test_typescript_client(server_socket: str, test_dir: Path) -> Dict:
@@ -724,16 +1060,33 @@ async function runTests() {
         const client = new JanusClient(serverSocket);
         
         // Test 1: Manifest request
-        const manifest = await client.getManifest();
-        console.log(`MANIFEST_VERSION:${manifest.version}`);
+        const manifestResponse = await client.sendRequest('manifest', null, 10.0);
+        if (manifestResponse.success && manifestResponse.result) {
+            const manifest = manifestResponse.result;
+            if (manifest.version) {
+                console.log(`MANIFEST_VERSION:${manifest.version}`);
+            }
+        }
         
         // Test 2: Echo request
-        const result = await client.request('echo', {
+        const echoResponse = await client.sendRequest('echo', {
             message: 'Hello from TypeScript',
             timestamp: new Date().toISOString()
-        }, 5.0);
+        }, 10.0);
         
-        console.log(`ECHO_RESULT:${JSON.stringify(result)}`);
+        if (echoResponse.success && echoResponse.result) {
+            console.log(`ECHO_RESULT:${JSON.stringify(echoResponse.result)}`);
+        }
+        
+        // Test 3: Custom request (if available)
+        const customResponse = await client.sendRequest('custom_test', {
+            test_param: 'typescript_value'
+        }, 10.0);
+        
+        if (customResponse.success && customResponse.result) {
+            console.log(`CUSTOM_RESULT:${JSON.stringify(customResponse.result)}`);
+        }
+        
         console.log('TEST_COMPLETE');
         
         client.close();
@@ -785,6 +1138,18 @@ runTests();
                     tests["echo_request"] = {
                         "passed": False,
                         "error": "No echo result in output"
+                    }
+                
+                # Check custom request test
+                if "CUSTOM_RESULT:" in output:
+                    tests["custom_request"] = {
+                        "passed": True,
+                        "result": output.split("CUSTOM_RESULT:")[1].split("\n")[0]
+                    }
+                else:
+                    tests["custom_request"] = {
+                        "passed": False,
+                        "error": "Custom request not supported or failed"
                     }
                 
                 return {
@@ -852,28 +1217,63 @@ def run_cross_platform_test(client_impl: str, server_impl: str, base_dir: Path) 
         server.stop()
 
 
-def test_critical_combinations(base_dir: Path) -> List[Dict]:
-    """Test the critical Go ↔ Rust combinations first"""
+def test_critical_combinations(base_dir: Path, timeout_seconds: int = 60) -> List[Dict]:
+    """Test the critical Go ↔ Rust combinations first with timeout"""
+    import signal
+    import time
+    
     results = []
+    
+    def timeout_handler(signum, frame):
+        raise TimeoutError("Test exceeded timeout limit")
     
     # Critical test 1: Go client → Rust server (failed in terraform)
     print("🔥 Testing critical combination: Go client → Rust server")
-    success, details = run_cross_platform_test("go", "rust", base_dir)
-    results.append({
-        "combination": "go_client_rust_server",
-        "success": success,
-        "details": details,
-        "priority": "CRITICAL"
-    })
+    start_time = time.time()
+    try:
+        signal.signal(signal.SIGALRM, timeout_handler)
+        signal.alarm(timeout_seconds)
+        
+        success, details = run_cross_platform_test("go", "rust", base_dir)
+        results.append({
+            "combination": "go_client_rust_server",
+            "success": success,
+            "details": details,
+            "priority": "CRITICAL"
+        })
+        
+        signal.alarm(0)  # Cancel timeout
+    except TimeoutError:
+        results.append({
+            "combination": "go_client_rust_server",
+            "success": False,
+            "details": {"error": f"Test timed out after {timeout_seconds} seconds"},
+            "priority": "CRITICAL"
+        })
+        signal.alarm(0)  # Cancel timeout
     
     # Critical test 2: Rust client → Go server (reverse validation)
     print("🔥 Testing critical combination: Rust client → Go server")
-    success, details = run_cross_platform_test("rust", "go", base_dir)
-    results.append({
-        "combination": "rust_client_go_server",
-        "success": success,
-        "details": details,
-        "priority": "CRITICAL"
-    })
+    try:
+        signal.signal(signal.SIGALRM, timeout_handler)
+        signal.alarm(timeout_seconds)
+        
+        success, details = run_cross_platform_test("rust", "go", base_dir)
+        results.append({
+            "combination": "rust_client_go_server",
+            "success": success,
+            "details": details,
+            "priority": "CRITICAL"
+        })
+        
+        signal.alarm(0)  # Cancel timeout
+    except TimeoutError:
+        results.append({
+            "combination": "rust_client_go_server", 
+            "success": False,
+            "details": {"error": f"Test timed out after {timeout_seconds} seconds"},
+            "priority": "CRITICAL"
+        })
+        signal.alarm(0)  # Cancel timeout
     
     return results

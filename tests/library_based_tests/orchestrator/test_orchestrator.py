@@ -454,15 +454,19 @@ class LibraryTestOrchestrator:
         self.test_results.extend(self.run_typescript_library_tests())
         self.test_results.append(self.validate_message_formats())
         
-        # Skip cross-platform matrix temporarily due to build timeout issues
-        print("🌐 Skipping Cross-Platform Communication Matrix (build timeout issues)...")
-        for i in range(16):
-            self.test_results.append(TestOutcome(
-                f"cross_platform_test_{i+1}",
-                TestResult.SKIP,
-                0.0,
-                "Skipped due to Go build timeout issues in orchestrator"
-            ))
+        # Run cross-platform matrix tests (timeout issues fixed)
+        try:
+            self.test_results.extend(self.run_cross_platform_matrix())
+        except Exception as e:
+            print(f"🌐 Cross-Platform Matrix failed with exception: {e}")
+            # Add placeholder results for tracking
+            for i in range(16):
+                self.test_results.append(TestOutcome(
+                    f"cross_platform_test_{i+1}",
+                    TestResult.ERROR,
+                    0.0,
+                    f"Cross-platform matrix error: {str(e)}"
+                ))
         
         total_duration = time.time() - start_time
         

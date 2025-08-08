@@ -11,6 +11,10 @@ let package = Package(
     ],
     targets: [
         .executableTarget(
+            name: "MinimalTest",
+            dependencies: []
+        ),
+        .executableTarget(
             name: "TestServer",
             dependencies: ["SwiftJanus"]
         ),

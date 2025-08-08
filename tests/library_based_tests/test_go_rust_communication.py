@@ -146,23 +146,22 @@ func main() {
     
     // Test 1: Get manifest
     fmt.Println("\\nTest 1: Getting manifest...")
-    manifest := client.GetManifest()
-    if manifest == nil {
-        // Manifest is lazy-loaded, force load by making a request
-        ctx := context.Background()
-        err = client.TestConnection(ctx)
-        if err != nil {
-            log.Printf("❌ Failed to test connection: %v", err)
-        }
-        manifest = client.GetManifest()
-    }
+    ctx := context.Background()
     
-    if manifest != nil {
-        fmt.Printf("✅ Manifest received: version=%s\\n", manifest.Version)
-        manifestJSON, _ := json.MarshalIndent(manifest, "", "  ")
-        fmt.Printf("Full manifest:\\n%s\\n", string(manifestJSON))
+    // Make a manifest request to trigger manifest loading
+    _, err = client.SendRequest(ctx, "manifest", nil)
+    if err != nil {
+        log.Printf("❌ Failed to fetch manifest: %v", err)
     } else {
-        log.Printf("❌ Failed to get manifest")
+        // Now check if manifest was loaded
+        manifest := client.GetManifest()
+        if manifest != nil {
+            fmt.Printf("✅ Manifest received: version=%s\\n", manifest.Version)
+            manifestJSON, _ := json.MarshalIndent(manifest, "", "  ")
+            fmt.Printf("Full manifest:\\n%s\\n", string(manifestJSON))
+        } else {
+            log.Printf("❌ Manifest was not loaded despite successful request")
+        }
     }
     
     // Test 2: Echo request
@@ -172,10 +171,10 @@ func main() {
         "timestamp": time.Now().Format(time.RFC3339),
     }
     
-    ctx := context.Background()
-    result, err := client.SendRequest(ctx, "echo", args)
-    if err != nil {
-        log.Printf("❌ Echo request failed: %v", err)
+    // ctx already created above
+    result, echoErr := client.SendRequest(ctx, "echo", args)
+    if echoErr != nil {
+        log.Printf("❌ Echo request failed: %v", echoErr)
     } else {
         fmt.Println("✅ Echo response received:")
         resultJSON, _ := json.MarshalIndent(result, "", "  ")
@@ -402,11 +401,20 @@ async fn run_tests(socket_path: &str) -> Result<(), Box<dyn std::error::Error>> 
     
     // Test 1: Get manifest
     println!("\\nTest 1: Getting manifest...");
-    if let Some(manifest) = client.manifest() {
-        println!("✅ Manifest received: version={}", manifest.version);
-        println!("Full manifest: {:#?}", manifest);
-    } else {
-        println!("❌ No manifest available");
+    // Make a manifest request to trigger manifest loading
+    let manifest_result = client.send_request("manifest", None, None).await;
+    match manifest_result {
+        Ok(_) => {
+            if let Some(manifest) = client.manifest() {
+                println!("✅ Manifest received: version={}", manifest.version);
+                println!("Full manifest: {:#?}", manifest);
+            } else {
+                println!("❌ Manifest was not loaded despite successful request");
+            }
+        }
+        Err(e) => {
+            println!("❌ Failed to fetch manifest: {}", e);
+        }
     }
     
     // Test 2: Echo request
