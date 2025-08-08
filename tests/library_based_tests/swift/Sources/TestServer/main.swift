@@ -17,7 +17,8 @@ struct ServerApp {
             print("SERVER_READY")
             fflush(stdout)
             
-            // Keep server running
+            // Keep server running by waiting for termination signal
+            // The server now runs in background task, so we just wait
             while true {
                 try await Task.sleep(nanoseconds: 1_000_000_000) // 1 second
             }

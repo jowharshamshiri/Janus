@@ -281,7 +281,8 @@ struct ServerApp {
             print("SERVER_READY")
             fflush(stdout)
             
-            // Keep server running
+            // Keep server running by waiting for termination signal
+            // The server now runs in background task, so we just wait
             while true {
                 try await Task.sleep(nanoseconds: 1_000_000_000) // 1 second
             }
@@ -355,7 +356,7 @@ struct ServerApp {
     def start_typescript_server(self, test_dir: Path) -> bool:
         """Start TypeScript server using library API"""
         server_code = '''
-import { JanusServer } from '../dist/server/janus-server.js';
+import { JanusServer } from '../../../TypeScriptJanus/dist/server/janus-server.js';
 import * as fs from 'fs';
 
 const socketPath = process.argv[2];
@@ -369,19 +370,33 @@ try {
 
 async function main() {
     try {
-        const server = new JanusServer(socketPath);
-        await server.start();
+        const config = { 
+            socketPath: socketPath,
+            maxMessageSize: 64 * 1024,
+            defaultTimeout: 30,
+            maxConnections: 10,
+            cleanupOnStart: true,
+            cleanupOnShutdown: true
+        };
+        const server = new JanusServer(config);
+        
+        // Register custom handler for testing
+        server.registerRequestHandler('custom_test', async (args) => {
+            return { result: `Custom handler response: ${JSON.stringify(args)}` };
+        });
+        
+        await server.listen();
         
         console.log('SERVER_READY');
         
         // Keep running
         process.on('SIGINT', () => {
-            server.stop();
+            server.close();
             process.exit(0);
         });
         
         process.on('SIGTERM', () => {
-            server.stop();
+            server.close();
             process.exit(0);
         });
         
@@ -866,52 +881,37 @@ struct ClientApp {
         let serverSocket = CommandLine.arguments[1]
         
         do {
-            let client = JanusClient()
+            let client = try await JanusClient(socketPath: serverSocket)
             
             // Test 1: Manifest request
-            let manifestResponse = try await client.sendRequest(
-                to: serverSocket,
-                request: "manifest",
-                args: nil
-            )
+            let manifestResponse = try await client.sendRequest("manifest")
             
             if manifestResponse.success,
-               let manifestData = manifestResponse.result,
-               case .dictionary(let dict) = manifestData,
-               case .string(let version) = dict["version"] ?? .null {
+               let result = manifestResponse.result?.value as? [String: Any],
+               let version = result["version"] as? String {
                 print("MANIFEST_VERSION:\\(version)")
             }
             
             // Test 2: Echo request
-            let echoArgs: [String: AnyCodable] = [
-                "message": AnyCodable("Hello from Swift"),
-                "timestamp": AnyCodable(ISO8601DateFormatter().string(from: Date()))
-            ]
+            let echoResponse = try await client.sendRequest("echo", 
+                args: ["message": AnyCodable("Hello from Swift"),
+                       "timestamp": AnyCodable(ISO8601DateFormatter().string(from: Date()))])
             
-            let echoResponse = try await client.sendRequest(
-                to: serverSocket,
-                request: "echo", 
-                args: echoArgs
-            )
-            
-            if echoResponse.success, let resultData = echoResponse.result {
-                let encoder = JSONEncoder()
-                if let jsonData = try? encoder.encode(resultData),
+            if echoResponse.success,
+               let result = echoResponse.result?.value {
+                if let jsonData = try? JSONSerialization.data(withJSONObject: result),
                    let jsonString = String(data: jsonData, encoding: .utf8) {
                     print("ECHO_RESULT:\\(jsonString)")
                 }
             }
             
             // Test 3: Custom request (if available)
-            let customResponse = try await client.sendRequest(
-                to: serverSocket,
-                request: "custom_test",
-                args: ["test_param": AnyCodable("swift_value")]
-            )
+            let customResponse = try await client.sendRequest("custom_test",
+                args: ["test_param": AnyCodable("swift_value")])
             
-            if customResponse.success, let resultData = customResponse.result {
-                let encoder = JSONEncoder()
-                if let jsonData = try? encoder.encode(resultData),
+            if customResponse.success,
+               let result = customResponse.result?.value {
+                if let jsonData = try? JSONSerialization.data(withJSONObject: result),
                    let jsonString = String(data: jsonData, encoding: .utf8) {
                     print("CUSTOM_RESULT:\\(jsonString)")
                 }
@@ -1051,16 +1051,22 @@ struct ClientApp {
     def test_typescript_client(server_socket: str, test_dir: Path) -> Dict:
         """Test TypeScript client against a server"""
         client_code = '''
-import { JanusClient } from './dist/protocol/janus-client.js';
+import { JanusClient } from '../../../TypeScriptJanus/dist/protocol/janus-client.js';
 
 const serverSocket = process.argv[2];
 
 async function runTests() {
     try {
-        const client = new JanusClient(serverSocket);
+        const config = { 
+            socketPath: serverSocket,
+            maxMessageSize: 64 * 1024,
+            defaultTimeout: 10000,
+            enableValidation: false
+        };
+        const client = new JanusClient(config);
         
-        // Test 1: Manifest request
-        const manifestResponse = await client.sendRequest('manifest', null, 10.0);
+        // Test 1: Manifest request  
+        const manifestResponse = await client.sendRequest('manifest');
         if (manifestResponse.success && manifestResponse.result) {
             const manifest = manifestResponse.result;
             if (manifest.version) {
@@ -1072,16 +1078,16 @@ async function runTests() {
         const echoResponse = await client.sendRequest('echo', {
             message: 'Hello from TypeScript',
             timestamp: new Date().toISOString()
-        }, 10.0);
+        });
         
         if (echoResponse.success && echoResponse.result) {
             console.log(`ECHO_RESULT:${JSON.stringify(echoResponse.result)}`);
         }
         
-        // Test 3: Custom request (if available)
+        // Test 3: Custom request (if available) 
         const customResponse = await client.sendRequest('custom_test', {
             test_param: 'typescript_value'
-        }, 10.0);
+        });
         
         if (customResponse.success && customResponse.result) {
             console.log(`CUSTOM_RESULT:${JSON.stringify(customResponse.result)}`);
@@ -1089,7 +1095,7 @@ async function runTests() {
         
         console.log('TEST_COMPLETE');
         
-        client.close();
+        await client.disconnect();
         process.exit(0);
     } catch (error) {
         console.error('Test failed:', error);

@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "TypeScript library-based tests for Janus cross-platform validation",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "test": "jest --forceExit",
     "build": "tsc"
