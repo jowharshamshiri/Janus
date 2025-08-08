@@ -164,8 +164,7 @@ func main() {
         server_code = '''
 use std::env;
 use tokio::runtime::Runtime;
-use rust_janus::server::{JanusServer, ServerConfig};
-use rust_janus::JSONRPCError;
+use rust_janus::{JanusServer, ServerConfig, JSONRPCError};
 use serde_json;
 
 fn main() {
@@ -276,6 +275,16 @@ struct ServerApp {
         
         do {
             let server = JanusServer()
+            
+            // Register custom test handler
+            server.registerHandler("custom_test") { request in
+                let testParam = request.args?["test_param"] as? String ?? "unknown"
+                return .success(AnyCodable([
+                    "result": "custom_test_success",
+                    "received_param": testParam
+                ]))
+            }
+            
             try await server.startListening(socketPath)
             
             print("SERVER_READY")
@@ -705,8 +714,7 @@ func main() {
 use std::env;
 use std::collections::HashMap;
 use tokio::runtime::Runtime;
-use rust_janus::protocol::janus_client::JanusClient;
-use rust_janus::config::JanusClientConfig;
+use rust_janus::{JanusClient, JanusClientConfig};
 use serde_json::json;
 
 fn main() {
@@ -734,7 +742,7 @@ fn main() {
 }
 
 async fn run_tests(server_socket: &str) -> Result<(), Box<dyn std::error::Error>> {
-    use rust_janus::config::JanusClientConfig;
+    use rust_janus::JanusClientConfig;
     
     let client_config = JanusClientConfig::default();
     let mut client = JanusClient::new(server_socket.to_string(), client_config).await?;

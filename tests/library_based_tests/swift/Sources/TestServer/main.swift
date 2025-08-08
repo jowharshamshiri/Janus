@@ -12,6 +12,16 @@ struct ServerApp {
         
         do {
             let server = JanusServer()
+            
+            // Register custom test handler
+            server.registerHandler("custom_test") { request in
+                let testParam = request.args?["test_param"] as? String ?? "unknown"
+                return .success(AnyCodable([
+                    "result": "custom_test_success",
+                    "received_param": testParam
+                ]))
+            }
+            
             try await server.startListening(socketPath)
             
             print("SERVER_READY")

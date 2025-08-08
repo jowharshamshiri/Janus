@@ -18,3 +18,10 @@ path = "integration_test.rs"
 [[test]]
 name = "cross_platform_test"
 path = "cross_platform_test.rs"
+[[bin]]
+name = "debug_server"
+path = "src/bin/debug_server.rs"
+
+[[bin]]
+name = "debug_enhanced"
+path = "src/bin/debug_enhanced.rs"
